@@ -1,0 +1,146 @@
+/Users/moamenibrahem/Downloads/TUIO11_NET-master/bin/Debug/TuioDemo.exe
+/Users/moamenibrahem/Downloads/TUIO11_NET-master/bin/Debug/TuioDemo.pdb
+/Users/moamenibrahem/Downloads/TUIO11_NET-master/obj/Debug/TUIO_DEMO.csproj.AssemblyReference.cache
+/Users/moamenibrahem/Downloads/TUIO11_NET-master/obj/Debug/TUIO_DEMO.csproj.CoreCompileInputs.cache
+/Users/moamenibrahem/Downloads/TUIO11_NET-master/obj/Debug/TuioDemo.exe
+/Users/moamenibrahem/Downloads/TUIO11_NET-master/obj/Debug/TuioDemo.pdb
+D:\MSA material\sana 4\HCI\Lab\Lab 2 - TUIO + GUI-20241005\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\TuioDemo.exe.config
+D:\MSA material\sana 4\HCI\Lab\Lab 2 - TUIO + GUI-20241005\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\TuioDemo.exe
+D:\MSA material\sana 4\HCI\Lab\Lab 2 - TUIO + GUI-20241005\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\TuioDemo.pdb
+D:\MSA material\sana 4\HCI\Lab\Lab 2 - TUIO + GUI-20241005\TUIO11_NET-master (3)\TUIO11_NET-master\obj\Debug\TUIO_DEMO.csproj.AssemblyReference.cache
+D:\MSA material\sana 4\HCI\Lab\Lab 2 - TUIO + GUI-20241005\TUIO11_NET-master (3)\TUIO11_NET-master\obj\Debug\TUIO_DEMO.csproj.SuggestedBindingRedirects.cache
+D:\MSA material\sana 4\HCI\Lab\Lab 2 - TUIO + GUI-20241005\TUIO11_NET-master (3)\TUIO11_NET-master\obj\Debug\TUIO_DEMO.csproj.CoreCompileInputs.cache
+D:\MSA material\sana 4\HCI\Lab\Lab 2 - TUIO + GUI-20241005\TUIO11_NET-master (3)\TUIO11_NET-master\obj\Debug\TuioDemo.exe
+D:\MSA material\sana 4\HCI\Lab\Lab 2 - TUIO + GUI-20241005\TUIO11_NET-master (3)\TUIO11_NET-master\obj\Debug\TuioDemo.pdb
+C:\Users\haidy\Source\Repos\SecondSurface\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\TuioDemo.exe.config
+C:\Users\haidy\Source\Repos\SecondSurface\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\TuioDemo.exe
+C:\Users\haidy\Source\Repos\SecondSurface\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\TuioDemo.pdb
+C:\Users\haidy\Source\Repos\SecondSurface\TUIO11_NET-master (3)\TUIO11_NET-master\obj\Debug\TUIO_DEMO.csproj.AssemblyReference.cache
+C:\Users\haidy\Source\Repos\SecondSurface\TUIO11_NET-master (3)\TUIO11_NET-master\obj\Debug\TUIO_DEMO.csproj.CoreCompileInputs.cache
+C:\Users\haidy\Source\Repos\SecondSurface\TUIO11_NET-master (3)\TUIO11_NET-master\obj\Debug\TuioDemo.exe
+C:\Users\haidy\Source\Repos\SecondSurface\TUIO11_NET-master (3)\TUIO11_NET-master\obj\Debug\TuioDemo.pdb
+C:\Users\haidy\Source\Repos\SecondSurface\TUIO11_NET-master (3)\TUIO11_NET-master\obj\Debug\TuioDemo.resources
+C:\Users\haidy\Source\Repos\SecondSurface\TUIO11_NET-master (3)\TUIO11_NET-master\obj\Debug\TUIO_DEMO.csproj.GenerateResource.cache
+D:\MSA\8th semester\HCI\phase 1\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\TuioDemo.exe.config
+D:\MSA\8th semester\HCI\phase 1\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\TuioDemo.exe
+D:\MSA\8th semester\HCI\phase 1\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\TuioDemo.pdb
+D:\MSA\8th semester\HCI\phase 1\TUIO11_NET-master (3)\TUIO11_NET-master\obj\Debug\TUIO_DEMO.csproj.AssemblyReference.cache
+D:\MSA\8th semester\HCI\phase 1\TUIO11_NET-master (3)\TUIO11_NET-master\obj\Debug\TuioDemo.resources
+D:\MSA\8th semester\HCI\phase 1\TUIO11_NET-master (3)\TUIO11_NET-master\obj\Debug\TUIO_DEMO.csproj.GenerateResource.cache
+D:\MSA\8th semester\HCI\phase 1\TUIO11_NET-master (3)\TUIO11_NET-master\obj\Debug\TUIO_DEMO.csproj.CoreCompileInputs.cache
+D:\MSA\8th semester\HCI\phase 1\TUIO11_NET-master (3)\TUIO11_NET-master\obj\Debug\TuioDemo.exe
+D:\MSA\8th semester\HCI\phase 1\TUIO11_NET-master (3)\TUIO11_NET-master\obj\Debug\TuioDemo.pdb
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\TuioDemo.exe.config
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\TuioDemo.exe
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\TuioDemo.pdb
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\FirebaseAdmin.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Google.Api.CommonProtos.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Google.Api.Gax.Rest.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Google.Apis.Auth.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Google.Apis.Core.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Google.Apis.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Google.Protobuf.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Grpc.Auth.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Grpc.Core.Api.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Microsoft.Bcl.AsyncInterfaces.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Newtonsoft.Json.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\System.Buffers.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\System.CodeDom.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\System.Memory.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\System.Numerics.Vectors.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\System.Threading.Tasks.Extensions.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\System.ValueTuple.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\FirebaseAdmin.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Google.Api.CommonProtos.pdb
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Google.Api.CommonProtos.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Google.Api.Gax.Rest.pdb
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Google.Api.Gax.Rest.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Google.Apis.pdb
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Google.Apis.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Google.Apis.Auth.pdb
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Google.Apis.Auth.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Google.Apis.Core.pdb
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Google.Apis.Core.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Google.Protobuf.pdb
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Google.Protobuf.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Grpc.Auth.pdb
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Grpc.Auth.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Grpc.Core.Api.pdb
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Grpc.Core.Api.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Microsoft.Bcl.AsyncInterfaces.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\Newtonsoft.Json.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\System.Buffers.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\System.CodeDom.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\System.Memory.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\System.Numerics.Vectors.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\bin\Debug\System.ValueTuple.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\obj\Debug\TUIO_DEMO.csproj.AssemblyReference.cache
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\obj\Debug\TUIO_DEMO.csproj.SuggestedBindingRedirects.cache
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\obj\Debug\TuioDemo.exe.config
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\obj\Debug\TuioDemo.resources
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\obj\Debug\TUIO_DEMO.csproj.GenerateResource.cache
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\obj\Debug\TUIO_DEMO.csproj.CoreCompileInputs.cache
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\obj\Debug\TUIO_DEMO.csproj.CopyComplete
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\obj\Debug\TuioDemo.exe
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\SecondSurfaceformversion-main\TUIO11_NET-master (3)\TUIO11_NET-master\TUIO11_NET-master (3)\TUIO11_NET-master\obj\Debug\TuioDemo.pdb
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\TuioDemo.exe.config
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\TuioDemo.exe
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\TuioDemo.pdb
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\FirebaseAdmin.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Google.Api.CommonProtos.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Google.Api.Gax.Rest.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Google.Apis.Auth.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Google.Apis.Core.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Google.Apis.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Google.Protobuf.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Grpc.Auth.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Grpc.Core.Api.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Microsoft.Bcl.AsyncInterfaces.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Newtonsoft.Json.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\System.Buffers.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\System.CodeDom.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\System.Collections.Immutable.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\System.Memory.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\System.Numerics.Vectors.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\System.Threading.Tasks.Extensions.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\System.ValueTuple.dll
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\FirebaseAdmin.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Google.Api.CommonProtos.pdb
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Google.Api.CommonProtos.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Google.Api.Gax.Rest.pdb
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Google.Api.Gax.Rest.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Google.Apis.pdb
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Google.Apis.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Google.Apis.Auth.pdb
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Google.Apis.Auth.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Google.Apis.Core.pdb
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Google.Apis.Core.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Google.Protobuf.pdb
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Google.Protobuf.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Grpc.Auth.pdb
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Grpc.Auth.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Grpc.Core.Api.pdb
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Grpc.Core.Api.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Microsoft.Bcl.AsyncInterfaces.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Microsoft.Extensions.DependencyInjection.Abstractions.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\Newtonsoft.Json.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\System.Buffers.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\System.CodeDom.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\System.Collections.Immutable.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\System.Memory.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\System.Numerics.Vectors.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\System.Threading.Tasks.Extensions.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\bin\Debug\System.ValueTuple.xml
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\obj\Debug\TUIO_DEMO.csproj.AssemblyReference.cache
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\obj\Debug\TUIO_DEMO.csproj.SuggestedBindingRedirects.cache
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\obj\Debug\TuioDemo.exe.config
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\obj\Debug\TuioDemo.resources
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\obj\Debug\TUIO_DEMO.csproj.GenerateResource.cache
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\obj\Debug\TUIO_DEMO.csproj.CoreCompileInputs.cache
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\obj\Debug\TUIO_DEMO.csproj.CopyComplete
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\obj\Debug\TuioDemo.exe
+D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\obj\Debug\TuioDemo.pdb
