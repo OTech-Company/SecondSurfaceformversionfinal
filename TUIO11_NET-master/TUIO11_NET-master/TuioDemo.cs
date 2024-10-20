@@ -55,7 +55,7 @@ public class TuioDemo : Form, TuioListener
 
     Font font = new Font("Arial", 10.0f);
     SolidBrush fntBrush = new SolidBrush(Color.White);
-    SolidBrush bgrBrush = new SolidBrush(Color.FromArgb(0, 0, 64));
+    SolidBrush bgrBrush = new SolidBrush(Color.FromArgb(255, 255, 255));
     SolidBrush curBrush = new SolidBrush(Color.FromArgb(192, 0, 192));
     SolidBrush objBrush = new SolidBrush(Color.FromArgb(64, 0, 0));
     SolidBrush blbBrush = new SolidBrush(Color.FromArgb(64, 64, 64));
@@ -266,175 +266,140 @@ public class TuioDemo : Form, TuioListener
         }
     }
 
+    Dictionary<int, Tuple<Rectangle, Rectangle, Rectangle>> objectRectangles = new Dictionary<int, Tuple<Rectangle, Rectangle, Rectangle>>();
 
     protected override void OnPaintBackground(PaintEventArgs pevent)
     {
         // Getting the graphics object
         Graphics g = pevent.Graphics;
-         g.FillRectangle(bgrBrush, new Rectangle(0, 0, width, height));
+        g.FillRectangle(bgrBrush, new Rectangle(0, 0, width, height));
+
+        // Copy of cursorList to safely iterate
+        List<TuioCursor> cursorCopy = new List<TuioCursor>();
+
+        lock (cursorList)
+        {
+            cursorCopy.AddRange(cursorList.Values); // Make a safe copy of cursorList
+        }
 
         // Draw the cursor path
-        if (cursorList.Count > 0)
+        if (cursorCopy.Count > 0)
         {
-            lock (cursorList)
+            foreach (TuioCursor tcur in cursorCopy)
             {
-                foreach (TuioCursor tcur in cursorList.Values)
-                {
-                    List<TuioPoint> path = tcur.Path;
-                    TuioPoint current_point = path[0];
+                List<TuioPoint> path = tcur.Path;
+                TuioPoint current_point = path[0];
 
-                    for (int i = 0; i < path.Count; i++)
-                    {
-                        TuioPoint next_point = path[i];
-                        g.DrawLine(curPen, current_point.getScreenX(width), current_point.getScreenY(height), next_point.getScreenX(width), next_point.getScreenY(height));
-                        current_point = next_point;
-                    }
-                    g.FillEllipse(curBrush, current_point.getScreenX(width) - height / 100, current_point.getScreenY(height) - height / 100, height / 50, height / 50);
-                    g.DrawString(tcur.CursorID + "", font, fntBrush, new PointF(tcur.getScreenX(width) - 10, tcur.getScreenY(height) - 10));
+                for (int i = 0; i < path.Count; i++)
+                {
+                    TuioPoint next_point = path[i];
+                    g.DrawLine(curPen, current_point.getScreenX(width), current_point.getScreenY(height), next_point.getScreenX(width), next_point.getScreenY(height));
+                    current_point = next_point;
                 }
+                g.FillEllipse(curBrush, current_point.getScreenX(width) - height / 100, current_point.getScreenY(height) - height / 100, height / 50, height / 50);
+                g.DrawString(tcur.CursorID + "", font, fntBrush, new PointF(tcur.getScreenX(width) - 10, tcur.getScreenY(height) - 10));
             }
         }
 
-        // Draw the objects
-        if (objectList.Count > 0)
-        {
-            lock (objectList)
-            {
-                // Clear existing buttons before drawing new ones
+        // Copy of objectList to safely iterate
+        List<TuioObject> objectCopy = new List<TuioObject>();
 
-                foreach (TuioObject tobj in objectList.Values)
+        lock (objectList)
+        {
+            objectCopy.AddRange(objectList.Values); // Make a safe copy of objectList
+        }
+
+        // Draw the objects
+        if (objectCopy.Count > 0)
+        {
+            lock (objectRectangles)
+            {
+                objectRectangles.Clear(); // Clear previously stored rectangles
+
+                foreach (TuioObject tobj in objectCopy)
                 {
                     int ox = tobj.getScreenX(width);
                     int oy = tobj.getScreenY(height);
                     int size = height / 10;
 
-
-                    // Load object image based on SymbolID
-                  
                     try
                     {
-                        // Draw object image with rotation
-                       // Retrieve description using the function objDescriptions based on SymbolID
+                        // Draw object image and descriptions
                         string[] descriptions = objDescriptions(tobj.SymbolID);
-
-                        // Loop through each string in the description array and display each in a new row
                         for (int i = 0; i < descriptions.Length; i++)
                         {
-                            // Adjust Y position for each string to be displayed in the next row
                             g.DrawString(descriptions[i], new Font("Arial", 12), Brushes.Black, ox + size / 2 + 10, oy + (i * 20));
                         }
-                       
+
+                        // Draw the object rectangle
                         g.FillRectangle(objBrush, new Rectangle(ox - size / 2, oy - size / 2, size, size));
-                       
-                    
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine($"Error drawing object: {ex.Message}");
                     }
 
-                   CreateButtons(tobj.SymbolID);
+                    int rectWidth = size * 2; // Increase the width (you can adjust the multiplier as needed)
+                    int rectHeight = 30; // Fixed height for the rectangles
 
-                }
+                    // Calculate the positions for the Add, Update, and Delete rectangles with no space between them
+                    Rectangle addRect = new Rectangle(ox - rectWidth / 2, oy + size, rectWidth, rectHeight);
+                    Rectangle updateRect = new Rectangle(ox - rectWidth / 2, oy + size + rectHeight```                                                                                                                                                                                                                                                                                                                              , rectWidth, rectHeight); // Directly under Add
+                    Rectangle deleteRect = new Rectangle(ox - rectWidth / 2, oy + size + rectHeight * 2, rectWidth, rectHeight); // Directly under Update
 
-                // Create buttons at the bottom of the form
-            }
-        }
-        else
-        {
-            ClearButtons();
-        }
 
-        // Draw the blobs
-        if (blobList.Count > 0)
-        {
-            lock (blobList)
-            {
-                foreach (TuioBlob tblb in blobList.Values)
-                {
-                    int bx = tblb.getScreenX(width);
-                    int by = tblb.getScreenY(height);
-                    float bw = tblb.Width * width;
-                    float bh = tblb.Height * height;
+                    // Store the rectangles in the dictionary with the SymbolID as key
+                    objectRectangles[tobj.SymbolID] = new Tuple<Rectangle, Rectangle, Rectangle>(addRect, updateRect, deleteRect);
 
-                    g.TranslateTransform(bx, by);
-                    g.RotateTransform((float)(tblb.Angle / Math.PI * 180.0f));
-                    g.TranslateTransform(-bx, -by);
+                    // Draw rectangles
+                    g.FillRectangle(Brushes.Green, addRect);
+                    g.DrawString("Add", new Font("Arial", 12), Brushes.White, addRect.X + 5, addRect.Y + 5);
 
-                    g.FillEllipse(blbBrush, bx - bw / 2, by - bh / 2, bw, bh);
+                    g.FillRectangle(Brushes.Orange, updateRect);
+                    g.DrawString("Update", new Font("Arial", 12), Brushes.White, updateRect.X + 5, updateRect.Y + 5);
 
-                    g.TranslateTransform(bx, by);
-                    g.RotateTransform(-1 * (float)(tblb.Angle / Math.PI * 180.0f));
-                    g.TranslateTransform(-bx, -by);
-
-                    g.DrawString(tblb.BlobID + "", font, fntBrush, new PointF(bx, by));
+                    g.FillRectangle(Brushes.Red, deleteRect);
+                    g.DrawString("Delete", new Font("Arial", 12), Brushes.White, deleteRect.X + 5, deleteRect.Y + 5);
                 }
             }
         }
+
+        // Similar logic for blobList: Create a copy and iterate
     }
 
-    private void CreateButtons(int id)
+    // Mouse click event handler to check if a rectangle is clicked
+    protected override void OnMouseClick(MouseEventArgs e)
     {
+        base.OnMouseClick(e);
 
+        // Copy objectRectangles to safely iterate during mouse click event
+        Dictionary<int, Tuple<Rectangle, Rectangle, Rectangle>> rectanglesCopy = new Dictionary<int, Tuple<Rectangle, Rectangle, Rectangle>>(objectRectangles);
 
-        // Clear existing buttons first
-        // ClearButtons();
-
-        int buttonWidth = this.ClientSize.Width / 3; // Full width divided by 3
-        int buttonHeight = 40; // Set a height for the buttons
-
-        Button addButton = new Button
+        foreach (var kvp in rectanglesCopy)
         {
-            Text = "Add",
-            Location = new Point(0, this.ClientSize.Height - buttonHeight), // Bottom left
-            Size = new Size(buttonWidth, buttonHeight)
-        };
-        addButton.Click += (sender, e) => AddTuioObject(id);
-        addButton.BringToFront();
+            int symbolID = kvp.Key;
+            var rects = kvp.Value;
 
-        this.Controls.Add(addButton); // Add button to the form
-
-        Button updateButton = new Button
-        {
-            Text = "Update",
-            Location = new Point(buttonWidth, this.ClientSize.Height - buttonHeight), // Bottom middle
-            Size = new Size(buttonWidth, buttonHeight)
-        };
-        updateButton.BringToFront();
-
-        updateButton.Click += (sender, e) => UpdateTuioObject(id);
-        this.Controls.Add(updateButton); // Add button to the form
-
-        Button deleteButton = new Button
-        {
-            Text = "Delete",
-            Location = new Point(buttonWidth * 2, this.ClientSize.Height - buttonHeight), // Bottom right
-            Size = new Size(buttonWidth, buttonHeight)
-        };
-        deleteButton.Click += (sender, e) => DeleteTuioObject(id);
-
-        // Bring buttons to the front
-        deleteButton.BringToFront();
-
-        this.Controls.Add(deleteButton); // Add button to the form
-
-    }
-
-    private void ClearButtons()
-    {
-        // Clear existing buttons from the form
-        foreach (Control control in this.Controls)
-        {
-            if (control is Button && control.Text == "Add" || control.Text == "Update" || control.Text == "Delete")
+            // Check if the click is within the "Add" rectangle
+            if (rects.Item1.Contains(e.Location))
             {
-                this.Controls.Remove(control);
-                control.Dispose(); // Optional: Dispose of the button to free resources
+                MessageBox.Show($"Add clicked for object {symbolID}");
+            }
+            // Check if the click is within the "Update" rectangle
+            else if (rects.Item2.Contains(e.Location))
+            {
+                MessageBox.Show($"Update clicked for object {symbolID}");
+            }
+            // Check if the click is within the "Delete" rectangle
+            else if (rects.Item3.Contains(e.Location))
+            {
+                MessageBox.Show($"Delete clicked for object {symbolID}");
             }
         }
-
-        this.Invalidate();
-
     }
+
+
+
 
 
     // mas2ola 3n shakl el form el odamy
