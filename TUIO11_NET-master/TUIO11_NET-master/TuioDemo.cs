@@ -344,7 +344,7 @@ public class TuioDemo : Form, TuioListener
 
                     // Calculate the positions for the Add, Update, and Delete rectangles with no space between them
                     Rectangle addRect = new Rectangle(ox - rectWidth / 2, oy + size, rectWidth, rectHeight);
-                    Rectangle updateRect = new Rectangle(ox - rectWidth / 2, oy + size + rectHeight```                                                                                                                                                                                                                                                                                                                              , rectWidth, rectHeight); // Directly under Add
+                    Rectangle updateRect = new Rectangle(ox - rectWidth / 2, oy + size + rectHeight, rectWidth, rectHeight); // Directly under Add
                     Rectangle deleteRect = new Rectangle(ox - rectWidth / 2, oy + size + rectHeight * 2, rectWidth, rectHeight); // Directly under Update
 
 
