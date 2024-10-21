@@ -48,6 +48,9 @@ Global
 		{3135B187-8A7D-4BC5-ACFE-36196AB1F5C0} = {086531B4-F63E-4E74-B320-43AFBEB57E16}
 		{A151C4EE-C66A-49C0-9181-E10CD3304E00} = {086531B4-F63E-4E74-B320-43AFBEB57E16}
 	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {42A20A8D-61DA-46BE-8D0B-E17FEF309698}
+	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
 		$0.StandardHeader = $1

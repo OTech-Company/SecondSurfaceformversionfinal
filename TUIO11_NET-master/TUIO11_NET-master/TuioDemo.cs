@@ -350,6 +350,8 @@ public class TuioDemo : Form, TuioListener
 
                     // Store the rectangles in the dictionary with the SymbolID as key
                     objectRectangles[tobj.SymbolID] = new Tuple<Rectangle, Rectangle, Rectangle>(addRect, updateRect, deleteRect);
+                    objectRectangles[tobj.SymbolID] = new Tuple<Rectangle, Rectangle, Rectangle>(addRect, updateRect, deleteRect);
+
 
                     // Draw rectangles
                     g.FillRectangle(Brushes.Green, addRect);
@@ -383,21 +385,205 @@ public class TuioDemo : Form, TuioListener
             // Check if the click is within the "Add" rectangle
             if (rects.Item1.Contains(e.Location))
             {
-                MessageBox.Show($"Add clicked for object {symbolID}");
+                addButton(symbolID);
             }
             // Check if the click is within the "Update" rectangle
             else if (rects.Item2.Contains(e.Location))
             {
-                MessageBox.Show($"Update clicked for object {symbolID}");
+                updateButton(symbolID);
             }
             // Check if the click is within the "Delete" rectangle
             else if (rects.Item3.Contains(e.Location))
             {
-                MessageBox.Show($"Delete clicked for object {symbolID}");
+                deleteButton(symbolID);
             }
         }
     }
 
+    private void addButton(int id)
+    {
+        // Create a panel
+        int width = this.Width;
+        Panel panel = new Panel();
+        panel.Size = new Size(width, 80); // Set the size of the panel
+        panel.BorderStyle = BorderStyle.FixedSingle; // Adds a border to the panel
+        panel.Location = new Point(0, this.ClientSize.Height - panel.Height); // Position at bottom of form
+        panel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left; // Stick it to the bottom
+
+        // Create a label
+        Label lblDescription = new Label();
+        lblDescription.Text = "Enter Post Description:";
+        lblDescription.Location = new Point(10, 10);
+        lblDescription.AutoSize = true;
+
+        // Create a text box with increased height
+        TextBox txtDescription = new TextBox();
+        txtDescription.Location = new Point(10, 40);
+        txtDescription.Width = 200; // Adjust width for text box
+        txtDescription.Height = 30; // Set the height to match the button
+
+        // Create a submit button with the same height as the text box
+        Button btnSubmit = new Button();
+        btnSubmit.Text = "Submit";
+        btnSubmit.Location = new Point(220, 40); // Position it next to the text box
+        btnSubmit.Width = 80; // Set a suitable width
+        btnSubmit.Height = txtDescription.Height; // Match the height of the text box
+
+        // Button click event to capture the description and call addRequest
+        btnSubmit.Click += (sender, e) =>
+        {
+            // Capture the description
+            string description = txtDescription.Text;
+
+            // Call the addRequest function with id and description
+            addRequest(id, description);
+
+            // Remove the panel from the form (and all controls inside it)
+            this.Controls.Remove(panel);
+        };
+
+        // Add controls to the panel
+        panel.Controls.Add(lblDescription);
+        panel.Controls.Add(txtDescription);
+        panel.Controls.Add(btnSubmit);
+
+        // Add the panel to the form
+        this.Controls.Add(panel);
+    }
+
+    // Define the addRequest function
+    private void addRequest(int id, string description)
+    {
+        // Implement your logic to handle the request here
+        MessageBox.Show($"Request added for object {id}: {description}");
+        // Add additional logic to save the description, update a database, etc.
+    }
+
+
+
+
+    private void updateButton(int id)
+    {
+        // Create a panel
+        int width = this.Width;
+        Panel panel = new Panel();
+        panel.Size = new Size(width, 80); // Set the size of the panel
+        panel.BorderStyle = BorderStyle.FixedSingle; // Adds a border to the panel
+        panel.Location = new Point(0, this.ClientSize.Height - panel.Height); // Position at bottom of form
+        panel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left; // Stick it to the bottom
+
+        // Create a label
+        Label lblDescription = new Label();
+        lblDescription.Text = "Please enter updated data below:";
+        lblDescription.Location = new Point(10, 10);
+        lblDescription.AutoSize = true;
+
+        // Create a text box with increased height
+        TextBox txtDescription = new TextBox();
+        txtDescription.Location = new Point(10, 40);
+        txtDescription.Width = 200; // Adjust width for text box
+        txtDescription.Height = 30; // Set the height to match the button
+
+        // Create a submit button with the same height as the text box
+        Button btnSubmit = new Button();
+        btnSubmit.Text = "Submit";
+        btnSubmit.Location = new Point(220, 40); // Position it next to the text box
+        btnSubmit.Width = 80; // Set a suitable width
+        btnSubmit.Height = txtDescription.Height; // Match the height of the text box
+
+        // Button click event to capture the description and call addRequest
+        btnSubmit.Click += (sender, e) =>
+        {
+            // Capture the description
+            string description = txtDescription.Text;
+
+            // Call the addRequest function with id and description
+            updateRequest(id, description);
+
+            // Remove the panel from the form (and all controls inside it)
+            this.Controls.Remove(panel);
+        };
+
+        // Add controls to the panel
+        panel.Controls.Add(lblDescription);
+        panel.Controls.Add(txtDescription);
+        panel.Controls.Add(btnSubmit);
+
+        // Add the panel to the form
+        this.Controls.Add(panel);
+    }
+
+    // Define the addRequest function
+    private void updateRequest(int id, string description)
+    {
+        // Implement your logic to handle the request here
+        MessageBox.Show($"Update request for object {id}: {description}");
+        // Add additional logic to save the description, update a database, etc.
+    }
+
+
+
+    private void deleteButton(int id)
+    {
+        // Create a panel
+        int width = this.Width;
+        Panel panel = new Panel();
+        panel.Size = new Size(width, 80); // Set the size of the panel
+        panel.BorderStyle = BorderStyle.FixedSingle; // Adds a border to the panel
+        panel.Location = new Point(0, this.ClientSize.Height - panel.Height); // Position at bottom of form
+        panel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left; // Stick it to the bottom
+
+        // Create a label for confirmation
+        Label lblConfirmation = new Label();
+        lblConfirmation.Text = "Are you sure you want to delete?";
+        lblConfirmation.Location = new Point(10, 10);
+        lblConfirmation.AutoSize = true;
+
+        // Create a "Yes" button
+        Button btnYes = new Button();
+        btnYes.Text = "Yes";
+        btnYes.Location = new Point(10, 40); // Position it
+        btnYes.Width = 80; // Set a suitable width
+
+        // Button click event to call deleteRequest
+        btnYes.Click += (sender, e) =>
+        {
+            // Call the deleteRequest function with id
+            deleteRequest(id);
+
+            // Remove the panel from the form (and all controls inside it)
+            this.Controls.Remove(panel);
+        };
+
+        // Create a "No" button
+        Button btnNo = new Button();
+        btnNo.Text = "No";
+        btnNo.Location = new Point(100, 40); // Position it next to the "Yes" button
+        btnNo.Width = 80; // Set a suitable width
+
+        // Button click event to remove the panel without action
+        btnNo.Click += (sender, e) =>
+        {
+            // Remove the panel from the form (and all controls inside it)
+            this.Controls.Remove(panel);
+        };
+
+        // Add controls to the panel
+        panel.Controls.Add(lblConfirmation);
+        panel.Controls.Add(btnYes);
+        panel.Controls.Add(btnNo);
+
+        // Add the panel to the form
+        this.Controls.Add(panel);
+    }
+
+    // Define the deleteRequest function
+    private void deleteRequest(int id)
+    {
+        // Implement your logic to handle the delete request here
+        MessageBox.Show($"Delete request for object {id} confirmed.");
+        // Add additional logic to delete the object from the database, etc.
+    }
 
 
 
