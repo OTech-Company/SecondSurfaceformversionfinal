@@ -54,7 +54,7 @@ namespace TheClient
 
         private void PerformCRUDOperation(string operation, object data)
         {
-            string serverIp = "192.168.1.16";  // Replace with your server's IP address
+            string serverIp = "192.168.1.25";  // Replace with your server's IP address
             int serverPort = 9000;              // Replace with your server's port number
 
             try

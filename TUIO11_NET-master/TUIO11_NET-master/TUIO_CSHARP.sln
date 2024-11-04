@@ -12,6 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution_items", "Solution_items", "{086531B4-F63E-4E74-B320-43AFBEB57E16}"
 	ProjectSection(SolutionItems) = preProject
 		client.cs = client.cs
+		D:\MSA material\sana 4\HCI\Lab\lab2\OSAMA\lab2\file.json = D:\MSA material\sana 4\HCI\Lab\lab2\OSAMA\lab2\file.json
 		server.py = server.py
 	EndProjectSection
 EndProject
@@ -53,6 +54,9 @@ Global
 		{3BFDE196-5262-44EE-ADF0-6287AD9C4C7B} = {086531B4-F63E-4E74-B320-43AFBEB57E16}
 		{3135B187-8A7D-4BC5-ACFE-36196AB1F5C0} = {086531B4-F63E-4E74-B320-43AFBEB57E16}
 		{A151C4EE-C66A-49C0-9181-E10CD3304E00} = {086531B4-F63E-4E74-B320-43AFBEB57E16}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {28D1BB63-0AED-45C5-8600-C30FC77615BC}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
