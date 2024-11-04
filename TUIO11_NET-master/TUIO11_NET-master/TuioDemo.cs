@@ -156,7 +156,12 @@ public class TuioDemo : Form, TuioListener
             {
                 // Refresh the cache for the specific SymbolID
                 List<Post> updatedPosts = readTUIO(symbolID);
-                postCache[symbolID] = updatedPosts;
+
+                if(updatedPosts!=null)
+                {
+                    postCache[symbolID] = updatedPosts;
+
+                }
             }
             else
             {
@@ -246,7 +251,8 @@ public class TuioDemo : Form, TuioListener
         }
         else
         {
-            MessageBox.Show("Invalid response from server.");
+            //MessageBox.Show("Invalid response from server.");
+            return null;
         }
 
         // Return the list of posts
@@ -303,6 +309,7 @@ public class TuioDemo : Form, TuioListener
         client.connect();
     }
 
+    int postCount = 0;
     private void HoldTimer_Tick(object sender, EventArgs e)
     {
         holdTimer.Stop();
@@ -318,7 +325,7 @@ public class TuioDemo : Form, TuioListener
                 rotateLeftTriggered();
                 addTriggeredFlag = false;
                 editTriggeredFlag = false;
-                postIndex = (postIndex - 1 + 4) % 4;
+                postIndex--;
                 break;
             case 2:
                 editTriggered();
@@ -334,7 +341,7 @@ public class TuioDemo : Form, TuioListener
                 rotateRightTriggered();
                 addTriggeredFlag = false;
                 editTriggeredFlag = false;
-                postIndex = (postIndex + 1) % 4;
+                postIndex++;
                 break;
             case 5:
                 addTriggeredFlag = true;
@@ -690,14 +697,15 @@ public class TuioDemo : Form, TuioListener
                     int size = height / 10;
 
                     string backgroundImagePath = "";
-
+                    string foregroundImagePath = "";
 
                     //Posts = ReadPosts(tobj.SymbolID);
                     float angleDegrees = (float)(tobj.Angle / Math.PI * 180.0f);
                     bool menuFlag = false;
 
+                    this.Text = objectCopy.Count + " ";
 
-                    if (tobj.SymbolID == 0)
+                    if (tobj.SymbolID == 0 && objectCopy.Count > 1)
                     {
                         menuFlag = true;
                     }
@@ -721,18 +729,24 @@ public class TuioDemo : Form, TuioListener
                             break;
                         case 1:
                             backgroundImagePath = Path.Combine(Environment.CurrentDirectory, "cil.png");
+                            foregroundImagePath = Path.Combine(Environment.CurrentDirectory,"lotus.png");
 
                             break;
                         case 2:
                             backgroundImagePath = Path.Combine(Environment.CurrentDirectory, "makeup.jpg");
+                            foregroundImagePath = Path.Combine(Environment.CurrentDirectory, "foundation.png");
 
                             break;
                         case 3:
                             backgroundImagePath = Path.Combine(Environment.CurrentDirectory, "apple.png");
+                            foregroundImagePath = Path.Combine(Environment.CurrentDirectory, "mobile.png");
+
 
                             break;
                         case 4:
                             backgroundImagePath = Path.Combine(Environment.CurrentDirectory, "Willys.jpg");
+                            foregroundImagePath = Path.Combine(Environment.CurrentDirectory, "cheeseburger.png");
+
 
                             break;
                         default:
@@ -831,28 +845,56 @@ public class TuioDemo : Form, TuioListener
 
                         if (tobj.SymbolID != 0)
                         {
-                            // Define the position for the text
-                            PointF textPosition1 = new PointF(ox, oy - size / 2);
-                            PointF textPosition2 = new PointF(ox, oy - size + 10 / 2);
+                            // Define the position for the foreground image
+                            PointF imagePosition = new PointF(ox, oy - size);
 
-                            // Calculate the size of the rectangle based on text size
-                            SizeF textSize1 = g.MeasureString(postCache[tobj.SymbolID][postIndex].CreatedAt, font);
-                            SizeF textSize2 = g.MeasureString(postCache[tobj.SymbolID][postIndex].Content, font);
+                            // Draw the foreground image
+                            System.Drawing.Image foregroundImage = System.Drawing.Image.FromFile(foregroundImagePath); // Use the full namespace
 
-                            // Create the rectangle's position and size
-                            RectangleF rect1 = new RectangleF(textPosition1, textSize1);
-                            RectangleF rect2 = new RectangleF(textPosition2, textSize2);
+                            // Define the position for the foreground image
+                            imagePosition = new PointF(ox, oy - size);
 
-                            // Draw the black rectangle behind the text
-                            g.FillRectangle(Brushes.Black, rect1);
-                            g.FillRectangle(Brushes.Black, rect2);
+                            // Set desired width and height for the image
+                            float imageWidth = 200; // Set your desired width
+                            float imageHeight = 200;
 
-                            // Draw the text on top of the rectangle
-                            g.DrawString(postCache[tobj.SymbolID][postIndex].CreatedAt, font, fntBrush, textPosition1);
-                            g.DrawString(postCache[tobj.SymbolID][postIndex].Content, font, fntBrush, textPosition2);
+                            RectangleF imageRect = new RectangleF(imagePosition, new SizeF(imageWidth, imageHeight));
 
+                            // Draw the foreground image with the specified width and height
+                            g.DrawImage(foregroundImage, imageRect);
+                            // Define the position for the text above the image
+                            PointF textPosition1 = new PointF(ox, imagePosition.Y - size / 2);
+                            PointF textPosition2 = new PointF(ox, textPosition1.Y - size + 10 / 2);
 
+                            if(!postCache.ContainsKey(tobj.SymbolID) && postCache[tobj.SymbolID].Count > 0)
+                            {
+                                SizeF textSize1 = g.MeasureString(postCache[tobj.SymbolID][postIndex].CreatedAt, font);
+                                SizeF textSize2 = g.MeasureString(postCache[tobj.SymbolID][postIndex].Content, font);
+
+                                // Create the rectangle's position and size
+                                RectangleF rect1 = new RectangleF(textPosition1, textSize1);
+                                RectangleF rect2 = new RectangleF(textPosition2, textSize2);
+
+                                // Draw the black rectangle behind the text
+                                g.FillRectangle(Brushes.Black, rect1);
+                                g.FillRectangle(Brushes.Black, rect2);
+
+                                // Draw the text on top of the rectangle
+                                if (postIndex < 0)
+                                {
+                                    postIndex = postCache[tobj.SymbolID].Count - 1;
+                                }
+                                else if (postIndex >= postCache[tobj.SymbolID].Count)
+                                {
+                                    postIndex = 0;
+
+                                }
+                                g.DrawString(postCache[tobj.SymbolID][postIndex].CreatedAt, font, fntBrush, textPosition1);
+                                g.DrawString(postCache[tobj.SymbolID][postIndex].Content, font, fntBrush, textPosition2);
+
+                            }
                         }
+
                     }
                     catch (Exception ex)
                     {
