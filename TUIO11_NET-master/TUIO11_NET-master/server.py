@@ -61,11 +61,12 @@ class FirestoreCRUD:
     def update_post(self, post_id, new_data):
         try:
             post_ref = self.db.collection('Posts').document(post_id)
-            new_data['updatedAt'] = datetime.now().isoformat()
-            post_ref.update(new_data)
+            new_data['updatedAt'] = datetime.now().isoformat()  # Add the updatedAt field
+            post_ref.update(new_data)  # Update the document with the new data
             return f"Post {post_id} updated successfully."
         except Exception as e:
             return f"Error updating post: {e}"
+
 
     # Delete a post by ID (either soft-delete or hard-delete)
     def delete_post(self, post_id, soft_delete=True):
@@ -114,10 +115,18 @@ class FirestoreCRUD:
         return None
 
     def update_tuio_document(self, tuio_id, updates):
-        tuio_ref = self.db.collection("TUIO").document(tuio_id)
-        updates['updatedAt'] = datetime.utcnow()
-        tuio_ref.update(updates)
-        print(f"TUIO document {tuio_id} updated.")
+        try:
+            tuio_ref = self.db.collection("TUIO").document(tuio_id)
+            doc = tuio_ref.get()
+            if doc.exists:
+                updates['updatedAt'] = datetime.utcnow().isoformat()  # Add the updatedAt field
+                tuio_ref.update(updates)  # Update the TUIO document
+                return f"TUIO document {tuio_id} updated successfully."
+            else:
+                return f"Error: No TUIO document found with ID {tuio_id}."
+        except Exception as e:
+            return f"Error updating TUIO document {tuio_id}: {e}"
+
 
     def delete_tuio_document(self, tuio_id):
         tuio_ref = self.db.collection("TUIO").document(tuio_id)
@@ -148,11 +157,36 @@ class FirestoreCRUD:
             print(f"No user found with ID {doc_id}.")
         return None
 
+    def update_tuio_document(self, tuio_id, updates):
+        try:
+            tuio_ref = self.db.collection("TUIO").document(tuio_id)
+            doc = tuio_ref.get()
+            if doc.exists:
+                updates['updatedAt'] = datetime.utcnow().isoformat()
+                tuio_ref.update(updates)
+                return f"TUIO document {tuio_id} updated successfully."
+            else:
+                return f"Error: No TUIO document found with ID {tuio_id}."
+        except Exception as e:
+            return f"Error updating TUIO document {tuio_id}: {e}"
+
     def update_user_document(self, user_id, updates):
-        user_ref = self.db.collection("user").document(user_id)
-        updates['updatedAt'] = datetime.utcnow()
-        user_ref.update(updates)
-        print(f"User {user_id} updated.")
+        try:
+            user_ref = self.db.collection("user").document(user_id)
+            doc = user_ref.get()
+            if doc.exists:
+                updates['updatedAt'] = datetime.utcnow().isoformat()
+                user_ref.update(updates)
+                return f"User {user_id} updated successfully."
+            else:
+                # Create the document if it doesn't exist
+                updates['createdAt'] = datetime.utcnow().isoformat()
+                updates['updatedAt'] = datetime.utcnow().isoformat()
+                user_ref.set(updates)
+                return f"User {user_id} created and updated successfully."
+        except Exception as e:
+            return f"Error updating user {user_id}: {e}"
+
 
     def delete_user_document(self, doc_id):
         user_ref = self.db.collection("user").document(doc_id)
@@ -167,7 +201,7 @@ class FirestoreCRUD:
 crud = FirestoreCRUD()
 
 # Server details
-server_ip = '192.168.1.16'  # Replace with your IP address
+server_ip = '192.168.1.25'  # Replace with your IP address
 port = 9000
 
 # Create a socket object
@@ -202,7 +236,8 @@ def handle_client(client_socket):
                 response = crud.delete_post(post_id)
             elif operation == 'update_post':
                 post_id = content.get('post_id')
-                response = crud.update_post(post_id)
+                updates = content.get('updates', {})  # Extract the updates data from the request
+                response = crud.update_post(post_id, updates)
             elif operation == 'create_tuio':
                 tuio_id = content.get('tuio_id')
                 tuio_data = content.get('data')
@@ -256,4 +291,3 @@ while True:
     # Handle client request in a separate thread
     client_handler = Thread(target=handle_client, args=(client_socket,))
     client_handler.start()
-
