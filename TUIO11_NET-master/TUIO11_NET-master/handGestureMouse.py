@@ -1,8 +1,8 @@
 import cv2
 import mediapipe as mp
 import pyautogui
-import math
 import time
+import math
 
 # Initialize Mediapipe hands and drawing utilities
 mp_hands = mp.solutions.hands
@@ -13,14 +13,11 @@ hands = mp_hands.Hands(min_detection_confidence=0.7, min_tracking_confidence=0.7
 cap = cv2.VideoCapture(0)
 screen_width, screen_height = pyautogui.size()
 
-# Variable to track if click has been triggered, the last open-hand position, and the last click time
-click_triggered = False
-last_open_x, last_open_y = None, None
-last_click_time = 0  # Track the time of the last click
-
-# Define the upward offset and freeze duration (0.5 seconds)
-upward_offset = 10
-freeze_duration = 0.5  # 0.5 seconds
+# Variables to track position and time
+start_time = time.time()  # Initialize start time to current time
+last_position = None
+hold_time_threshold = 1.5  # seconds
+position_tolerance = 15  # pixels, adjust for more/less tolerance
 
 while cap.isOpened():
     ret, frame = cap.read()
@@ -35,36 +32,38 @@ while cap.isOpened():
     # Check if hand landmarks are detected
     if results.multi_hand_landmarks:
         for hand_landmarks in results.multi_hand_landmarks:
-            # Get the index finger tip and thumb tip coordinates
+            # Get the index finger tip coordinates
             x_index = hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].x
             y_index = hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].y
-            x_thumb = hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_TIP].x
-            y_thumb = hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_TIP].y
 
             # Convert normalized coordinates to screen coordinates
             screen_x = int(screen_width * x_index)
             screen_y = int(screen_height * y_index)
 
-            # Calculate the distance between index finger and thumb
-            distance = math.sqrt((x_index - x_thumb) ** 2 + (y_index - y_thumb) ** 2)
+            # Move the mouse to the screen coordinates
+            pyautogui.moveTo(screen_x, screen_y)
 
-            # Check if the hand is "closed" (fingers are close together)
-            if distance < 0.05:
-                current_time = time.time()
-                # Only click if 0.5 seconds have passed since the last click
-                if not click_triggered and (current_time - last_click_time) > freeze_duration:
-                    pyautogui.click()  # Perform left-click
-                    click_triggered = True  # Prevent repeated clicking while hand is closed
-                    last_click_time = current_time  # Update last click time
-
-                # Move the mouse slightly up when the hand is closed
-                if last_open_x is not None and last_open_y is not None:
-                    pyautogui.moveTo(last_open_x, last_open_y - upward_offset)
+            # Check if the finger has stayed in the same approximate position
+            current_position = (screen_x, screen_y)
+            if last_position is None:
+                last_position = current_position
+                start_time = time.time()  # Reset start time when initializing position
             else:
-                # Hand is open: Update the last open position and move the mouse
-                click_triggered = False
-                last_open_x, last_open_y = screen_x, screen_y
-                pyautogui.moveTo(last_open_x, last_open_y)  # Move the mouse only when hand is open
+                # Calculate distance from last position
+                distance = math.sqrt((current_position[0] - last_position[0]) ** 2 +
+                                     (current_position[1] - last_position[1]) ** 2)
+                
+                # Check if within tolerance
+                if distance <= position_tolerance:
+                    # Calculate elapsed time only if start_time is set
+                    elapsed_time = time.time() - start_time if start_time else 0
+                    if elapsed_time >= hold_time_threshold:
+                        pyautogui.click()  # Perform left-click
+                        start_time = time.time()  # Reset start time after clicking
+                else:
+                    # Update position and reset the timer if moved outside tolerance
+                    last_position = current_position
+                    start_time = time.time()
 
             # Draw landmarks on the frame
             mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
