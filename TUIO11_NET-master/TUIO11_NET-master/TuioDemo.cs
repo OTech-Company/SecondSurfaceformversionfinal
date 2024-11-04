@@ -110,7 +110,7 @@ public class TuioDemo : Form, TuioListener
 
     private JObject PerformCRUDOperation(string operation, object data)
     {
-        string serverIp = "192.168.1.17";  // Replace with your server's IP address
+        string serverIp = "192.168.20.129";  // Replace with your server's IP address
         int serverPort = 9001;              // Replace with your server's port number
         try
         {

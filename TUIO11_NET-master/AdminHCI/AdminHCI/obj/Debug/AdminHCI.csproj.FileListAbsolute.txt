@@ -1,0 +1,64 @@
+C:\Users\haidy\source\repos\AdminHCI\AdminHCI\bin\Debug\AdminHCI.exe.config
+C:\Users\haidy\source\repos\AdminHCI\AdminHCI\bin\Debug\AdminHCI.exe
+C:\Users\haidy\source\repos\AdminHCI\AdminHCI\bin\Debug\AdminHCI.pdb
+C:\Users\haidy\source\repos\AdminHCI\AdminHCI\obj\Debug\AdminHCI.csproj.AssemblyReference.cache
+C:\Users\haidy\source\repos\AdminHCI\AdminHCI\obj\Debug\AdminHCI.Form1.resources
+C:\Users\haidy\source\repos\AdminHCI\AdminHCI\obj\Debug\AdminHCI.Properties.Resources.resources
+C:\Users\haidy\source\repos\AdminHCI\AdminHCI\obj\Debug\AdminHCI.csproj.GenerateResource.cache
+C:\Users\haidy\source\repos\AdminHCI\AdminHCI\obj\Debug\AdminHCI.csproj.CoreCompileInputs.cache
+C:\Users\haidy\source\repos\AdminHCI\AdminHCI\obj\Debug\AdminHCI.exe
+C:\Users\haidy\source\repos\AdminHCI\AdminHCI\obj\Debug\AdminHCI.pdb
+D:\MSA\8th semester\HCI\AdminHCI\AdminHCI\bin\Debug\AdminHCI.exe.config
+D:\MSA\8th semester\HCI\AdminHCI\AdminHCI\bin\Debug\AdminHCI.exe
+D:\MSA\8th semester\HCI\AdminHCI\AdminHCI\bin\Debug\AdminHCI.pdb
+D:\MSA\8th semester\HCI\AdminHCI\AdminHCI\obj\Debug\AdminHCI.csproj.AssemblyReference.cache
+D:\MSA\8th semester\HCI\AdminHCI\AdminHCI\obj\Debug\AdminHCI.Properties.Resources.resources
+D:\MSA\8th semester\HCI\AdminHCI\AdminHCI\obj\Debug\AdminHCI.csproj.GenerateResource.cache
+D:\MSA\8th semester\HCI\AdminHCI\AdminHCI\obj\Debug\AdminHCI.csproj.CoreCompileInputs.cache
+D:\MSA\8th semester\HCI\AdminHCI\AdminHCI\obj\Debug\AdminHCI.exe
+D:\MSA\8th semester\HCI\AdminHCI\AdminHCI\obj\Debug\AdminHCI.pdb
+D:\MSA\8th semester\HCI\AdminHCI\AdminHCI\obj\Debug\AdminHCI.Admin.resources
+D:\MSA\8th semester\HCI\AdminHCI\AdminHCI\bin\Debug\Newtonsoft.Json.dll
+D:\MSA\8th semester\HCI\AdminHCI\AdminHCI\bin\Debug\Newtonsoft.Json.xml
+D:\MSA\8th semester\HCI\AdminHCI\AdminHCI\obj\Debug\AdminHCI.csproj.Up2Date
+D:\HCI Project\AdminHCI\AdminHCI\bin\Debug\AdminHCI.exe.config
+D:\HCI Project\AdminHCI\AdminHCI\bin\Debug\AdminHCI.exe
+D:\HCI Project\AdminHCI\AdminHCI\bin\Debug\AdminHCI.pdb
+D:\HCI Project\AdminHCI\AdminHCI\bin\Debug\Newtonsoft.Json.dll
+D:\HCI Project\AdminHCI\AdminHCI\bin\Debug\Newtonsoft.Json.xml
+D:\HCI Project\AdminHCI\AdminHCI\obj\Debug\AdminHCI.csproj.AssemblyReference.cache
+D:\HCI Project\AdminHCI\AdminHCI\obj\Debug\AdminHCI.Admin.resources
+D:\HCI Project\AdminHCI\AdminHCI\obj\Debug\AdminHCI.Properties.Resources.resources
+D:\HCI Project\AdminHCI\AdminHCI\obj\Debug\AdminHCI.csproj.GenerateResource.cache
+D:\HCI Project\AdminHCI\AdminHCI\obj\Debug\AdminHCI.csproj.CoreCompileInputs.cache
+D:\HCI Project\AdminHCI\AdminHCI\obj\Debug\AdminHCI.csproj.Up2Date
+D:\HCI Project\AdminHCI\AdminHCI\obj\Debug\AdminHCI.exe
+D:\HCI Project\AdminHCI\AdminHCI\obj\Debug\AdminHCI.pdb
+C:\Users\Osama hosam\Downloads\SecondSurfaceformversionfinal-mn3m-s-Branch\SecondSurfaceformversionfinal-mn3m-s-Branch\AdminHCI\AdminHCI\bin\Debug\AdminHCI.exe.config
+C:\Users\Osama hosam\Downloads\SecondSurfaceformversionfinal-mn3m-s-Branch\SecondSurfaceformversionfinal-mn3m-s-Branch\AdminHCI\AdminHCI\bin\Debug\AdminHCI.exe
+C:\Users\Osama hosam\Downloads\SecondSurfaceformversionfinal-mn3m-s-Branch\SecondSurfaceformversionfinal-mn3m-s-Branch\AdminHCI\AdminHCI\bin\Debug\AdminHCI.pdb
+C:\Users\Osama hosam\Downloads\SecondSurfaceformversionfinal-mn3m-s-Branch\SecondSurfaceformversionfinal-mn3m-s-Branch\AdminHCI\AdminHCI\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Osama hosam\Downloads\SecondSurfaceformversionfinal-mn3m-s-Branch\SecondSurfaceformversionfinal-mn3m-s-Branch\AdminHCI\AdminHCI\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Osama hosam\Downloads\SecondSurfaceformversionfinal-mn3m-s-Branch\SecondSurfaceformversionfinal-mn3m-s-Branch\AdminHCI\AdminHCI\obj\Debug\AdminHCI.csproj.AssemblyReference.cache
+C:\Users\Osama hosam\Downloads\SecondSurfaceformversionfinal-mn3m-s-Branch\SecondSurfaceformversionfinal-mn3m-s-Branch\AdminHCI\AdminHCI\obj\Debug\AdminHCI.csproj.SuggestedBindingRedirects.cache
+C:\Users\Osama hosam\Downloads\SecondSurfaceformversionfinal-mn3m-s-Branch\SecondSurfaceformversionfinal-mn3m-s-Branch\AdminHCI\AdminHCI\obj\Debug\AdminHCI.Admin.resources
+C:\Users\Osama hosam\Downloads\SecondSurfaceformversionfinal-mn3m-s-Branch\SecondSurfaceformversionfinal-mn3m-s-Branch\AdminHCI\AdminHCI\obj\Debug\AdminHCI.Properties.Resources.resources
+C:\Users\Osama hosam\Downloads\SecondSurfaceformversionfinal-mn3m-s-Branch\SecondSurfaceformversionfinal-mn3m-s-Branch\AdminHCI\AdminHCI\obj\Debug\AdminHCI.csproj.GenerateResource.cache
+C:\Users\Osama hosam\Downloads\SecondSurfaceformversionfinal-mn3m-s-Branch\SecondSurfaceformversionfinal-mn3m-s-Branch\AdminHCI\AdminHCI\obj\Debug\AdminHCI.csproj.CoreCompileInputs.cache
+C:\Users\Osama hosam\Downloads\SecondSurfaceformversionfinal-mn3m-s-Branch\SecondSurfaceformversionfinal-mn3m-s-Branch\AdminHCI\AdminHCI\obj\Debug\AdminHCI.csproj.CopyComplete
+C:\Users\Osama hosam\Downloads\SecondSurfaceformversionfinal-mn3m-s-Branch\SecondSurfaceformversionfinal-mn3m-s-Branch\AdminHCI\AdminHCI\obj\Debug\AdminHCI.exe
+C:\Users\Osama hosam\Downloads\SecondSurfaceformversionfinal-mn3m-s-Branch\SecondSurfaceformversionfinal-mn3m-s-Branch\AdminHCI\AdminHCI\obj\Debug\AdminHCI.pdb
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\AdminHCI\AdminHCI\bin\Debug\AdminHCI.exe.config
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\AdminHCI\AdminHCI\bin\Debug\AdminHCI.exe
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\AdminHCI\AdminHCI\bin\Debug\AdminHCI.pdb
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\AdminHCI\AdminHCI\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\AdminHCI\AdminHCI\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\AdminHCI\AdminHCI\obj\Debug\AdminHCI.csproj.AssemblyReference.cache
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\AdminHCI\AdminHCI\obj\Debug\AdminHCI.csproj.SuggestedBindingRedirects.cache
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\AdminHCI\AdminHCI\obj\Debug\AdminHCI.Admin.resources
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\AdminHCI\AdminHCI\obj\Debug\AdminHCI.Properties.Resources.resources
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\AdminHCI\AdminHCI\obj\Debug\AdminHCI.csproj.GenerateResource.cache
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\AdminHCI\AdminHCI\obj\Debug\AdminHCI.csproj.CoreCompileInputs.cache
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\AdminHCI\AdminHCI\obj\Debug\AdminHCI.csproj.CopyComplete
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\AdminHCI\AdminHCI\obj\Debug\AdminHCI.exe
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\AdminHCI\AdminHCI\obj\Debug\AdminHCI.pdb
