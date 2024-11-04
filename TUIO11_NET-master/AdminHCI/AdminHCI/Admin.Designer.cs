@@ -34,12 +34,12 @@ namespace AdminHCI
             this.label2 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.sidebar = new System.Windows.Forms.FlowLayoutPanel();
-            this.pnTuio = new System.Windows.Forms.Button();
             this.pnUsers = new System.Windows.Forms.Button();
             this.pnPosts = new System.Windows.Forms.Button();
             this.PnLogout = new System.Windows.Forms.Button();
             this.sidebarTransition = new System.Windows.Forms.Timer(this.components);
             this.dataGridViewPosts = new System.Windows.Forms.DataGridView();
+            this.pnTuio = new System.Windows.Forms.Button();
             this.deletebtn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -94,25 +94,6 @@ namespace AdminHCI
             this.sidebar.Name = "sidebar";
             this.sidebar.Size = new System.Drawing.Size(297, 689);
             this.sidebar.TabIndex = 2;
-            // 
-            // pnTuio
-            // 
-            this.pnTuio.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(18)))), ((int)(((byte)(20)))), ((int)(((byte)(53)))));
-            this.pnTuio.FlatAppearance.BorderSize = 0;
-            this.pnTuio.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.pnTuio.Font = new System.Drawing.Font("Microsoft YaHei", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.pnTuio.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.pnTuio.Image = global::AdminHCI.Properties.Resources.multiple_users_silhouette40;
-            this.pnTuio.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.pnTuio.Location = new System.Drawing.Point(3, 2);
-            this.pnTuio.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.pnTuio.Name = "pnTuio";
-            this.pnTuio.Padding = new System.Windows.Forms.Padding(27, 24, 27, 24);
-            this.pnTuio.Size = new System.Drawing.Size(307, 86);
-            this.pnTuio.TabIndex = 9;
-            this.pnTuio.Text = "TUIO";
-            this.pnTuio.UseVisualStyleBackColor = false;
-            this.pnTuio.Click += new System.EventHandler(this.pnTuio_Click);
             // 
             // pnUsers
             // 
@@ -187,6 +168,25 @@ namespace AdminHCI
             this.dataGridViewPosts.Size = new System.Drawing.Size(822, 689);
             this.dataGridViewPosts.TabIndex = 3;
             this.dataGridViewPosts.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewPosts_CellContentClick);
+            // 
+            // pnTuio
+            // 
+            this.pnTuio.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(18)))), ((int)(((byte)(20)))), ((int)(((byte)(53)))));
+            this.pnTuio.FlatAppearance.BorderSize = 0;
+            this.pnTuio.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.pnTuio.Font = new System.Drawing.Font("Microsoft YaHei", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.pnTuio.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.pnTuio.Image = global::AdminHCI.Properties.Resources.multiple_users_silhouette40;
+            this.pnTuio.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.pnTuio.Location = new System.Drawing.Point(3, 2);
+            this.pnTuio.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.pnTuio.Name = "pnTuio";
+            this.pnTuio.Padding = new System.Windows.Forms.Padding(27, 24, 27, 24);
+            this.pnTuio.Size = new System.Drawing.Size(307, 86);
+            this.pnTuio.TabIndex = 9;
+            this.pnTuio.Text = "TUIO";
+            this.pnTuio.UseVisualStyleBackColor = false;
+            this.pnTuio.Click += new System.EventHandler(this.pnTuio_Click);
             // 
             // deletebtn
             // 

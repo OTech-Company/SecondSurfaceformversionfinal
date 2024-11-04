@@ -127,7 +127,7 @@ namespace Tarbita3._0
         private void label5_Click(object sender, EventArgs e)
         {
             this.Close();
-            new introForm().Show();
+            //new introForm1().Show();
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)

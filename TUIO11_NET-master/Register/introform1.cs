@@ -6,12 +6,12 @@ using TUIO;
 
 namespace Tarbita3._0
 {
-    public partial class introForm : Form, TuioListener
+    public partial class introform1 : Form, TuioListener
     {
         private TuioClient client;
         private Dictionary<long, TuioObject> objectList;
 
-        public introForm()
+        public introform1()
         {
             InitializeComponent();
             this.FormClosing += introForm_FormClosing;
@@ -72,8 +72,8 @@ namespace Tarbita3._0
         private void hlabel_Click(object sender, EventArgs e)
         {
             this.Hide(); // Close the current form
-            Register newForm = new Register();
-            newForm.ShowDialog(); // Open the new form
+            //Register newForm = new Register();
+            //newForm.ShowDialog(); // Open the new form
         }
 
 

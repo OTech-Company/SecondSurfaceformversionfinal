@@ -49,12 +49,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="introForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="introForm.Designer.cs">
-      <DependentUpon>introForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="OSC.NET\OSCBundle.cs" />
     <Compile Include="OSC.NET\OSCMessage.cs" />
     <Compile Include="OSC.NET\OSCPacket.cs" />
@@ -77,9 +71,6 @@
     <Compile Include="TUIO\TuioObject.cs" />
     <Compile Include="TUIO\TuioPoint.cs" />
     <Compile Include="TUIO\TuioTime.cs" />
-    <EmbeddedResource Include="introForm.resx">
-      <DependentUpon>introForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

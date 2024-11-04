@@ -11,22 +11,44 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using TUIO;
 
 namespace AdminHCI
 {
-    public partial class Admin : Form
+    public partial class Admin : Form, TuioListener
     {
+        private TuioClient client;
+        private Dictionary<long, TuioObject> objectList;
 
         bool sidebarExpand = true;
         private string currentView = "posts"; // Default to posts view
         public Admin()
         {
             InitializeComponent();
+            this.FormClosing += admin_FormClosing;
+
+
+            client = new TuioClient(3333); // Replace 3333 with the appropriate port
+            client.addTuioListener(this);
+            client.connect();
+
+            objectList = new Dictionary<long, TuioObject>();
+
+
             dataGridViewPosts.Dock = DockStyle.Fill;
             dataGridViewPosts.Left = sidebar.Width;
             dataGridViewPosts.Width = this.ClientSize.Width - sidebar.Width;
-        }
 
+
+        }
+        private void admin_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            client.removeTuioListener(this);
+            client.disconnect();
+            System.Windows.Forms.Application.Exit();
+        }
         private void pictureBox1_Click(object sender, EventArgs e)
         {
             sidebarTransition.Start();
@@ -57,7 +79,7 @@ namespace AdminHCI
                 if (control is Button button)
                 {
                     // Set all buttons to default colors
-                    button.ForeColor = Color.White;              
+                    button.ForeColor = Color.White;
                 }
             }
 
@@ -78,7 +100,7 @@ namespace AdminHCI
             PerformCRUDOperation("read_all_posts", null);
         }
 
-        private void DisplayPostsInGrid(string operation , object data)
+        private void DisplayPostsInGrid(string operation, object data)
         {
             // Clear existing rows and columns in the DataGridView
             dataGridViewPosts.Rows.Clear();
@@ -112,7 +134,7 @@ namespace AdminHCI
                             }
                             else
                             {
-                                if(!post.isDeleted)
+                                if (!post.isDeleted)
                                     dataGridViewPosts.Rows.Add($"Post {i}", post.post_id, post.text, post.user_id, "", "");
                             }
                         }
@@ -302,13 +324,13 @@ namespace AdminHCI
                     sidebarTransition.Stop();
 
                     pnPosts.Width = sidebar.Width;
-                    // Remove this line for `pnTuio`
+                    // Remove this line for pnTuio
                     pnTuio.Width = sidebar.Width;
                     pnUsers.Width = sidebar.Width;
                     PnLogout.Width = sidebar.Width;
 
                     pnPosts.Text = "";
-                    // Remove this line for `pnTuio`
+                    // Remove this line for pnTuio
                     pnTuio.Text = "";
                     pnUsers.Text = "";
                     PnLogout.Text = "";
@@ -323,13 +345,13 @@ namespace AdminHCI
                     sidebarTransition.Stop();
 
                     pnPosts.Width = sidebar.Width;
-                    // Remove this line for `pnTuio`
+                    // Remove this line for pnTuio
                     pnTuio.Width = sidebar.Width;
                     pnUsers.Width = sidebar.Width;
                     PnLogout.Width = sidebar.Width;
 
                     pnPosts.Text = "Posts";
-                    // Remove this line for `pnTuio`
+                    // Remove this line for pnTuio
                     pnTuio.Text = "TUIO";
                     pnUsers.Text = "Users";
                     PnLogout.Text = "Logout";
@@ -480,6 +502,68 @@ namespace AdminHCI
             }
         }
 
+        public void addTuioObject(TuioObject o)
+        {
+            lock (objectList)
+            {
+                objectList.Add(o.SessionID, o);
+            }
+
+            if (o.SymbolID == 1)
+            {
+                MessageBox.Show("TUIO object with SymbolID 1 detected!", "Notification", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+
+            }
+        }
+
+        public void updateTuioObject(TuioObject tobj)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void removeTuioObject(TuioObject o)
+        {
+            lock (objectList)
+            {
+                objectList.Remove(o.SessionID);
+            }
+        }
+
+        public void addTuioCursor(TuioCursor tcur)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void updateTuioCursor(TuioCursor tcur)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void removeTuioCursor(TuioCursor tcur)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void addTuioBlob(TuioBlob tblb)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void updateTuioBlob(TuioBlob tblb)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void removeTuioBlob(TuioBlob tblb)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void refresh(TuioTime ftime)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class Post

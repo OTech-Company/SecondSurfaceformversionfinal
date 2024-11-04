@@ -1,6 +1,6 @@
 ﻿namespace Tarbita3._0
 {
-    partial class introForm
+    partial class introform1
     {
         /// <summary>
         /// Required designer variable.
