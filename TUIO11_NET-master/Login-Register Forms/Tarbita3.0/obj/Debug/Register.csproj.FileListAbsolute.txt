@@ -1,0 +1,14 @@
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Login-Register Forms\Tarbita3.0\bin\Debug\Tarbita3.0.exe.config
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Login-Register Forms\Tarbita3.0\bin\Debug\Tarbita3.0.exe
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Login-Register Forms\Tarbita3.0\bin\Debug\Tarbita3.0.pdb
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Login-Register Forms\Tarbita3.0\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Login-Register Forms\Tarbita3.0\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Login-Register Forms\Tarbita3.0\obj\Debug\Register.csproj.AssemblyReference.cache
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Login-Register Forms\Tarbita3.0\obj\Debug\Register.csproj.SuggestedBindingRedirects.cache
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Login-Register Forms\Tarbita3.0\obj\Debug\Tarbita3._0.Properties.Resources.resources
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Login-Register Forms\Tarbita3.0\obj\Debug\Tarbita3._0.Register.resources
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Login-Register Forms\Tarbita3.0\obj\Debug\Register.csproj.GenerateResource.cache
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Login-Register Forms\Tarbita3.0\obj\Debug\Register.csproj.CoreCompileInputs.cache
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Login-Register Forms\Tarbita3.0\obj\Debug\Register.csproj.CopyComplete
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Login-Register Forms\Tarbita3.0\obj\Debug\Tarbita3.0.exe
+C:\Users\Osama hosam\source\repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Login-Register Forms\Tarbita3.0\obj\Debug\Tarbita3.0.pdb

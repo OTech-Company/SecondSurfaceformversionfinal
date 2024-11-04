@@ -780,11 +780,24 @@ public class TuioDemo : Form, TuioListener
                         // Draw the comments on the post and chnage it with rotation
                         // Get the angle in degrees from radians
 
+                        if(tobj.SymbolID == 101 && addTriggeredFlag)
+                        {
+                            MessageBox.Show("Option 1");
+                        }
+                        if (tobj.SymbolID == 102 && addTriggeredFlag)
+                        {
+                            MessageBox.Show("Option 2");
+                        }
+                        else if (tobj.SymbolID == 103 && addTriggeredFlag)
+                        {
+                            MessageBox.Show("Option 3");
+                        }
+
                         if (menuFlag)
                         {
                             drawCircularMenu(g, angleDegrees);
 
-
+                            this.Text = addTriggeredFlag + "," + objectCopy.Count;
                             if (addTriggeredFlag)
                             {
 
@@ -793,9 +806,10 @@ public class TuioDemo : Form, TuioListener
                                 string gestureRecognized = getGesture();
 
 
+
                                 if (gestureRecognized == "one")
                                 {
-
+                                    //AddPost(tobj.SymbolID);
                                 }
                                 else if (gestureRecognized == "two")
                                 {
@@ -873,7 +887,7 @@ public class TuioDemo : Form, TuioListener
                             PointF textPosition2 = new PointF(ox, textPosition1.Y - size + 10 / 2);
                             if (postCache[tobj.SymbolID] != null)
                             {
-                                this.Text = postCache[tobj.SymbolID].Count +";;;"+postIndex;
+                                
                                 if (postIndex < 0)
                                 {
                                     postIndex = postCache[tobj.SymbolID].Count - 1;
@@ -944,6 +958,11 @@ public class TuioDemo : Form, TuioListener
         return "";
     }
 
+    int getCommentByTUIO() 
+    {
+
+        return -1;
+    }
 
     void drawCircularMenu(Graphics g, float angleDegrees)
     {
