@@ -12,6 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution_items", "Solution_items", "{086531B4-F63E-4E74-B320-43AFBEB57E16}"
 	ProjectSection(SolutionItems) = preProject
 		D:\MSA material\sana 4\HCI\Lab\lab2\OSAMA\lab2\file.json = D:\MSA material\sana 4\HCI\Lab\lab2\OSAMA\lab2\file.json
+		..\..\..\..\..\..\Downloads\Lab 4  Location Awareness (Bluetooth) amp Pose Estimation(Mediapipe)-20241103 (1)\Bluetooth.py = ..\..\..\..\..\..\Downloads\Lab 4  Location Awareness (Bluetooth) amp Pose Estimation(Mediapipe)-20241103 (1)\Bluetooth.py
 		handGestureMouse.py = handGestureMouse.py
 		server.py = server.py
 	EndProjectSection
