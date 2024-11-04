@@ -866,7 +866,8 @@ public class TuioDemo : Form, TuioListener
                             PointF textPosition1 = new PointF(ox, imagePosition.Y - size / 2);
                             PointF textPosition2 = new PointF(ox, textPosition1.Y - size + 10 / 2);
 
-                            if(!postCache.ContainsKey(tobj.SymbolID) && postCache[tobj.SymbolID].Count > 0)
+                            this.Text = postIndex + " ";
+                            if(postCache.ContainsKey(tobj.SymbolID) && postCache[tobj.SymbolID].Count > 0)
                             {
                                 SizeF textSize1 = g.MeasureString(postCache[tobj.SymbolID][postIndex].CreatedAt, font);
                                 SizeF textSize2 = g.MeasureString(postCache[tobj.SymbolID][postIndex].Content, font);
