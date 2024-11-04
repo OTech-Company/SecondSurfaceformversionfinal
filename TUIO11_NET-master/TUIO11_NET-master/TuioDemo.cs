@@ -692,7 +692,7 @@ public class TuioDemo : Form, TuioListener
                     string backgroundImagePath = "";
 
 
-                    Posts = ReadPosts(tobj.SymbolID);
+                    //Posts = ReadPosts(tobj.SymbolID);
                     float angleDegrees = (float)(tobj.Angle / Math.PI * 180.0f);
                     bool menuFlag = false;
 
@@ -720,15 +720,15 @@ public class TuioDemo : Form, TuioListener
                             menuFlag = true;
                             break;
                         case 1:
-                            backgroundImagePath = Path.Combine(Environment.CurrentDirectory, "MSA Graduation.jpg");
+                            backgroundImagePath = Path.Combine(Environment.CurrentDirectory, "cil.png");
 
                             break;
                         case 2:
-                            backgroundImagePath = Path.Combine(Environment.CurrentDirectory, "Graduation.jpg");
+                            backgroundImagePath = Path.Combine(Environment.CurrentDirectory, "makeup.jpg");
 
                             break;
                         case 3:
-                            backgroundImagePath = Path.Combine(Environment.CurrentDirectory, "RealMadrid.jpg");
+                            backgroundImagePath = Path.Combine(Environment.CurrentDirectory, "apple.png");
 
                             break;
                         case 4:
