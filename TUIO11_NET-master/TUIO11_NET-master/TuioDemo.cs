@@ -110,7 +110,7 @@ public class TuioDemo : Form, TuioListener
 
     private JObject PerformCRUDOperation(string operation, object data)
     {
-        string serverIp = "192.168.1.17";  // Replace with your server's IP address
+        string serverIp = "192.168.20.105";  // Replace with your server's IP address
         int serverPort = 9001;              // Replace with your server's port number
         try
         {
@@ -157,11 +157,16 @@ public class TuioDemo : Form, TuioListener
                 // Refresh the cache for the specific SymbolID
                 List<Post> updatedPosts = readTUIO(symbolID);
 
-                if(updatedPosts!=null)
+                if (updatedPosts != null)
                 {
                     postCache[symbolID] = updatedPosts;
 
                 }
+                else
+                {
+                    postCache[symbolID] = new List<Post>();
+                }
+                
             }
             else
             {
@@ -278,8 +283,7 @@ public class TuioDemo : Form, TuioListener
         height = window_height;
 
         this.ClientSize = new System.Drawing.Size(width, height);
-        this.Name = "TuioDemo";
-        this.Text = "TuioDemo";
+        
         this.DoubleBuffered = true; // Enable double buffering
 
 
@@ -326,6 +330,7 @@ public class TuioDemo : Form, TuioListener
                 addTriggeredFlag = false;
                 editTriggeredFlag = false;
                 postIndex--;
+                
                 break;
             case 2:
                 editTriggered();
@@ -342,6 +347,7 @@ public class TuioDemo : Form, TuioListener
                 addTriggeredFlag = false;
                 editTriggeredFlag = false;
                 postIndex++;
+                
                 break;
             case 5:
                 addTriggeredFlag = true;
@@ -354,17 +360,17 @@ public class TuioDemo : Form, TuioListener
 
     private void rotateLeftTriggered()
     {
-        this.Text = "Rotate Left";
+        //this.Text = "Rotate Left";
     }
 
     private void editTriggered()
     {
-        this.Text = "Edit";
+        //this.Text = "Edit";
     }
 
     private void deleteTriggered()
     {
-        this.Text = "Delete";
+        //this.Text = "Delete";
     }
 
     private void rotateRightTriggered()
@@ -703,7 +709,6 @@ public class TuioDemo : Form, TuioListener
                     float angleDegrees = (float)(tobj.Angle / Math.PI * 180.0f);
                     bool menuFlag = false;
 
-                    this.Text = objectCopy.Count + " ";
 
                     if (tobj.SymbolID == 0 && objectCopy.Count > 1)
                     {
@@ -717,7 +722,8 @@ public class TuioDemo : Form, TuioListener
                             // Posts not in cache, load them and notify subscribers
                             RefreshCache(tobj.SymbolID);
                             posts = postCache[tobj.SymbolID];
-                            this.Text = "POSTSCACHE" + postCache.Count;// Retrieve from cache after refresh
+                            
+                            //this.Text = "POSTSCACHE" + postCache.Count;// Retrieve from cache after refresh
                         }
                     }
 
@@ -729,7 +735,7 @@ public class TuioDemo : Form, TuioListener
                             break;
                         case 1:
                             backgroundImagePath = Path.Combine(Environment.CurrentDirectory, "cil.png");
-                            foregroundImagePath = Path.Combine(Environment.CurrentDirectory,"lotus.png");
+                            foregroundImagePath = Path.Combine(Environment.CurrentDirectory, "lotus.png");
 
                             break;
                         case 2:
@@ -865,22 +871,9 @@ public class TuioDemo : Form, TuioListener
                             // Define the position for the text above the image
                             PointF textPosition1 = new PointF(ox, imagePosition.Y - size / 2);
                             PointF textPosition2 = new PointF(ox, textPosition1.Y - size + 10 / 2);
-
-                            this.Text = postIndex + " ";
-                            if(postCache.ContainsKey(tobj.SymbolID) && postCache[tobj.SymbolID].Count > 0)
+                            if (postCache[tobj.SymbolID] != null)
                             {
-                                SizeF textSize1 = g.MeasureString(postCache[tobj.SymbolID][postIndex].CreatedAt, font);
-                                SizeF textSize2 = g.MeasureString(postCache[tobj.SymbolID][postIndex].Content, font);
-
-                                // Create the rectangle's position and size
-                                RectangleF rect1 = new RectangleF(textPosition1, textSize1);
-                                RectangleF rect2 = new RectangleF(textPosition2, textSize2);
-
-                                // Draw the black rectangle behind the text
-                                g.FillRectangle(Brushes.Black, rect1);
-                                g.FillRectangle(Brushes.Black, rect2);
-
-                                // Draw the text on top of the rectangle
+                                this.Text = postCache[tobj.SymbolID].Count +";;;"+postIndex;
                                 if (postIndex < 0)
                                 {
                                     postIndex = postCache[tobj.SymbolID].Count - 1;
@@ -888,10 +881,38 @@ public class TuioDemo : Form, TuioListener
                                 else if (postIndex >= postCache[tobj.SymbolID].Count)
                                 {
                                     postIndex = 0;
-
                                 }
-                                g.DrawString(postCache[tobj.SymbolID][postIndex].CreatedAt, font, fntBrush, textPosition1);
-                                g.DrawString(postCache[tobj.SymbolID][postIndex].Content, font, fntBrush, textPosition2);
+                            }
+
+                            if (postCache.ContainsKey(tobj.SymbolID) )
+                            {
+                                if (postCache[tobj.SymbolID] != null)
+                                {
+                                    SizeF textSize1 = g.MeasureString(postCache[tobj.SymbolID][postIndex].CreatedAt, font);
+                                    SizeF textSize2 = g.MeasureString(postCache[tobj.SymbolID][postIndex].Content, font);
+
+                                    // Create the rectangle's position and size
+                                    RectangleF rect1 = new RectangleF(textPosition1, textSize1);
+                                    RectangleF rect2 = new RectangleF(textPosition2, textSize2);
+
+                                    // Draw the black rectangle behind the text
+                                    g.FillRectangle(Brushes.Black, rect1);
+                                    g.FillRectangle(Brushes.Black, rect2);
+
+                                    // Draw the text on top of the rectangle
+                                    if (postIndex < 0)
+                                    {
+                                        postIndex = postCache[tobj.SymbolID].Count - 1;
+                                    }
+                                    else if (postIndex >= postCache[tobj.SymbolID].Count)
+                                    {
+                                        postIndex = 0;
+
+                                    }
+                                    g.DrawString(postCache[tobj.SymbolID][postIndex].CreatedAt, font, fntBrush, textPosition1);
+                                    g.DrawString(postCache[tobj.SymbolID][postIndex].Content, font, fntBrush, textPosition2);
+                                }
+                                
 
                             }
                         }
