@@ -65,10 +65,21 @@ class FirestoreCRUD:
             tuios_list = []
             for doc in docs:
                 tuio_data = doc.to_dict()
-                # Extract only the id and description fields
+                
+                # Calculate the number of posts by counting references in the 'Posts' field
+                posts_count = len(tuio_data.get("Posts", []))  # Get length of 'Posts' array
+
+                # Format Firestore timestamp to string for createdAt
+                createdAt = tuio_data.get('createdAt')
+                if createdAt:
+                    createdAt = createdAt.isoformat() if hasattr(createdAt, 'isoformat') else str(createdAt)
+
+                # Prepare filtered TUIO data to be sent to the client
                 tuio_data_filtered = {
                     'tuio_id': doc.id,
-                    'description': tuio_data.get('description', '')
+                    'description': tuio_data.get('description', ''),
+                    'createdAt': createdAt,
+                    'posts_count': posts_count  # Calculated posts count
                 }
                 tuios_list.append(tuio_data_filtered)
 
@@ -76,6 +87,7 @@ class FirestoreCRUD:
         except Exception as e:
             print(f"An error occurred while reading TUIOs: {e}")
             return None
+
 
 
     def get_posts_by_tuio(self, tuio_id):
@@ -285,6 +297,7 @@ class FirestoreCRUD:
             print(f"An error occurred while reading users: {e}")
             return None
 
+
     
     def read_all_posts(self):
         try:
@@ -357,94 +370,80 @@ print(f"Server is running on {server_ip}:{port} and waiting for connections...")
 def handle_client(client_socket):
     try:
         # Receive data from the client
-        # data = client_socket.recv(1024).decode('ascii') changed
         data = client_socket.recv(1024).decode('utf-8')
-        response = "empty"  # Default response for unknown operations
+
         # Process received data (assuming it's a JSON string with 'operation' and 'data')
         if data:
             request = json.loads(data)
             operation = request.get('operation')
             content = request.get('data')
-            print(operation)
-            match operation:
-                case 'create_post':
-                    response = crud.create_post(content)
-            
-                case 'read_post':
-                    post_id = content.get('post_id')
-                    response = crud.read_post(post_id)
-            
-                case 'delete_post':
-                    post_id = content.get('post_id')
-                    response = crud.delete_post(post_id)
-            
-                case 'update_post':
-                    post_id = content.get('post_id')
-                    response = crud.update_post(post_id)
-            
-                case 'create_tuio':
-                    tuio_id = content.get('tuio_id')
-                    tuio_data = content.get('data')
-                    post_ids = content.get('post_ids', [])
-                    response = crud.create_tuio_document(tuio_id, tuio_data, post_ids)
-            
-                case 'read_tuio':
-                    tuio_id = content.get('tuio_id')
-                    response = crud.read_tuio_document(tuio_id)
-            
-                case 'update_tuio':
-                    tuio_id = content.get('tuio_id')
-                    updates = content.get('updates', {})
-                    response = crud.update_tuio_document(tuio_id, updates)
-            
-                case 'delete_tuio':
-                    tuio_id = content.get('tuio_id')
-                    response = crud.delete_tuio_document(tuio_id)
-            
-                case 'create_user':
-                    user_id = content.get('user_id')
-                    user_data = content.get('data')
-                    response = crud.create_user_document(user_id, user_data)
-            
-                case 'read_user':
-                    user_id = content.get('user_id')
-                    response = crud.read_user_document(user_id)
-            
-                case 'update_user':
-                    user_id = content.get('user_id')
-                    updates = content.get('updates', {})
-                    response = crud.update_user_document(user_id, updates)
-            
-                case 'delete_user':
-                    user_id = content.get('user_id')
-                    response = crud.delete_user_document(user_id)
-            
-                case 'read_all_users':
-                    users = crud.read_all_users()
-                    response = users if isinstance(users, str) else json.dumps(users, ensure_ascii=False)
-            
-                case 'read_all_posts':
-                    posts = crud.read_all_posts()
-                    response = posts if isinstance(posts, str) else json.dumps(posts, ensure_ascii=False)
-            
-                case 'read_all_tuios':
-                    tuios = crud.read_all_tuios()
-                    response = json.dumps(tuios, ensure_ascii=False)
-            
-                case 'get_posts_by_tuio':
-                    tuio_id = content.get('tuio_id')
-                    posts = crud.get_posts_by_tuio(tuio_id)
-                    response = posts if isinstance(posts, str) else posts  # Handle error if posts is a string
-                    response = json.dumps(response)
-            
-                case _:
-                    response = "Unknown operation requested."
 
+            # Default response
+            response = {"message": "Operation completed successfully."}
 
-            client_socket.send(response.encode('utf-8'))
+            if operation == 'create_post':
+                response = {"message": crud.create_post(content)}
+            elif operation == 'read_post':
+                post_id = content.get('post_id')
+                response = {"message": crud.read_post(post_id)}
+            elif operation == 'delete_post':
+                post_id = content.get('post_id')
+                response = {"message": crud.delete_post(post_id)}
+            elif operation == 'update_post':
+                post_id = content.get('post_id')
+                response = {"message": crud.update_post(post_id)}
+            elif operation == 'create_tuio':
+                tuio_id = content.get('tuio_id')
+                tuio_data = content.get('data')
+                post_ids = content.get('post_ids', [])
+                response = {"message": crud.create_tuio_document(tuio_id, tuio_data, post_ids)}
+            elif operation == 'get_posts_by_tuio':
+                tuio_id = content.get('tuio_id')
+                posts = crud.get_posts_by_tuio(tuio_id)
+                response = posts if isinstance(posts, str) else posts  # Handle error if posts is a string
+                response = json.dumps(response)
+            elif operation == 'read_tuio':
+                tuio_id = content.get('tuio_id')
+                response = {"data": crud.read_tuio_document(tuio_id)}
+            elif operation == 'update_tuio':
+                tuio_id = content.get('tuio_id')
+                updates = content.get('updates', {})
+                response = {"message": crud.update_tuio_document(tuio_id, updates)}
+            elif operation == 'delete_tuio':
+                tuio_id = content.get('tuio_id')
+                response = {"message": crud.delete_tuio_document(tuio_id)}
+            elif operation == 'read_all_tuios':
+                tuios = crud.read_all_tuios()
+                response = {"data": tuios} if tuios else {"message": "No TUIOs found."}
+
+            elif operation == 'create_user':
+                user_id = content.get('user_id')
+                user_data = content.get('data')
+                response = {"message": crud.create_user_document(user_id, user_data)}
+            elif operation == 'read_user':
+                user_id = content.get('user_id')
+                response = {"data": crud.read_user_document(user_id)}
+            elif operation == 'update_user':
+                user_id = content.get('user_id')
+                updates = content.get('updates', {})
+                response = {"message": crud.update_user_document(user_id, updates)}
+            elif operation == 'delete_user':
+                user_id = content.get('user_id')
+                response = {"message": crud.delete_user_document(user_id)}
+            elif operation == 'read_all_users':
+                users = crud.read_all_users()
+                response = {"data": users} if users else {"message": "No users found."}
+            elif operation == 'read_all_posts':
+                posts = crud.read_all_posts()
+                response = {"data": posts} if posts else {"message": "No posts found."}
+            else:
+                response = {"message": "Unknown operation requested."}
+
+            # Ensure the response is in JSON format
+            client_socket.send(json.dumps(response).encode('utf-8'))
 
     except Exception as e:
-        error_message = f"Error handling client request: {e}"
+        error_message = json.dumps({"error": f"Error handling client request: {str(e)}"})
         print(error_message)
         client_socket.send(error_message.encode('utf-8'))
 

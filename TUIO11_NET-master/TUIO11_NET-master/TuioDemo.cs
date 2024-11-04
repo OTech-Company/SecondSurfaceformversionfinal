@@ -31,7 +31,12 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
-
+using System.Net.Sockets;
+using System.Text;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using static System.Net.Mime.MediaTypeNames;
+using Timer = System.Windows.Forms.Timer;
 
 public class TuioDemo : Form, TuioListener
 {
@@ -41,43 +46,228 @@ public class TuioDemo : Form, TuioListener
     private Dictionary<long, TuioBlob> blobList;
     private Dictionary<int, List<Button>> objectButtons = new Dictionary<int, List<Button>>();
 
-
+    public bool flagShift = true;
     public static int width, height;
-    private int window_width = 640;
-    private int window_height = 480;
+    private int window_width = 900;
+    private int window_height = 600;
     private int window_left = 0;
     private int window_top = 0;
     private int screen_width = Screen.PrimaryScreen.Bounds.Width;
     private int screen_height = Screen.PrimaryScreen.Bounds.Height;
 
+
+    public event Action<int> PostsChanged; // Event for when posts change
+
+    // Cache for posts
+    private Dictionary<int, List<Post>> postCache = new Dictionary<int, List<Post>>();
+
+
+    List<Post> posts = new List<Post>();
+    private Timer holdTimer = new Timer();
+    private int holdDuration = 1000; // 3 seconds in milliseconds
+    private int previousRotateIndex = -1; // To track if rotateIndex has changed
+    private bool inHoldRange = false;
+    int postIndex = 0;
+
+    private Process reactiVisionProcess; // Class-level variable to hold the process
+
+    public class Post
+    {
+        public string CreatedAt { get; set; }
+        public string Content { get; set; }
+        public string PostId { get; set; }
+
+        public override string ToString()
+        {
+            return $"Created At: {CreatedAt}\nContent: {Content}\nPost ID: {PostId}";
+        }
+    }
+
+
     private bool fullscreen;
     private bool verbose;
 
+    private bool addTriggeredFlag = false, editTriggeredFlag = false;
+    public List<string> Posts = new List<string>();
+
     Font font = new Font("Arial", 10.0f);
     SolidBrush fntBrush = new SolidBrush(Color.White);
-    SolidBrush bgrBrush = new SolidBrush(Color.FromArgb(0, 0, 64));
+    SolidBrush bgrBrush = new SolidBrush(Color.FromArgb(255, 255, 255));
     SolidBrush curBrush = new SolidBrush(Color.FromArgb(192, 0, 192));
     SolidBrush objBrush = new SolidBrush(Color.FromArgb(64, 0, 0));
     SolidBrush blbBrush = new SolidBrush(Color.FromArgb(64, 64, 64));
     Pen curPen = new Pen(new SolidBrush(Color.Blue), 1);
-    
-    
-    
-    // Define the relative path to access Solution_items/server.py
-    string clientfile = @"..\Solution_items\server.py";
 
-    public void ReadMyFiles()
+
+    List<string> CommentOptions = new List<string>
+{
+    "1. Exceeded Expectations",
+    "2. Satisfactory",
+    "3. Disappointing"
+};
+    private List<Bitmap> CircularMenu = new List<Bitmap>();
+    int currentMenuFrame = 0;
+
+    private JObject PerformCRUDOperation(string operation, object data)
     {
-        if (System.IO.File.Exists(clientfile))
+        string serverIp = "192.168.1.17";  // Replace with your server's IP address
+        int serverPort = 9001;              // Replace with your server's port number
+        try
         {
-            string fileContents = System.IO.File.ReadAllText(clientfile);
-            Console.WriteLine(fileContents);
+            // Create a TcpClient and connect to the server
+            using (TcpClient client = new TcpClient())
+            {
+                client.Connect(serverIp, serverPort);
+
+                // Prepare the JSON message for the CRUD operation
+                var request = new
+                {
+                    operation = operation,
+                    data = data
+                };
+                string jsonMessage = JsonConvert.SerializeObject(request);
+
+                // Send the request to the server
+                SendMessageToServer(client, jsonMessage);
+
+                // Receive response from the server
+                JObject response = ReceiveMessageFromServer(client);
+
+                // Optionally show a message box with a specific field from the response
+
+                // Close the client connection
+                client.Close();
+
+                return response; // Return the JSON response
+            }
+        }
+        catch (Exception ex)
+        {
+            // Return an error JSON object with the exception message
+            return new JObject { { "Error", "Error performing CRUD operation: " + ex.Message } };
+        }
+    }
+
+    public void RefreshCache(int symbolID)
+    {
+        lock (postCache) // Locking to ensure thread safety
+        {
+            if (postCache.ContainsKey(symbolID))
+            {
+                // Refresh the cache for the specific SymbolID
+                List<Post> updatedPosts = readTUIO(symbolID);
+
+                if (updatedPosts != null)
+                {
+                    postCache[symbolID] = updatedPosts;
+
+                }
+            }
+            else
+            {
+                // If it's a new SymbolID, cache the posts
+                postCache[symbolID] = readTUIO(symbolID);
+            }
+        }
+    }
+
+    private void SendMessageToServer(TcpClient client, string message)
+    {
+        try
+        {
+            NetworkStream stream = client.GetStream();
+            byte[] data = Encoding.ASCII.GetBytes(message);
+            stream.Write(data, 0, data.Length);
+        }
+        catch (Exception ex)
+        {
+            // Optionally log or handle the exception here
+            //MessageBox.Show("Error sending message: " + ex.Message);
+        }
+    }
+
+    private JObject ReceiveMessageFromServer(TcpClient client)
+    {
+        try
+        {
+            NetworkStream stream = client.GetStream();
+            byte[] buffer = new byte[4026];
+            int bytesRead = stream.Read(buffer, 0, buffer.Length);
+            string response = Encoding.ASCII.GetString(buffer, 0, bytesRead).Trim();
+
+            // Validate if the response is a valid JSON
+            if (IsValidJson(response))
+            {
+                return JObject.Parse(response); // Parse and return the JSON response
+            }
+            else
+            {
+                // Return an error JSON object
+                return new JObject { { "Error", "Received data is not valid JSON." } };
+            }
+        }
+        catch (Exception ex)
+        {
+            // Return an error JSON object with the exception message
+            return new JObject { { "Error", "Error receiving message: " + ex.Message } };
+        }
+    }
+
+    private bool IsValidJson(string response)
+    {
+        response = response.Trim();
+        // Check if it starts with { or [ to identify JSON objects or arrays
+        return (response.StartsWith("{") && response.EndsWith("}")) ||
+               (response.StartsWith("[") && response.EndsWith("]"));
+    }
+
+    List<Post> readTUIO(int id)
+    {
+        // Get the JSON response from the server for the specified TUIO ID
+        JObject response = PerformCRUDOperation("get_posts_by_tuio", new
+        {
+            tuio_id = id.ToString()  // Convert the id to a string
+        });
+        // List to store parsed posts
+        List<Post> posts = new List<Post>();
+
+        // Check if the response has a "posts" field containing an array
+        if (response != null && response["posts"] is JArray postsArray)
+        {
+
+            for (int i = 0; i < postsArray.Count; i++)
+            {
+                // Create a new Post object and set its properties
+                Post post = new Post
+                {
+                    CreatedAt = postsArray[i]["createdAt"]?.ToString() ?? "N/A",
+                    Content = postsArray[i]["content"]?.ToString() ?? "N/A",
+                    PostId = postsArray[i]["post_id"]?.ToString() ?? "N/A"
+                };
+
+                // Add the post to the list
+                posts.Add(post);
+            }
         }
         else
         {
-            Console.WriteLine("File not found.");
+            //MessageBox.Show("Invalid response from server.");
+            return null;
         }
+
+        // Return the list of posts
+        return posts;
     }
+
+
+    public void AddPost(int symbolID, Post newPost)
+    {
+        // Logic to add a new post...
+
+        // After adding, trigger the event
+        PostsChanged?.Invoke(symbolID); // Notify subscribers
+    }
+
 
     public TuioDemo(int port)
     {
@@ -92,6 +282,10 @@ public class TuioDemo : Form, TuioListener
         this.Text = "TuioDemo";
         this.DoubleBuffered = true; // Enable double buffering
 
+
+        PostsChanged += RefreshCache; // Subscribe to the event
+
+
         this.Closing += new CancelEventHandler(Form_Closing);
         this.KeyDown += new KeyEventHandler(Form_KeyDown);
 
@@ -104,11 +298,92 @@ public class TuioDemo : Form, TuioListener
         blobList = new Dictionary<long, TuioBlob>(128);
 
         this.Load += new System.EventHandler(this.TuioDemo_Load);
+        holdTimer.Interval = holdDuration;
+        holdTimer.Tick += HoldTimer_Tick;
+
+        createCircularMenu();
 
         client = new TuioClient(port);
         client.addTuioListener(this);
         //InitializeComponent();
         client.connect();
+    }
+
+    int postCount = 0;
+    private void HoldTimer_Tick(object sender, EventArgs e)
+    {
+        holdTimer.Stop();
+        // rotate right 4
+        //del 3
+        // edit 2
+        // rotate left 1
+        // ADD 5
+
+        switch (rotateIndex)
+        {
+            case 1:
+                rotateLeftTriggered();
+                addTriggeredFlag = false;
+                editTriggeredFlag = false;
+                postIndex--;
+                break;
+            case 2:
+                editTriggered();
+                addTriggeredFlag = false;
+                editTriggeredFlag = true;
+                break;
+            case 3:
+                deleteTriggered();
+                addTriggeredFlag = false;
+                editTriggeredFlag = false;
+                break;
+            case 4:
+                rotateRightTriggered();
+                addTriggeredFlag = false;
+                editTriggeredFlag = false;
+                postIndex++;
+                break;
+            case 5:
+                addTriggeredFlag = true;
+                editTriggeredFlag = false;
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void rotateLeftTriggered()
+    {
+        this.Text = "Rotate Left";
+    }
+
+    private void editTriggered()
+    {
+        this.Text = "Edit";
+    }
+
+    private void deleteTriggered()
+    {
+        this.Text = "Delete";
+    }
+
+    private void rotateRightTriggered()
+    {
+        this.Text = "Rotate Right";
+
+    }
+
+
+
+
+
+
+    void createCircularMenu()
+    {
+        for (int i = 1; i <= 6; i++)
+        {
+            CircularMenu.Add(new Bitmap($"{i}.png")); // Adjust the path accordingly
+        }
     }
 
     private void Form_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
@@ -163,6 +438,24 @@ public class TuioDemo : Form, TuioListener
     private void Form_Closing(object sender, System.ComponentModel.CancelEventArgs e)
     {
         client.removeTuioListener(this);
+
+        if (reactiVisionProcess != null && !reactiVisionProcess.HasExited)
+        {
+            try
+            {
+                reactiVisionProcess.CloseMainWindow(); // Sends a close request to the main window
+                reactiVisionProcess.WaitForExit(5000); // Wait for up to 5 seconds for the process to exit
+
+                if (!reactiVisionProcess.HasExited)
+                {
+                    reactiVisionProcess.Kill(); // Force kill if it did not close gracefully
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to close reacTIVision: {ex.Message}");
+            }
+        }
 
         client.disconnect();
         System.Environment.Exit(0);
@@ -251,190 +544,663 @@ public class TuioDemo : Form, TuioListener
         Invalidate();
     }
 
-    string[] objDescriptions(int symbolID)
+
+
+    public static List<string> ReadPosts(int symbolID)
     {
+        List<string> response;
+
         switch (symbolID)
         {
+            case 4:
+                response = new List<string>
+                    {
+        "Polo\n" +
+        "'Best burger ever!'\n" +
+        "'2024-10-20'",
+
+        "Mark\n" +
+        "'Fries were good, burger average.'\n" +
+        "'2024-10-21'",
+
+        "Heeey\n" +
+        "'Great service, okay burger.'\n" +
+        "'2024-10-22'"
+    };
+                break;
+
             case 1:
-                return new string[] { "This is a circle", "It is round", "It has no corners" };
+                response = new List<string>
+                {
+        "John Doe\n" +
+        "'Graduation is here!'\n" +
+        "'2024-10-23'",
+
+        "Momen\n" +
+        "'Excited for graduation!'\n" +
+        "'2024-10-24'",
+
+        "James\n" +
+        "'Ready for grad day!'\n" +
+        "'2024-10-25'"
+    };
+                break;
+
             case 2:
-                return new string[] { "This is a square", "It has 4 sides", "Each side is equal" };
+                response = new List<string>
+                {
+        "Hamooood\n" +
+        "'Congrats, Mahmoud!'\n" +
+        "'2024-10-26'",
+
+        "Alios\n" +
+        "'Well done, Mahmoud!'\n" +
+        "'2024-10-27'",
+
+        "Osamaaaz\n" +
+        "'Great job, Mahmoud!'\n" +
+        "'2024-10-28'"
+    };
+                break;
+
             case 3:
-                return new string[] { "This is a triangle", "It has 3 sides", "It has 3 angles" };
+                response = new List<string>
+                {
+        "mazennashraff1\n" +
+        "'Real Madrid wins again!'\n" +
+        "'2024-10-29'",
+
+        "Booooo\n" +
+        "'Amazing game by Madrid!'\n" +
+        "'2024-10-30'",
+
+        "Mn3m\n" +
+        "'Champions, Real Madrid!'\n" +
+        "'2024-10-31'"
+    };
+                break;
+
             default:
-                return new string[] { "Unknown object" };
+                response = new List<string>
+                {
+                "No posts available for this symbol ID."
+                };
+                break;
         }
+
+        return response;
     }
+
+    Dictionary<int, Tuple<Rectangle, Rectangle, Rectangle>> objectRectangles = new Dictionary<int, Tuple<Rectangle, Rectangle, Rectangle>>();
+    int rotateIndex = 0;
+
 
 
     protected override void OnPaintBackground(PaintEventArgs pevent)
     {
         // Getting the graphics object
         Graphics g = pevent.Graphics;
-         g.FillRectangle(bgrBrush, new Rectangle(0, 0, width, height));
+        //g.FillRectangle(bgrBrush, new Rectangle(0, 0, width, height));
+
+        using (Bitmap backgroundImage = (Bitmap)System.Drawing.Image.FromFile("BGG.png"))
+        {
+            // Draw the bitmap to cover the entire window
+            pevent.Graphics.DrawImage(backgroundImage, new Rectangle(0, 0, this.Width, this.Height));
+        }
+
+        // Copy of cursorList to safely iterate
+        List<TuioCursor> cursorCopy = new List<TuioCursor>();
+
+        lock (cursorList)
+        {
+            cursorCopy.AddRange(cursorList.Values); // Make a safe copy of cursorList
+        }
 
         // Draw the cursor path
-        if (cursorList.Count > 0)
+        if (cursorCopy.Count > 0)
         {
-            lock (cursorList)
+            foreach (TuioCursor tcur in cursorCopy)
             {
-                foreach (TuioCursor tcur in cursorList.Values)
-                {
-                    List<TuioPoint> path = tcur.Path;
-                    TuioPoint current_point = path[0];
+                List<TuioPoint> path = tcur.Path;
+                TuioPoint current_point = path[0];
 
-                    for (int i = 0; i < path.Count; i++)
-                    {
-                        TuioPoint next_point = path[i];
-                        g.DrawLine(curPen, current_point.getScreenX(width), current_point.getScreenY(height), next_point.getScreenX(width), next_point.getScreenY(height));
-                        current_point = next_point;
-                    }
-                    g.FillEllipse(curBrush, current_point.getScreenX(width) - height / 100, current_point.getScreenY(height) - height / 100, height / 50, height / 50);
-                    g.DrawString(tcur.CursorID + "", font, fntBrush, new PointF(tcur.getScreenX(width) - 10, tcur.getScreenY(height) - 10));
+                for (int i = 0; i < path.Count; i++)
+                {
+                    TuioPoint next_point = path[i];
+                    g.DrawLine(curPen, current_point.getScreenX(width), current_point.getScreenY(height), next_point.getScreenX(width), next_point.getScreenY(height));
+                    current_point = next_point;
                 }
+                g.FillEllipse(curBrush, current_point.getScreenX(width) - height / 100, current_point.getScreenY(height) - height / 100, height / 50, height / 50);
+                g.DrawString(tcur.CursorID + "", font, fntBrush, new PointF(tcur.getScreenX(width) - 10, tcur.getScreenY(height) - 10));
             }
         }
 
-        // Draw the objects
-        if (objectList.Count > 0)
-        {
-            lock (objectList)
-            {
-                // Clear existing buttons before drawing new ones
+        // Copy of objectList to safely iterate
+        List<TuioObject> objectCopy = new List<TuioObject>();
 
-                foreach (TuioObject tobj in objectList.Values)
+        lock (objectList)
+        {
+            objectCopy.AddRange(objectList.Values); // Make a safe copy of objectList
+        }
+
+        // Draw the objects
+        if (objectCopy.Count > 0)
+        {
+            lock (objectRectangles)
+            {
+                objectRectangles.Clear(); // Clear previously stored rectangles
+
+                foreach (TuioObject tobj in objectCopy)
                 {
                     int ox = tobj.getScreenX(width);
                     int oy = tobj.getScreenY(height);
                     int size = height / 10;
 
+                    string backgroundImagePath = "";
+                    string foregroundImagePath = "";
 
-                    // Load object image based on SymbolID
-                  
+                    //Posts = ReadPosts(tobj.SymbolID);
+                    float angleDegrees = (float)(tobj.Angle / Math.PI * 180.0f);
+                    bool menuFlag = false;
+
+                    this.Text = objectCopy.Count + " ";
+
+                    if (tobj.SymbolID == 0 && objectCopy.Count > 1)
+                    {
+                        menuFlag = true;
+                    }
+                    else
+                    {
+
+                        if (!postCache.TryGetValue(tobj.SymbolID, out List<Post> posts))
+                        {
+                            // Posts not in cache, load them and notify subscribers
+                            RefreshCache(tobj.SymbolID);
+                            posts = postCache[tobj.SymbolID];
+                            this.Text = "POSTSCACHE" + postCache.Count;// Retrieve from cache after refresh
+                        }
+                    }
+
+
+                    switch (tobj.SymbolID)
+                    {
+                        case 0:
+                            menuFlag = true;
+                            break;
+                        case 1:
+                            backgroundImagePath = Path.Combine(Environment.CurrentDirectory, "cil.png");
+                            foregroundImagePath = Path.Combine(Environment.CurrentDirectory, "lotus.png");
+
+                            break;
+                        case 2:
+                            backgroundImagePath = Path.Combine(Environment.CurrentDirectory, "makeup.jpg");
+                            foregroundImagePath = Path.Combine(Environment.CurrentDirectory, "foundation.png");
+
+                            break;
+                        case 3:
+                            backgroundImagePath = Path.Combine(Environment.CurrentDirectory, "apple.png");
+                            foregroundImagePath = Path.Combine(Environment.CurrentDirectory, "mobile.png");
+
+
+                            break;
+                        case 4:
+                            backgroundImagePath = Path.Combine(Environment.CurrentDirectory, "Willys.jpg");
+                            foregroundImagePath = Path.Combine(Environment.CurrentDirectory, "cheeseburger.png");
+
+
+                            break;
+                        default:
+                            backgroundImagePath = Path.Combine(Environment.CurrentDirectory, "Loading.jpg");
+
+                            break;
+                    }
+
                     try
                     {
-                        // Draw object image with rotation
-                       // Retrieve description using the function objDescriptions based on SymbolID
-                        string[] descriptions = objDescriptions(tobj.SymbolID);
-
-                        // Loop through each string in the description array and display each in a new row
-                        for (int i = 0; i < descriptions.Length; i++)
-                        {
-                            // Adjust Y position for each string to be displayed in the next row
-                            g.DrawString(descriptions[i], new Font("Arial", 12), Brushes.Black, ox + size / 2 + 10, oy + (i * 20));
-                        }
-                       
+                        // Draw the object rectangle
                         g.FillRectangle(objBrush, new Rectangle(ox - size / 2, oy - size / 2, size, size));
-                       
-                    
+                        // Draw background image without rotation
+                        if (File.Exists(backgroundImagePath))
+                        {
+                            using (System.Drawing.Image bgImage = System.Drawing.Image.FromFile(backgroundImagePath))
+                            {
+                                g.DrawImage(bgImage, new Rectangle(new Point(15, 10), new Size(530, 580)));
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Background image not found: {backgroundImagePath}");
+                        }
+                        // Draw the comments on the post and chnage it with rotation
+                        // Get the angle in degrees from radians
+
+                        if (menuFlag)
+                        {
+                            drawCircularMenu(g, angleDegrees);
+
+
+                            if (addTriggeredFlag)
+                            {
+
+
+                                //Listen if gesture is DONE
+                                string gestureRecognized = getGesture();
+
+
+                                if (gestureRecognized == "one")
+                                {
+
+                                }
+                                else if (gestureRecognized == "two")
+                                {
+
+                                }
+                                else if (gestureRecognized == "three")
+                                {
+
+                                }
+                                // Main prompt text
+                                string commentText = "Select an option:";
+                                Font font = new Font("Open Sans", 14, FontStyle.Regular);
+                                Brush textBrush = Brushes.Black;
+                                Brush backgroundBrush = new SolidBrush(Color.FromArgb(128, 255, 255, 255)); // White with 50% opacity
+
+                                // Measure the size of the main prompt text
+                                SizeF promptSize = g.MeasureString(commentText, font);
+                                float rectanglePadding = 5; // Padding around the text
+
+                                // Starting position for options
+                                float startX = this.Width - 320;
+                                float startY = this.Height - 150; // Starting Y position for the prompt
+                                float lineSpacing = 32; // Spacing between each option line
+
+                                // Measure the text width and height for background rectangle for options
+                                SizeF optionTextSize = g.MeasureString(CommentOptions[0], font);
+
+                                // Calculate total height of all options
+                                float totalOptionsHeight = CommentOptions.Count * (optionTextSize.Height + lineSpacing) + promptSize.Height + 5; // Add prompt height and spacing
+
+                                // Draw a semi-transparent background rectangle
+                                RectangleF backgroundRect = new RectangleF(startX - rectanglePadding - 20, startY - rectanglePadding - 40, 310, totalOptionsHeight - 50);
+                                g.FillRectangle(backgroundBrush, backgroundRect);
+
+                                // Draw the main prompt text
+                                g.DrawString(commentText, font, textBrush, startX, startY - 40);
+
+                                // Loop through options and draw each one
+                                for (int i = 0; i < CommentOptions.Count; i++)
+                                {
+                                    // Set position for each option
+                                    PointF optionLocation = new PointF(startX, startY + (i * lineSpacing));
+
+                                    g.DrawString(CommentOptions[i], font, textBrush, optionLocation);
+                                }
+
+                                // Dispose of the font object when done
+                                font.Dispose();
+
+
+                            }
+                        }
+
+                        if (tobj.SymbolID != 0)
+                        {
+                            // Define the position for the foreground image
+                            PointF imagePosition = new PointF(ox, oy - size);
+
+                            // Draw the foreground image
+                            System.Drawing.Image foregroundImage = System.Drawing.Image.FromFile(foregroundImagePath); // Use the full namespace
+
+                            // Define the position for the foreground image
+                            imagePosition = new PointF(ox, oy - size);
+
+                            // Set desired width and height for the image
+                            float imageWidth = 200; // Set your desired width
+                            float imageHeight = 200;
+
+                            RectangleF imageRect = new RectangleF(imagePosition, new SizeF(imageWidth, imageHeight));
+
+                            // Draw the foreground image with the specified width and height
+                            g.DrawImage(foregroundImage, imageRect);
+                            // Define the position for the text above the image
+                            PointF textPosition1 = new PointF(ox, imagePosition.Y - size / 2);
+                            PointF textPosition2 = new PointF(ox, textPosition1.Y - size + 10 / 2);
+
+                            this.Text = postIndex + " ";
+                            if (postCache.ContainsKey(tobj.SymbolID) && postCache[tobj.SymbolID].Count > 0)
+                            {
+                                SizeF textSize1 = g.MeasureString(postCache[tobj.SymbolID][postIndex].CreatedAt, font);
+                                SizeF textSize2 = g.MeasureString(postCache[tobj.SymbolID][postIndex].Content, font);
+
+                                // Create the rectangle's position and size
+                                RectangleF rect1 = new RectangleF(textPosition1, textSize1);
+                                RectangleF rect2 = new RectangleF(textPosition2, textSize2);
+
+                                // Draw the black rectangle behind the text
+                                g.FillRectangle(Brushes.Black, rect1);
+                                g.FillRectangle(Brushes.Black, rect2);
+
+                                // Draw the text on top of the rectangle
+                                if (postIndex < 0)
+                                {
+                                    postIndex = postCache[tobj.SymbolID].Count - 1;
+                                }
+                                else if (postIndex >= postCache[tobj.SymbolID].Count)
+                                {
+                                    postIndex = 0;
+
+                                }
+                                g.DrawString(postCache[tobj.SymbolID][postIndex].CreatedAt, font, fntBrush, textPosition1);
+                                g.DrawString(postCache[tobj.SymbolID][postIndex].Content, font, fntBrush, textPosition2);
+
+                            }
+                        }
+
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine($"Error drawing object: {ex.Message}");
                     }
 
-                   CreateButtons(tobj.SymbolID);
+                    int rectWidth = size * 2; // Increase the width (you can adjust the multiplier as needed)
+                    int rectHeight = 30; // Fixed height for the rectangles
+
+                    // Calculate the positions for the Add, Update, and Delete rectangles with no space between them
+                    Rectangle addRect = new Rectangle(ox - rectWidth / 2, oy + size, rectWidth, rectHeight);
+                    Rectangle updateRect = new Rectangle(ox - rectWidth / 2, oy + size + rectHeight, rectWidth, rectHeight); // Directly under Add
+                    Rectangle deleteRect = new Rectangle(ox - rectWidth / 2, oy + size + rectHeight * 2, rectWidth, rectHeight); // Directly under Update
 
                 }
-
-                // Create buttons at the bottom of the form
             }
+        }
+
+        // Similar logic for blobList: Create a copy and iterate
+    }
+
+    string getGesture()
+    {
+
+        return "";
+    }
+
+
+    void drawCircularMenu(Graphics g, float angleDegrees)
+    {
+        int imageWidth = CircularMenu[currentMenuFrame].Width - 250;
+        int imgHeight = CircularMenu[currentMenuFrame].Height - 250;
+        int x = this.Width - imageWidth;
+        int y = this.Height - imgHeight;
+        g.DrawImage(CircularMenu[rotateIndex], x - 60, 20, imageWidth, imgHeight);
+
+        // Determine the rotateIndex based on angleDegrees
+        if (angleDegrees >= 45.0f && angleDegrees < 125.0f)
+        {
+            SetRotateIndexWithHold(4);
+
+            // rotate right 4
+        }
+        else if (angleDegrees >= 125.0f && angleDegrees < 180.0f)
+        {
+            SetRotateIndexWithHold(3);
+            //del 3
+        }
+        else if (angleDegrees >= 180.0f && angleDegrees < 225.0f)
+        {
+            SetRotateIndexWithHold(2);
+            // edit 2
+        }
+        else if (angleDegrees >= 225.0f && angleDegrees < 295.0f)
+        {
+            SetRotateIndexWithHold(1);
+            // rotate left 1
         }
         else
         {
-            ClearButtons();
+            SetRotateIndexWithHold(5);
+            // ADD 5
         }
 
-        // Draw the blobs
-        if (blobList.Count > 0)
+        this.Validate();
+    }
+
+    private void SetRotateIndexWithHold(int index)
+    {
+        if (rotateIndex != index)
         {
-            lock (blobList)
+            // rotateIndex has changed, reset the timer and update the index
+            rotateIndex = index;
+            holdTimer.Stop();
+            holdTimer.Start(); // Start the timer for the new rotateIndex
+        }
+        else if (!holdTimer.Enabled)
+        {
+            // Start the timer if it's not already running and rotateIndex hasn't changed
+            holdTimer.Start();
+        }
+
+        previousRotateIndex = rotateIndex;
+    }
+
+    // Mouse click event handler to check if a rectangle is clicked
+    protected override void OnMouseClick(MouseEventArgs e)
+    {
+        base.OnMouseClick(e);
+
+        // Copy objectRectangles to safely iterate during mouse click event
+        Dictionary<int, Tuple<Rectangle, Rectangle, Rectangle>> rectanglesCopy = new Dictionary<int, Tuple<Rectangle, Rectangle, Rectangle>>(objectRectangles);
+
+        foreach (var kvp in rectanglesCopy)
+        {
+            int symbolID = kvp.Key;
+            var rects = kvp.Value;
+
+            // Check if the click is within the "Add" rectangle
+            if (rects.Item1.Contains(e.Location))
             {
-                foreach (TuioBlob tblb in blobList.Values)
-                {
-                    int bx = tblb.getScreenX(width);
-                    int by = tblb.getScreenY(height);
-                    float bw = tblb.Width * width;
-                    float bh = tblb.Height * height;
-
-                    g.TranslateTransform(bx, by);
-                    g.RotateTransform((float)(tblb.Angle / Math.PI * 180.0f));
-                    g.TranslateTransform(-bx, -by);
-
-                    g.FillEllipse(blbBrush, bx - bw / 2, by - bh / 2, bw, bh);
-
-                    g.TranslateTransform(bx, by);
-                    g.RotateTransform(-1 * (float)(tblb.Angle / Math.PI * 180.0f));
-                    g.TranslateTransform(-bx, -by);
-
-                    g.DrawString(tblb.BlobID + "", font, fntBrush, new PointF(bx, by));
-                }
+                addButton(symbolID);
+            }
+            // Check if the click is within the "Update" rectangle
+            else if (rects.Item2.Contains(e.Location))
+            {
+                updateButton(symbolID);
+            }
+            // Check if the click is within the "Delete" rectangle
+            else if (rects.Item3.Contains(e.Location))
+            {
+                deleteButton(symbolID);
             }
         }
     }
 
-    private void CreateButtons(int id)
+    private void addButton(int id)
     {
+        // Create a panel
+        int width = this.Width;
+        Panel panel = new Panel();
+        panel.Size = new Size(width, 80); // Set the size of the panel
+        panel.BorderStyle = BorderStyle.FixedSingle; // Adds a border to the panel
+        panel.Location = new Point(0, this.ClientSize.Height - panel.Height); // Position at bottom of form
+        panel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left; // Stick it to the bottom
+
+        // Create a label
+        Label lblDescription = new Label();
+        lblDescription.Text = "Enter Post Description:";
+        lblDescription.Location = new Point(10, 10);
+        lblDescription.AutoSize = true;
+
+        // Create a text box with increased height
+        TextBox txtDescription = new TextBox();
+        txtDescription.Location = new Point(10, 40);
+        txtDescription.Width = 200; // Adjust width for text box
+        txtDescription.Height = 30; // Set the height to match the button
+
+        // Create a submit button with the same height as the text box
+        Button btnSubmit = new Button();
+        btnSubmit.Text = "Submit";
+        btnSubmit.Location = new Point(220, 40); // Position it next to the text box
+        btnSubmit.Width = 80; // Set a suitable width
+        btnSubmit.Height = txtDescription.Height; // Match the height of the text box
 
 
-        // Clear existing buttons first
-        // ClearButtons();
 
-        int buttonWidth = this.ClientSize.Width / 3; // Full width divided by 3
-        int buttonHeight = 40; // Set a height for the buttons
-
-        Button addButton = new Button
+        // Button click event to capture the description and call addRequest
+        btnSubmit.Click += (sender, e) =>
         {
-            Text = "Add",
-            Location = new Point(0, this.ClientSize.Height - buttonHeight), // Bottom left
-            Size = new Size(buttonWidth, buttonHeight)
+            // Capture the description
+            string description = txtDescription.Text;
+            Posts.Add(description);
+
+            // Call the addRequest function with id and description
+            addRequest(id, description);
+
+            // Remove the panel from the form (and all controls inside it)
+            this.Controls.Remove(panel);
         };
-        addButton.Click += (sender, e) => AddTuioObject(id);
-        addButton.BringToFront();
 
-        this.Controls.Add(addButton); // Add button to the form
+        // Add controls to the panel
+        panel.Controls.Add(lblDescription);
+        panel.Controls.Add(txtDescription);
+        panel.Controls.Add(btnSubmit);
 
-        Button updateButton = new Button
-        {
-            Text = "Update",
-            Location = new Point(buttonWidth, this.ClientSize.Height - buttonHeight), // Bottom middle
-            Size = new Size(buttonWidth, buttonHeight)
-        };
-        updateButton.BringToFront();
-
-        updateButton.Click += (sender, e) => UpdateTuioObject(id);
-        this.Controls.Add(updateButton); // Add button to the form
-
-        Button deleteButton = new Button
-        {
-            Text = "Delete",
-            Location = new Point(buttonWidth * 2, this.ClientSize.Height - buttonHeight), // Bottom right
-            Size = new Size(buttonWidth, buttonHeight)
-        };
-        deleteButton.Click += (sender, e) => DeleteTuioObject(id);
-
-        // Bring buttons to the front
-        deleteButton.BringToFront();
-
-        this.Controls.Add(deleteButton); // Add button to the form
-
+        // Add the panel to the form
+        this.Controls.Add(panel);
     }
 
-    private void ClearButtons()
+    // Define the addRequest function
+    private void addRequest(int id, string description)
     {
-        // Clear existing buttons from the form
-        foreach (Control control in this.Controls)
-        {
-            if (control is Button && control.Text == "Add" || control.Text == "Update" || control.Text == "Delete")
-            {
-                this.Controls.Remove(control);
-                control.Dispose(); // Optional: Dispose of the button to free resources
-            }
-        }
-
-        this.Invalidate();
-
+        // Implement your logic to handle the request here
+        MessageBox.Show($"Request added for object {id}: {description}");
+        // Add additional logic to save the description, update a database, etc.
     }
+
+
+
+
+    private void updateButton(int id)
+    {
+        // Create a panel
+        int width = this.Width;
+        Panel panel = new Panel();
+        panel.Size = new Size(width, 80); // Set the size of the panel
+        panel.BorderStyle = BorderStyle.FixedSingle; // Adds a border to the panel
+        panel.Location = new Point(0, this.ClientSize.Height - panel.Height); // Position at bottom of form
+        panel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left; // Stick it to the bottom
+
+        // Create a label
+        Label lblDescription = new Label();
+        lblDescription.Text = "Please enter updated data below:";
+        lblDescription.Location = new Point(10, 10);
+        lblDescription.AutoSize = true;
+
+        // Create a text box with increased height
+        TextBox txtDescription = new TextBox();
+        txtDescription.Location = new Point(10, 40);
+        txtDescription.Width = 200; // Adjust width for text box
+        txtDescription.Height = 30; // Set the height to match the button
+
+        // Create a submit button with the same height as the text box
+        Button btnSubmit = new Button();
+        btnSubmit.Text = "Submit";
+        btnSubmit.Location = new Point(220, 40); // Position it next to the text box
+        btnSubmit.Width = 80; // Set a suitable width
+        btnSubmit.Height = txtDescription.Height; // Match the height of the text box
+
+        // Button click event to capture the description and call addRequest
+        btnSubmit.Click += (sender, e) =>
+        {
+            // Capture the description
+            string description = txtDescription.Text;
+
+            // Call the addRequest function with id and description
+            updateRequest(id, description);
+
+            // Remove the panel from the form (and all controls inside it)
+            this.Controls.Remove(panel);
+        };
+
+        // Add controls to the panel
+        panel.Controls.Add(lblDescription);
+        panel.Controls.Add(txtDescription);
+        panel.Controls.Add(btnSubmit);
+
+        // Add the panel to the form
+        this.Controls.Add(panel);
+    }
+
+    // Define the addRequest function
+    private void updateRequest(int id, string description)
+    {
+        // Implement your logic to handle the request here
+        MessageBox.Show($"Update request for object {id}: {description}");
+        // Add additional logic to save the description, update a database, etc.
+    }
+
+
+
+    private void deleteButton(int id)
+    {
+        // Create a panel
+        int width = this.Width;
+        Panel panel = new Panel();
+        panel.Size = new Size(width, 80); // Set the size of the panel
+        panel.BorderStyle = BorderStyle.FixedSingle; // Adds a border to the panel
+        panel.Location = new Point(0, this.ClientSize.Height - panel.Height); // Position at bottom of form
+        panel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left; // Stick it to the bottom
+
+        // Create a label for confirmation
+        Label lblConfirmation = new Label();
+        lblConfirmation.Text = "Are you sure you want to delete?";
+        lblConfirmation.Location = new Point(10, 10);
+        lblConfirmation.AutoSize = true;
+
+        // Create a "Yes" button
+        Button btnYes = new Button();
+        btnYes.Text = "Yes";
+        btnYes.Location = new Point(10, 40); // Position it
+        btnYes.Width = 80; // Set a suitable width
+
+        // Button click event to call deleteRequest
+        btnYes.Click += (sender, e) =>
+        {
+            // Call the deleteRequest function with id
+            deleteRequest(id);
+
+            // Remove the panel from the form (and all controls inside it)
+            this.Controls.Remove(panel);
+        };
+
+        // Create a "No" button
+        Button btnNo = new Button();
+        btnNo.Text = "No";
+        btnNo.Location = new Point(100, 40); // Position it next to the "Yes" button
+        btnNo.Width = 80; // Set a suitable width
+
+        // Button click event to remove the panel without action
+        btnNo.Click += (sender, e) =>
+        {
+            // Remove the panel from the form (and all controls inside it)
+            this.Controls.Remove(panel);
+        };
+
+        // Add controls to the panel
+        panel.Controls.Add(lblConfirmation);
+        panel.Controls.Add(btnYes);
+        panel.Controls.Add(btnNo);
+
+        // Add the panel to the form
+        this.Controls.Add(panel);
+    }
+
+    // Define the deleteRequest function
+    private void deleteRequest(int id)
+    {
+        // Implement your logic to handle the delete request here
+        MessageBox.Show($"Delete request for object {id} confirmed.");
+        // Add additional logic to delete the object from the database, etc.
+    }
+
+
 
 
     // mas2ola 3n shakl el form el odamy
@@ -458,39 +1224,38 @@ public class TuioDemo : Form, TuioListener
 
     private void InitializeComponent()
     {
-            this.SuspendLayout();
-            // 
-            // TuioDemo
-            // 
-            this.ClientSize = new System.Drawing.Size(647, 479);
-            this.Name = "TuioDemo";
-            this.Load += new System.EventHandler(this.TuioDemo_Load);
-            this.ResumeLayout(false);
+        this.SuspendLayout();
+        // 
+        // TuioDemo
+        // 
+        this.ClientSize = new System.Drawing.Size(647, 479);
+        this.Name = "TuioDemo";
+        this.Load += new System.EventHandler(this.TuioDemo_Load);
+        this.ResumeLayout(false);
 
     }
 
     private void TuioDemo_Load(object sender, EventArgs e)
     {
         // Path to the reacTIVision executable
-        // Get the current directory of the executable (project directory)
-        string exePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\reacTIVision-1.5.1-win64\reacTIVision.exe");
+        //string exePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\reacTIVision-1.5.1-win64\reacTIVision.exe");
 
-        try
-        {
-            // Create a new process to start the executable
-            Process reactiVisionProcess = new Process();
-            reactiVisionProcess.StartInfo.FileName = exePath;
+        //try
+        //{
+        //    // Create a new process to start the executable
+        //    reactiVisionProcess = new Process();
+        //    reactiVisionProcess.StartInfo.FileName = exePath;
 
-            // Optionally set other properties like arguments
-            reactiVisionProcess.StartInfo.Arguments = ""; // If you have any arguments
+        //    // Optionally set other properties like arguments
+        //    reactiVisionProcess.StartInfo.Arguments = ""; // If you have any arguments
 
-            // Start the process
-            reactiVisionProcess.Start();
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show($"Failed to start reacTIVision: {ex.Message}");
-        }
+        //    // Start the process
+        //    reactiVisionProcess.Start();
+        //}
+        //catch (Exception ex)
+        //{
+        //    MessageBox.Show($"Failed to start reacTIVision: {ex.Message}");
+        //}
     }
 
     public static void Main(String[] argv)
@@ -512,6 +1277,6 @@ public class TuioDemo : Form, TuioListener
         }
 
         TuioDemo app = new TuioDemo(port);
-        Application.Run(app);
+        System.Windows.Forms.Application.Run(app);
     }
 }
