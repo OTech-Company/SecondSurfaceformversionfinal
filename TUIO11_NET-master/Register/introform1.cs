@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using TUIO;
+using Register;
 
 namespace Tarbita3._0
 {
@@ -63,10 +66,15 @@ namespace Tarbita3._0
                     hlabel_Click(null, EventArgs.Empty);
                 });
                 }
+            if (o.SymbolID == 0)
+            {
+                this.Invoke((MethodInvoker)delegate {
+                    label1_Click(null, EventArgs.Empty);
+                });
+            }
 
 
 
-            
         }
 
         private void hlabel_Click(object sender, EventArgs e)
@@ -74,8 +82,41 @@ namespace Tarbita3._0
             this.Hide(); // Close the current form
             //Register newForm = new Register();
             //newForm.ShowDialog(); // Open the new form
+            string exePath = Path.Combine(Application.StartupPath, @"..\..\..\..\Login-Register Forms\Tarbita3.0\bin\Debug\Tarbita3.0.exe");
+            StartTuioDemo(exePath);
         }
+        private void StartTuioDemo(string exePath)
+        {
+            try
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    FileName = exePath,
+                    WorkingDirectory = Path.GetDirectoryName(exePath),
+                    UseShellExecute = false,
+                    RedirectStandardError = true,
+                    CreateNoWindow = false
+                };
 
+                Process process = Process.Start(startInfo);
+                process.WaitForExit();
+
+                string errors = process.StandardError.ReadToEnd();
+
+                if (!string.IsNullOrEmpty(errors))
+                {
+                    MessageBox.Show("Error: " + errors, "Execution Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    MessageBox.Show("TuioDemo.exe has finished running.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to start the application: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
 
         public void updateTuioObject(TuioObject o)
@@ -98,6 +139,15 @@ namespace Tarbita3._0
         public void updateTuioBlob(TuioBlob b) { }
         public void removeTuioBlob(TuioBlob b) { }
         public void refresh(TuioTime frameTime) { }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+            this.Hide(); // Close the current form
+            //Register newForm = new Register();
+            //newForm.ShowDialog(); // Open the new form
+            string exePath = Path.Combine(Application.StartupPath, @"..\..\..\..\Login\bin\Debug\Login.exe");
+            StartTuioDemo(exePath);
+        }
 
 
 

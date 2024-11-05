@@ -130,6 +130,12 @@ namespace TheClient
                 post_id = "BVrimPoB9fRQ1vInAz7A",  // Replace with the actual post ID you want to delete
                 soft_delete = true  // You can change this to false if you want a hard delete
             });
+
+            //PerformCRUDOperation("delete_post", new
+            //{
+            //    post_id = "BVrimPoB9fRQ1vInAz7A",  // Replace with the actual post ID you want to delete
+            //    soft_delete = true  // You can change this to false if you want a hard delete
+            //});
         }
 
 

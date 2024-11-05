@@ -93,5 +93,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Login-Register Forms\Tarbita3.0\Register.csproj">
+      <Project>{16722c7d-e038-4a58-8884-a151bc1174a2}</Project>
+      <Name>Register</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
