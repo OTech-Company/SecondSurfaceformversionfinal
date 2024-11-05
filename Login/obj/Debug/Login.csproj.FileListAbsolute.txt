@@ -1,0 +1,5 @@
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Login\obj\Debug\Login.csproj.AssemblyReference.cache
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Login\obj\Debug\Login.csproj.SuggestedBindingRedirects.cache
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Login\obj\Debug\Login.Properties.Resources.resources
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Login\obj\Debug\Login.csproj.GenerateResource.cache
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Login\obj\Debug\Login.csproj.CoreCompileInputs.cache
