@@ -144,3 +144,12 @@ D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO1
 D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\obj\Debug\TUIO_DEMO.csproj.CopyComplete
 D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\obj\Debug\TuioDemo.exe
 D:\MSA material\sana 4\HCI\SecondSurfaceformversion-main\TUIO11_NET-master\TUIO11_NET-master\obj\Debug\TuioDemo.pdb
+C:\Users\ali_o\Source\Repos\SecondSurfaceformversionfinal\TUIO11_NET-master\TUIO11_NET-master\obj\Debug\TUIO_DEMO.csproj.AssemblyReference.cache
+C:\Users\ali_o\Source\Repos\SecondSurfaceformversionfinal\TUIO11_NET-master\TUIO11_NET-master\obj\Debug\TuioDemo.exe.config
+C:\Users\ali_o\Source\Repos\SecondSurfaceformversionfinal\TUIO11_NET-master\TUIO11_NET-master\obj\Debug\TheSocialNetwork_AR_Login_Registration.frmRegister.resources
+C:\Users\ali_o\Source\Repos\SecondSurfaceformversionfinal\TUIO11_NET-master\TUIO11_NET-master\obj\Debug\TheSocialNetwork_AR_Login_Registration.frmLogin.resources
+C:\Users\ali_o\Source\Repos\SecondSurfaceformversionfinal\TUIO11_NET-master\TUIO11_NET-master\obj\Debug\TuioDemo.resources
+C:\Users\ali_o\Source\Repos\SecondSurfaceformversionfinal\TUIO11_NET-master\TUIO11_NET-master\obj\Debug\TUIO_DEMO.csproj.GenerateResource.cache
+C:\Users\ali_o\Source\Repos\SecondSurfaceformversionfinal\TUIO11_NET-master\TUIO11_NET-master\obj\Debug\TUIO_DEMO.csproj.CoreCompileInputs.cache
+C:\Users\ali_o\Source\Repos\SecondSurfaceformversionfinal\TUIO11_NET-master\TUIO11_NET-master\obj\Debug\TuioDemo.exe
+C:\Users\ali_o\Source\Repos\SecondSurfaceformversionfinal\TUIO11_NET-master\TUIO11_NET-master\obj\Debug\TuioDemo.pdb

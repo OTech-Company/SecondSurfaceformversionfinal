@@ -52,6 +52,18 @@
   </Target>
   -->
   <ItemGroup>
+    <Compile Include="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmLogin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmLogin.Designer.cs">
+      <DependentUpon>frmLogin.cs</DependentUpon>
+    </Compile>
     <Compile Include="OSC.NET\OSCBundle.cs" />
     <Compile Include="OSC.NET\OSCMessage.cs" />
     <Compile Include="OSC.NET\OSCPacket.cs" />
@@ -200,6 +212,12 @@
     <None Include="protos\google\type\timeofday.proto" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmLogin.resx">
+      <DependentUpon>frmLogin.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="TuioDemo.resx">
       <DependentUpon>TuioDemo.cs</DependentUpon>
     </EmbeddedResource>
