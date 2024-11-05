@@ -1,0 +1,17 @@
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Register\bin\Debug\Register.exe.config
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Register\bin\Debug\Register.exe
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Register\bin\Debug\Register.pdb
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Register\obj\Debug\introform1.csproj.AssemblyReference.cache
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Register\obj\Debug\introform1.csproj.SuggestedBindingRedirects.cache
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Register\obj\Debug\Tarbita3._0.introform1.resources
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Register\obj\Debug\Register.Properties.Resources.resources
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Register\obj\Debug\introform1.csproj.GenerateResource.cache
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Register\obj\Debug\introform1.csproj.CoreCompileInputs.cache
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Register\obj\Debug\Register.exe
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Register\obj\Debug\Register.pdb
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Register\bin\Debug\Tarbita3.0.exe
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Register\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Register\bin\Debug\Tarbita3.0.pdb
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Register\bin\Debug\Tarbita3.0.exe.config
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Register\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Register\obj\Debug\introform1.csproj.CopyComplete

@@ -19,7 +19,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution_items", "Solution_
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheClient", "..\TheClient\TheClient.csproj", "{8B745AF7-A3C0-457E-90A6-208D29412876}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tarbita3.0", "..\Login-Register Forms\Tarbita3.0\Tarbita3.0.csproj", "{16722C7D-E038-4A58-8884-A151BC1174A2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Register", "..\Login-Register Forms\Tarbita3.0\Register.csproj", "{16722C7D-E038-4A58-8884-A151BC1174A2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "introform1", "..\Register\introform1.csproj", "{4CD59F94-AD46-4D71-8EDB-61C772301046}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminHCI", "..\AdminHCI\AdminHCI\AdminHCI.csproj", "{EAB8ABE7-85C5-4C5D-A32D-E4A0C0075D54}"
 EndProject
@@ -49,6 +51,10 @@ Global
 		{16722C7D-E038-4A58-8884-A151BC1174A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16722C7D-E038-4A58-8884-A151BC1174A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{16722C7D-E038-4A58-8884-A151BC1174A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CD59F94-AD46-4D71-8EDB-61C772301046}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CD59F94-AD46-4D71-8EDB-61C772301046}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CD59F94-AD46-4D71-8EDB-61C772301046}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CD59F94-AD46-4D71-8EDB-61C772301046}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EAB8ABE7-85C5-4C5D-A32D-E4A0C0075D54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EAB8ABE7-85C5-4C5D-A32D-E4A0C0075D54}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EAB8ABE7-85C5-4C5D-A32D-E4A0C0075D54}.Release|Any CPU.ActiveCfg = Release|Any CPU

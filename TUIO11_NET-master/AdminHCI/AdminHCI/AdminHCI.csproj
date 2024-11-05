@@ -56,8 +56,22 @@
     <Compile Include="Admin.Designer.cs">
       <DependentUpon>Admin.cs</DependentUpon>
     </Compile>
+    <Compile Include="OSC.NET\OSCBundle.cs" />
+    <Compile Include="OSC.NET\OSCMessage.cs" />
+    <Compile Include="OSC.NET\OSCPacket.cs" />
+    <Compile Include="OSC.NET\OSCReceiver.cs" />
+    <Compile Include="OSC.NET\OSCTimeTag.cs" />
+    <Compile Include="OSC.NET\OSCTransmitter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TUIO\TuioBlob.cs" />
+    <Compile Include="TUIO\TuioClient.cs" />
+    <Compile Include="TUIO\TuioContainer.cs" />
+    <Compile Include="TUIO\TuioCursor.cs" />
+    <Compile Include="TUIO\TuioListener.cs" />
+    <Compile Include="TUIO\TuioObject.cs" />
+    <Compile Include="TUIO\TuioPoint.cs" />
+    <Compile Include="TUIO\TuioTime.cs" />
     <EmbeddedResource Include="Admin.resx">
       <DependentUpon>Admin.cs</DependentUpon>
     </EmbeddedResource>

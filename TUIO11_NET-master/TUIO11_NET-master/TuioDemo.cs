@@ -55,6 +55,7 @@ public class TuioDemo : Form, TuioListener
     private int screen_width = Screen.PrimaryScreen.Bounds.Width;
     private int screen_height = Screen.PrimaryScreen.Bounds.Height;
 
+    bool optionsFlag = false;
 
     public event Action<int> PostsChanged; // Event for when posts change
 
@@ -64,7 +65,7 @@ public class TuioDemo : Form, TuioListener
 
     List<Post> posts = new List<Post>();
     private Timer holdTimer = new Timer();
-    private int holdDuration = 1000; // 3 seconds in milliseconds
+    private int holdDuration = 2000; // 3 seconds in milliseconds
     private int previousRotateIndex = -1; // To track if rotateIndex has changed
     private bool inHoldRange = false;
     int postIndex = 0;
@@ -90,6 +91,11 @@ public class TuioDemo : Form, TuioListener
     private bool addTriggeredFlag = false, editTriggeredFlag = false;
     public List<string> Posts = new List<string>();
 
+
+    private int currentOptionIndex = -1;
+    private Timer optionHoldTimer = new Timer();
+    private bool isOptionHeld = false;
+
     Font font = new Font("Arial", 10.0f);
     SolidBrush fntBrush = new SolidBrush(Color.White);
     SolidBrush bgrBrush = new SolidBrush(Color.FromArgb(255, 255, 255));
@@ -97,21 +103,22 @@ public class TuioDemo : Form, TuioListener
     SolidBrush objBrush = new SolidBrush(Color.FromArgb(64, 0, 0));
     SolidBrush blbBrush = new SolidBrush(Color.FromArgb(64, 64, 64));
     Pen curPen = new Pen(new SolidBrush(Color.Blue), 1);
-
+    bool menuFlag = false;
 
     List<string> CommentOptions = new List<string>
 {
     "1. Exceeded Expectations",
     "2. Satisfactory",
-    "3. Disappointing"
+    "3. Disappointing",
+    "Cancel"
 };
     private List<Bitmap> CircularMenu = new List<Bitmap>();
     int currentMenuFrame = 0;
 
     private JObject PerformCRUDOperation(string operation, object data)
     {
-        string serverIp = "192.168.20.129";  // Replace with your server's IP address
-        int serverPort = 9001;              // Replace with your server's port number
+        string serverIp = "192.168.1.17";  // Replace with your server's IP address
+        int serverPort = 8001;              // Replace with your server's port number
         try
         {
             // Create a TcpClient and connect to the server
@@ -162,10 +169,18 @@ public class TuioDemo : Form, TuioListener
                     postCache[symbolID] = updatedPosts;
 
                 }
+                else
+                {
+
+                    postCache[symbolID] = new List<Post>();
+                }
+
             }
             else
             {
                 // If it's a new SymbolID, cache the posts
+
+
                 postCache[symbolID] = readTUIO(symbolID);
             }
         }
@@ -260,54 +275,82 @@ public class TuioDemo : Form, TuioListener
     }
 
 
-    public void AddPost(int symbolID, Post newPost)
+    public void AddPost(int id, string newPost)
     {
-        // Logic to add a new post...
 
-        // After adding, trigger the event
-        PostsChanged?.Invoke(symbolID); // Notify subscribers
+        JObject response = PerformCRUDOperation("create_post", new
+        {
+            post_data = newPost,
+            tuio_id = "1"
+            // Convert the id to a string
+
+        });
+
+
+        PostsChanged?.Invoke(id); // Notify subscribers
+
     }
 
 
     public TuioDemo(int port)
     {
-
         verbose = false;
         fullscreen = false;
         width = window_width;
         height = window_height;
 
         this.ClientSize = new System.Drawing.Size(width, height);
-        this.Name = "TuioDemo";
-        this.Text = "TuioDemo";
+
         this.DoubleBuffered = true; // Enable double buffering
 
-
         PostsChanged += RefreshCache; // Subscribe to the event
-
 
         this.Closing += new CancelEventHandler(Form_Closing);
         this.KeyDown += new KeyEventHandler(Form_KeyDown);
 
         this.SetStyle(ControlStyles.AllPaintingInWmPaint |
-                        ControlStyles.UserPaint |
-                        ControlStyles.DoubleBuffer, true);
+                      ControlStyles.UserPaint |
+                      ControlStyles.DoubleBuffer, true);
 
         objectList = new Dictionary<long, TuioObject>(128);
         cursorList = new Dictionary<long, TuioCursor>(128);
         blobList = new Dictionary<long, TuioBlob>(128);
 
         this.Load += new System.EventHandler(this.TuioDemo_Load);
+
+        // Initialize holdTimer (presumably for circular menu hold behavior)
         holdTimer.Interval = holdDuration;
         holdTimer.Tick += HoldTimer_Tick;
+
+        // Initialize optionHoldTimer (for option selection)
+        optionHoldTimer.Interval = 4000; // 1 second hold for option selection
+        optionHoldTimer.Tick += OptionHoldTimer_Tick; // Call the method on Tick
 
         createCircularMenu();
 
         client = new TuioClient(port);
         client.addTuioListener(this);
-        //InitializeComponent();
         client.connect();
     }
+
+    // Method called by optionHoldTimer.Tick
+    private void OptionHoldTimer_Tick(object sender, EventArgs e)
+    {
+        CheckOptionSelection();
+    }
+
+    // Method to check if an option is held and display message
+    private void CheckOptionSelection()
+    {
+        if (isOptionHeld && currentOptionIndex >= 0)
+        {
+            this.Text = "Option selected: " + CommentOptions[currentOptionIndex];
+            //MessageBox.Show("Option selected: " + CommentOptions[currentOptionIndex]);
+            optionHoldTimer.Stop();
+            optionsFlag = false;
+        }
+    }
+
 
     int postCount = 0;
     private void HoldTimer_Tick(object sender, EventArgs e)
@@ -326,6 +369,7 @@ public class TuioDemo : Form, TuioListener
                 addTriggeredFlag = false;
                 editTriggeredFlag = false;
                 postIndex--;
+
                 break;
             case 2:
                 editTriggered();
@@ -342,10 +386,13 @@ public class TuioDemo : Form, TuioListener
                 addTriggeredFlag = false;
                 editTriggeredFlag = false;
                 postIndex++;
+
                 break;
             case 5:
                 addTriggeredFlag = true;
                 editTriggeredFlag = false;
+                menuFlag = false;
+                optionsFlag = true;
                 break;
             default:
                 break;
@@ -354,17 +401,17 @@ public class TuioDemo : Form, TuioListener
 
     private void rotateLeftTriggered()
     {
-        this.Text = "Rotate Left";
+        //this.Text = "Rotate Left";
     }
 
     private void editTriggered()
     {
-        this.Text = "Edit";
+        //this.Text = "Edit";
     }
 
     private void deleteTriggered()
     {
-        this.Text = "Delete";
+        //this.Text = "Delete";
     }
 
     private void rotateRightTriggered()
@@ -545,92 +592,6 @@ public class TuioDemo : Form, TuioListener
     }
 
 
-
-    public static List<string> ReadPosts(int symbolID)
-    {
-        List<string> response;
-
-        switch (symbolID)
-        {
-            case 4:
-                response = new List<string>
-                    {
-        "Polo\n" +
-        "'Best burger ever!'\n" +
-        "'2024-10-20'",
-
-        "Mark\n" +
-        "'Fries were good, burger average.'\n" +
-        "'2024-10-21'",
-
-        "Heeey\n" +
-        "'Great service, okay burger.'\n" +
-        "'2024-10-22'"
-    };
-                break;
-
-            case 1:
-                response = new List<string>
-                {
-        "John Doe\n" +
-        "'Graduation is here!'\n" +
-        "'2024-10-23'",
-
-        "Momen\n" +
-        "'Excited for graduation!'\n" +
-        "'2024-10-24'",
-
-        "James\n" +
-        "'Ready for grad day!'\n" +
-        "'2024-10-25'"
-    };
-                break;
-
-            case 2:
-                response = new List<string>
-                {
-        "Hamooood\n" +
-        "'Congrats, Mahmoud!'\n" +
-        "'2024-10-26'",
-
-        "Alios\n" +
-        "'Well done, Mahmoud!'\n" +
-        "'2024-10-27'",
-
-        "Osamaaaz\n" +
-        "'Great job, Mahmoud!'\n" +
-        "'2024-10-28'"
-    };
-                break;
-
-            case 3:
-                response = new List<string>
-                {
-        "mazennashraff1\n" +
-        "'Real Madrid wins again!'\n" +
-        "'2024-10-29'",
-
-        "Booooo\n" +
-        "'Amazing game by Madrid!'\n" +
-        "'2024-10-30'",
-
-        "Mn3m\n" +
-        "'Champions, Real Madrid!'\n" +
-        "'2024-10-31'"
-    };
-                break;
-
-            default:
-                response = new List<string>
-                {
-                "No posts available for this symbol ID."
-                };
-                break;
-        }
-
-        return response;
-    }
-
     Dictionary<int, Tuple<Rectangle, Rectangle, Rectangle>> objectRectangles = new Dictionary<int, Tuple<Rectangle, Rectangle, Rectangle>>();
     int rotateIndex = 0;
 
@@ -701,31 +662,36 @@ public class TuioDemo : Form, TuioListener
 
                     //Posts = ReadPosts(tobj.SymbolID);
                     float angleDegrees = (float)(tobj.Angle / Math.PI * 180.0f);
-                    bool menuFlag = false;
+                    menuFlag = false;
 
-                    this.Text = objectCopy.Count + " ";
 
-                    if (tobj.SymbolID == 0 && objectCopy.Count > 1)
+                    if (tobj.SymbolID == 0 && objectCopy.Count > 1 && !addTriggeredFlag)
                     {
                         menuFlag = true;
                     }
                     else
                     {
 
-                        if (!postCache.TryGetValue(tobj.SymbolID, out List<Post> posts))
-                        {
-                            // Posts not in cache, load them and notify subscribers
-                            RefreshCache(tobj.SymbolID);
-                            posts = postCache[tobj.SymbolID];
-                            this.Text = "POSTSCACHE" + postCache.Count;// Retrieve from cache after refresh
-                        }
                     }
 
+                    if (!postCache.TryGetValue(tobj.SymbolID, out List<Post> posts))
+                    {
+                        // Posts not in cache, load them and notify subscribers
+                        RefreshCache(tobj.SymbolID);
+                        posts = postCache[tobj.SymbolID];
+
+                        //this.Text = "POSTSCACHE" + postCache.Count;// Retrieve from cache after refresh
+                    }
 
                     switch (tobj.SymbolID)
                     {
                         case 0:
-                            menuFlag = true;
+
+                            if (!optionsFlag)
+                            {
+                                menuFlag = true;
+
+                            }
                             break;
                         case 1:
                             backgroundImagePath = Path.Combine(Environment.CurrentDirectory, "cil.png");
@@ -776,9 +742,15 @@ public class TuioDemo : Form, TuioListener
 
                         if (menuFlag)
                         {
+                            if (objectCopy.Count < 2)
+                            {
+                                menuFlag = false;
+                                continue;
+                            }
+
                             drawCircularMenu(g, angleDegrees);
 
-
+                            this.Text = addTriggeredFlag + "," + objectCopy.Count;
                             if (addTriggeredFlag)
                             {
 
@@ -787,9 +759,10 @@ public class TuioDemo : Form, TuioListener
                                 string gestureRecognized = getGesture();
 
 
+
                                 if (gestureRecognized == "one")
                                 {
-
+                                    //AddPost(tobj.SymbolID);
                                 }
                                 else if (gestureRecognized == "two")
                                 {
@@ -799,49 +772,18 @@ public class TuioDemo : Form, TuioListener
                                 {
 
                                 }
-                                // Main prompt text
-                                string commentText = "Select an option:";
-                                Font font = new Font("Open Sans", 14, FontStyle.Regular);
-                                Brush textBrush = Brushes.Black;
-                                Brush backgroundBrush = new SolidBrush(Color.FromArgb(128, 255, 255, 255)); // White with 50% opacity
-
-                                // Measure the size of the main prompt text
-                                SizeF promptSize = g.MeasureString(commentText, font);
-                                float rectanglePadding = 5; // Padding around the text
-
-                                // Starting position for options
-                                float startX = this.Width - 320;
-                                float startY = this.Height - 150; // Starting Y position for the prompt
-                                float lineSpacing = 32; // Spacing between each option line
-
-                                // Measure the text width and height for background rectangle for options
-                                SizeF optionTextSize = g.MeasureString(CommentOptions[0], font);
-
-                                // Calculate total height of all options
-                                float totalOptionsHeight = CommentOptions.Count * (optionTextSize.Height + lineSpacing) + promptSize.Height + 5; // Add prompt height and spacing
-
-                                // Draw a semi-transparent background rectangle
-                                RectangleF backgroundRect = new RectangleF(startX - rectanglePadding - 20, startY - rectanglePadding - 40, 310, totalOptionsHeight - 50);
-                                g.FillRectangle(backgroundBrush, backgroundRect);
-
-                                // Draw the main prompt text
-                                g.DrawString(commentText, font, textBrush, startX, startY - 40);
-
-                                // Loop through options and draw each one
-                                for (int i = 0; i < CommentOptions.Count; i++)
-                                {
-                                    // Set position for each option
-                                    PointF optionLocation = new PointF(startX, startY + (i * lineSpacing));
-
-                                    g.DrawString(CommentOptions[i], font, textBrush, optionLocation);
-                                }
-
-                                // Dispose of the font object when done
-                                font.Dispose();
-
-
                             }
+
                         }
+
+                        if (optionsFlag)
+                        {
+                            int symbolIDToSend = 0;
+                            DrawOptionsMenu(g, angleDegrees, 1);
+
+                        }
+
+                        this.Text = postIndex + " ";
 
                         if (tobj.SymbolID != 0)
                         {
@@ -865,22 +807,9 @@ public class TuioDemo : Form, TuioListener
                             // Define the position for the text above the image
                             PointF textPosition1 = new PointF(ox, imagePosition.Y - size / 2);
                             PointF textPosition2 = new PointF(ox, textPosition1.Y - size + 10 / 2);
-
-                            this.Text = postIndex + " ";
-                            if (postCache.ContainsKey(tobj.SymbolID) && postCache[tobj.SymbolID].Count > 0)
+                            if (postCache[tobj.SymbolID] != null)
                             {
-                                SizeF textSize1 = g.MeasureString(postCache[tobj.SymbolID][postIndex].CreatedAt, font);
-                                SizeF textSize2 = g.MeasureString(postCache[tobj.SymbolID][postIndex].Content, font);
 
-                                // Create the rectangle's position and size
-                                RectangleF rect1 = new RectangleF(textPosition1, textSize1);
-                                RectangleF rect2 = new RectangleF(textPosition2, textSize2);
-
-                                // Draw the black rectangle behind the text
-                                g.FillRectangle(Brushes.Black, rect1);
-                                g.FillRectangle(Brushes.Black, rect2);
-
-                                // Draw the text on top of the rectangle
                                 if (postIndex < 0)
                                 {
                                     postIndex = postCache[tobj.SymbolID].Count - 1;
@@ -888,10 +817,38 @@ public class TuioDemo : Form, TuioListener
                                 else if (postIndex >= postCache[tobj.SymbolID].Count)
                                 {
                                     postIndex = 0;
-
                                 }
-                                g.DrawString(postCache[tobj.SymbolID][postIndex].CreatedAt, font, fntBrush, textPosition1);
-                                g.DrawString(postCache[tobj.SymbolID][postIndex].Content, font, fntBrush, textPosition2);
+                            }
+
+                            if (postCache.ContainsKey(tobj.SymbolID))
+                            {
+                                if (postCache[tobj.SymbolID] != null)
+                                {
+                                    SizeF textSize1 = g.MeasureString(postCache[tobj.SymbolID][postIndex].CreatedAt, font);
+                                    SizeF textSize2 = g.MeasureString(postCache[tobj.SymbolID][postIndex].Content, font);
+
+                                    // Create the rectangle's position and size
+                                    RectangleF rect1 = new RectangleF(textPosition1, textSize1);
+                                    RectangleF rect2 = new RectangleF(textPosition2, textSize2);
+
+                                    // Draw the black rectangle behind the text
+                                    g.FillRectangle(Brushes.Black, rect1);
+                                    g.FillRectangle(Brushes.Black, rect2);
+
+                                    // Draw the text on top of the rectangle
+                                    if (postIndex < 0)
+                                    {
+                                        postIndex = postCache[tobj.SymbolID].Count - 1;
+                                    }
+                                    else if (postIndex >= postCache[tobj.SymbolID].Count)
+                                    {
+                                        postIndex = 0;
+
+                                    }
+                                    g.DrawString(postCache[tobj.SymbolID][postIndex].CreatedAt, font, fntBrush, textPosition1);
+                                    g.DrawString(postCache[tobj.SymbolID][postIndex].Content, font, fntBrush, textPosition2);
+                                }
+
 
                             }
                         }
@@ -923,6 +880,145 @@ public class TuioDemo : Form, TuioListener
         return "";
     }
 
+    int getCommentByTUIO()
+    {
+
+        return -1;
+    }
+
+
+
+
+    void InitializeOptionHoldTimer()
+    {
+        optionHoldTimer.Interval = 1000; // 1 second hold
+        optionHoldTimer.Tick += (s, e) =>
+        {
+            if (isOptionHeld)
+            {
+                optionsFlag = false;
+                optionHoldTimer.Stop();
+
+            }
+        };
+    }
+
+    void DrawOptionsMenu(Graphics graphics, float angleInDegrees, int id)
+    {
+        // Main prompt text
+        string promptText = "Select an option:";
+        Font promptFont = new Font("Open Sans", 14, FontStyle.Regular);
+        Brush promptBrush = Brushes.Black;
+        Brush semiTransparentBackgroundBrush = new SolidBrush(Color.FromArgb(128, 255, 255, 255)); // White with 50% opacity
+
+        // Measure the size of the main prompt text
+        SizeF promptTextSize = graphics.MeasureString(promptText, promptFont);
+        float paddingAroundRectangle = 5; // Padding around the text
+
+        // Starting position for options
+        float optionStartX = this.Width - 320;
+        float optionStartY = this.Height - 170; // Starting Y position for the prompt
+        float lineGap = 32; // Spacing between each option line
+
+        // Measure the text width and height for background rectangle for options
+        SizeF optionTextSize = graphics.MeasureString(CommentOptions[0], promptFont);
+
+        // Calculate total height of all options
+        float totalOptionsHeight = CommentOptions.Count * (optionTextSize.Height + lineGap) + promptTextSize.Height + 5; // Add prompt height and spacing
+
+        // Draw a semi-transparent background rectangle
+        RectangleF backgroundRectangle = new RectangleF(optionStartX - paddingAroundRectangle - 20, optionStartY - paddingAroundRectangle - 40, 310, totalOptionsHeight - 50);
+        graphics.FillRectangle(semiTransparentBackgroundBrush, backgroundRectangle);
+
+        // Draw the main prompt text
+        graphics.DrawString(promptText, promptFont, promptBrush, optionStartX, optionStartY - 40);
+
+        // Determine the currentOptionIndex based on angleInDegrees for 4 options in upper semicircle
+
+        int selected = -1;
+        if (angleInDegrees >= 45.0f && angleInDegrees < 90.0f)
+        {
+            SetCurrentOptionIndex(0); // Option 2
+            selected = 0;
+        }
+        else if (angleInDegrees >= 90.0f && angleInDegrees < 135.0f)
+        {
+            selected = 1;
+
+            SetCurrentOptionIndex(1); // Option 3
+        }
+        else if (angleInDegrees >= 135.0f && angleInDegrees <= 180.0f)
+        {
+            selected = 2;
+
+            SetCurrentOptionIndex(2); // Option 4
+        }
+        else if (angleInDegrees >= 180.0f && angleInDegrees <= 225.0f)
+        {
+            selected = 3;
+
+            SetCurrentOptionIndex(3); // Option 4
+        }
+        else
+        {
+
+            selected = -1;
+
+            SetCurrentOptionIndex(-1); // No option selected if outside the 0-180 range
+        }
+
+        if (isOptionHeld && selected != -1)
+        {
+            if (selected != 3)
+            {
+
+                AddPost(1, CommentOptions[selected]);
+                optionsFlag = false;
+                MessageBox.Show("Comment Created: " + CommentOptions[selected]);
+
+            }
+            else
+            {
+                optionsFlag = false;
+            }
+
+        }
+
+        // Loop through options and draw each one
+        for (int i = 0; i < CommentOptions.Count; i++)
+        {
+            // Set position for each option
+            PointF optionLocation = new PointF(optionStartX, optionStartY + (i * lineGap));
+
+            // Highlight the selected option with a yellow background
+            if (i == currentOptionIndex)
+            {
+                graphics.FillRectangle(Brushes.Yellow, new RectangleF(optionLocation.X - paddingAroundRectangle, optionLocation.Y - paddingAroundRectangle, optionTextSize.Width + 10, optionTextSize.Height + 5));
+            }
+
+            graphics.DrawString(CommentOptions[i], promptFont, promptBrush, optionLocation);
+        }
+
+        // Dispose of the font object when done
+        promptFont.Dispose();
+    }
+
+    private void SetCurrentOptionIndex(int index)
+    {
+        if (currentOptionIndex != index)
+        {
+            // Index has changed, reset the timer and update the selected index
+            currentOptionIndex = index;
+            optionHoldTimer.Stop();
+            optionHoldTimer.Start(); // Start the timer for the new selection
+            isOptionHeld = true;
+        }
+        else if (!optionHoldTimer.Enabled)
+        {
+            // Start the timer if it's not already running and the selection hasn't changed
+            optionHoldTimer.Start();
+        }
+    }
 
     void drawCircularMenu(Graphics g, float angleDegrees)
     {
@@ -1238,24 +1334,24 @@ public class TuioDemo : Form, TuioListener
     private void TuioDemo_Load(object sender, EventArgs e)
     {
         // Path to the reacTIVision executable
-        //string exePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\reacTIVision-1.5.1-win64\reacTIVision.exe");
+        string exePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\reacTIVision-1.5.1-win64\reacTIVision.exe");
 
-        //try
-        //{
-        //    // Create a new process to start the executable
-        //    reactiVisionProcess = new Process();
-        //    reactiVisionProcess.StartInfo.FileName = exePath;
+        try
+        {
+            // Create a new process to start the executable
+            reactiVisionProcess = new Process();
+            reactiVisionProcess.StartInfo.FileName = exePath;
 
-        //    // Optionally set other properties like arguments
-        //    reactiVisionProcess.StartInfo.Arguments = ""; // If you have any arguments
+            // Optionally set other properties like arguments
+            reactiVisionProcess.StartInfo.Arguments = ""; // If you have any arguments
 
-        //    // Start the process
-        //    reactiVisionProcess.Start();
-        //}
-        //catch (Exception ex)
-        //{
-        //    MessageBox.Show($"Failed to start reacTIVision: {ex.Message}");
-        //}
+            // Start the process
+            reactiVisionProcess.Start();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Failed to start reacTIVision: {ex.Message}");
+        }
     }
 
     public static void Main(String[] argv)
