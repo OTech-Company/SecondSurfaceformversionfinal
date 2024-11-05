@@ -262,4 +262,5 @@ C:\Users\haidy\Source\Repos\SecondSurfaceformversionfinal\TUIO11_NET-master\TUIO
 C:\Users\haidy\Source\Repos\SecondSurfaceformversionfinal\TUIO11_NET-master\TUIO11_NET-master\obj\Debug\TUIO_DEMO.csproj.CoreCompileInputs.cache
 C:\Users\haidy\Source\Repos\SecondSurfaceformversionfinal\TUIO11_NET-master\TUIO11_NET-master\obj\Debug\TuioDemo.exe
 C:\Users\haidy\Source\Repos\SecondSurfaceformversionfinal\TUIO11_NET-master\TUIO11_NET-master\obj\Debug\TuioDemo.pdb
-C:\Users\haidy\source\repos\SecondSurfaceformversionfinal\TUIO11_NET-master\TUIO11_NET-master\obj\Debug\TUIO_DEMO.csproj.CopyComplete
+C:\Users\haidy\Source\Repos\SecondSurfaceformversionfinal\TUIO11_NET-master\TUIO11_NET-master\obj\Debug\TUIO_DEMO.csproj.SuggestedBindingRedirects.cache
+C:\Users\haidy\Source\Repos\SecondSurfaceformversionfinal\TUIO11_NET-master\TUIO11_NET-master\obj\Debug\TUIO_DEMO.csproj.Up2Date
