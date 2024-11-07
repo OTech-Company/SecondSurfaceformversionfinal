@@ -92,7 +92,7 @@ public class TuioDemo : Form, TuioListener
     public List<string> Posts = new List<string>();
 
 
-    private int currentOptionIndex = -1;
+    private int currentOptionIndex = -1,optionID=-1;
     private Timer optionHoldTimer = new Timer();
     private bool isOptionHeld = false;
 
@@ -277,13 +277,10 @@ public class TuioDemo : Form, TuioListener
 
     public void AddPost(int id, string newPost)
     {
-
         JObject response = PerformCRUDOperation("create_post", new
         {
             post_data = newPost,
-            tuio_id = "1"
-            // Convert the id to a string
-
+            tuio_id = id.ToString()
         });
 
 
@@ -323,7 +320,7 @@ public class TuioDemo : Form, TuioListener
         holdTimer.Tick += HoldTimer_Tick;
 
         // Initialize optionHoldTimer (for option selection)
-        optionHoldTimer.Interval = 4000; // 1 second hold for option selection
+        optionHoldTimer.Interval = 3000; // 1 second hold for option selection
         optionHoldTimer.Tick += OptionHoldTimer_Tick; // Call the method on Tick
 
         createCircularMenu();
@@ -336,8 +333,18 @@ public class TuioDemo : Form, TuioListener
     // Method called by optionHoldTimer.Tick
     private void OptionHoldTimer_Tick(object sender, EventArgs e)
     {
-        CheckOptionSelection();
+        if (isOptionHeld && currentOptionIndex >= 0)
+        {
+            // Adding post when the hold condition is met
+            AddPost(optionID, CommentOptions[currentOptionIndex]);
+
+            // Reset flags and stop the timer
+            optionHoldTimer.Stop();
+            isOptionHeld = false;
+            optionsFlag = false;
+        }
     }
+
 
     // Method to check if an option is held and display message
     private void CheckOptionSelection()
@@ -778,8 +785,18 @@ public class TuioDemo : Form, TuioListener
 
                         if (optionsFlag)
                         {
-                            int symbolIDToSend = 0;
-                            DrawOptionsMenu(g, angleDegrees, 1);
+                            if (objectCopy[0].SymbolID == 0)
+                            {
+                                DrawOptionsMenu(g, angleDegrees, objectCopy[1].SymbolID);
+                                optionID = objectCopy[1].SymbolID;
+                            }
+                            else
+                            {
+                                DrawOptionsMenu(g, angleDegrees, objectCopy[0].SymbolID);
+                                optionID = objectCopy[0].SymbolID;
+                            }
+
+
 
                         }
 
@@ -903,6 +920,7 @@ public class TuioDemo : Form, TuioListener
         };
     }
 
+    int selected = -1;
     void DrawOptionsMenu(Graphics graphics, float angleInDegrees, int id)
     {
         // Main prompt text
@@ -935,25 +953,24 @@ public class TuioDemo : Form, TuioListener
 
         // Determine the currentOptionIndex based on angleInDegrees for 4 options in upper semicircle
 
-        int selected = -1;
-        if (angleInDegrees >= 45.0f && angleInDegrees < 90.0f)
+        if (angleInDegrees >= 25.0f && angleInDegrees < 50.0f)
         {
-            SetCurrentOptionIndex(0); // Option 2
             selected = 0;
-        }
-        else if (angleInDegrees >= 90.0f && angleInDegrees < 135.0f)
-        {
-            selected = 1;
 
-            SetCurrentOptionIndex(1); // Option 3
+            SetCurrentOptionIndex(0); // Option 3
         }
-        else if (angleInDegrees >= 135.0f && angleInDegrees <= 180.0f)
+        else if (angleInDegrees >= 50.0f && angleInDegrees < 75.0f)
+        {
+            SetCurrentOptionIndex(1); // Option 2
+            selected = 1;
+        }
+        else if (angleInDegrees >= 75.0f && angleInDegrees < 100.0f)
         {
             selected = 2;
 
-            SetCurrentOptionIndex(2); // Option 4
+            SetCurrentOptionIndex(2); // Option 3
         }
-        else if (angleInDegrees >= 180.0f && angleInDegrees <= 225.0f)
+        else if (angleInDegrees >= 100.0f && angleInDegrees <= 125.0f)
         {
             selected = 3;
 
@@ -971,10 +988,21 @@ public class TuioDemo : Form, TuioListener
         {
             if (selected != 3)
             {
-               
-                AddPost(1, CommentOptions[selected]);
+                var newPost = new Post
+                {
+                    CreatedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                    Content = CommentOptions[selected],
+                    PostId = Guid.NewGuid().ToString()
+                };
+
+                // Directly add the Post object to postCache
+                postCache[id].Add(newPost);
+
+                //ddPost(id, CommentOptions[selected]);
+                // Update the index and flag
+                postIndex = postCache[id].Count - 1;
                 optionsFlag = false;
-                MessageBox.Show("Comment Created: " + CommentOptions[selected]);
+                this.Text = "Comment Created: " + CommentOptions[selected];
 
             }
             else
@@ -991,7 +1019,7 @@ public class TuioDemo : Form, TuioListener
             PointF optionLocation = new PointF(optionStartX, optionStartY + (i * lineGap));
 
             // Highlight the selected option with a yellow background
-            if (i == currentOptionIndex)
+            if (i == selected)
             {
                 graphics.FillRectangle(Brushes.Yellow, new RectangleF(optionLocation.X - paddingAroundRectangle, optionLocation.Y - paddingAroundRectangle, optionTextSize.Width + 10, optionTextSize.Height + 5));
             }
