@@ -81,6 +81,8 @@ namespace Tarbita3._0
         {
             this.Hide(); // Close the current form
             //Register newForm = new Register();
+            client.removeTuioListener(this);
+            client.disconnect();
             //newForm.ShowDialog(); // Open the new form
             string exePath = Path.Combine(Application.StartupPath, @"..\..\..\..\Login-Register Forms\Tarbita3.0\bin\Debug\Tarbita3.0.exe");
             StartTuioDemo(exePath);
@@ -145,6 +147,8 @@ namespace Tarbita3._0
             this.Hide(); // Close the current form
             //Register newForm = new Register();
             //newForm.ShowDialog(); // Open the new form
+            client.removeTuioListener(this);
+            client.disconnect();
             string exePath = Path.Combine(Application.StartupPath, @"..\..\..\..\Login\bin\Debug\Login.exe");
             StartTuioDemo(exePath);
         }

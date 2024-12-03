@@ -365,7 +365,7 @@ namespace Tarbita3._0
 
         private JObject PerformCRUDOperation(string operation, object data)
         {
-            string serverIp = "192.168.1.7";
+            string serverIp = "172.20.10.3";
             int serverPort = 9001;
 
             try

@@ -16,3 +16,4 @@ C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TU
 C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Login-Register Forms\Tarbita3.0\bin\Debug\AdminHCI.pdb
 C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Login-Register Forms\Tarbita3.0\bin\Debug\AdminHCI.exe.config
 C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Login-Register Forms\Tarbita3.0\obj\Debug\Tarbita3._0.login.resources
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\Login-Register Forms\Tarbita3.0\obj\Debug\Tarbita3._0.introform1.resources

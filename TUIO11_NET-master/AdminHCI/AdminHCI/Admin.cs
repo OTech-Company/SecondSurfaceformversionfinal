@@ -14,16 +14,22 @@ using System.Windows.Forms;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TUIO;
+using System.Runtime.InteropServices;
 
 namespace AdminHCI
+
 {
+
     public partial class Admin : Form, TuioListener
+
     {
         private TuioClient client;
         private Dictionary<long, TuioObject> objectList;
 
         bool sidebarExpand = true;
         private string currentView = "posts"; // Default to posts view
+
+
         public Admin()
         {
             InitializeComponent();
@@ -200,7 +206,7 @@ namespace AdminHCI
 
         private void PerformCRUDOperation(string operation, object data)
         {
-            string serverIp = "192.168.20.129";  // Replace with your server's IP address
+            string serverIp = "172.20.10.3";  // Replace with your server's IP address
             int serverPort = 9001;               // Replace with your server's port number
 
             try
@@ -381,6 +387,9 @@ namespace AdminHCI
 
         private void PnLogout_Click(object sender, EventArgs e)
         {
+            this.Hide();
+            client.removeTuioListener(this);
+            client.disconnect();
             // Path to the login application
             string exePath = Path.Combine(Application.StartupPath, @"..\..\..\..\Login-Register Forms\Tarbita3.0\bin\Debug\Tarbita3.0.exe");
 
@@ -506,17 +515,94 @@ namespace AdminHCI
         {
             lock (objectList)
             {
-                objectList.Add(o.SessionID, o);
+                this.Invoke((MethodInvoker)delegate
+                {
+                    objectList.Add(o.SessionID, o);
+                });
             }
 
+            if (o.SymbolID == 0)
+            {
+                this.Invoke((MethodInvoker)delegate
+                {
+                    pnTuio_Click(null, EventArgs.Empty);
+                });
+            }
             if (o.SymbolID == 1)
             {
-                MessageBox.Show("TUIO object with SymbolID 1 detected!", "Notification", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
+                this.Invoke((MethodInvoker)delegate
+                {
+                    pnUsers_Click(null, EventArgs.Empty);
+                });
+            }
+            if (o.SymbolID == 2)
+            {
+                
+                this.Invoke((MethodInvoker)delegate
+                {
+                    pnPosts_Click(null, EventArgs.Empty);
+                });
 
             }
+            if (o.SymbolID == 10)
+            {
+                this.Invoke((MethodInvoker)delegate
+                {
+                    PnLogout_Click(null, EventArgs.Empty);
+                });
+            }
+            if (o.SymbolID == 11)
+            {
+                this.Invoke((MethodInvoker)delegate
+                {
+                    PnLogout_Click(null, EventArgs.Empty);
+                });
+            }
+            int threshold = 400;
+            if (o.SymbolID == 12)
+            {
+                TUIOMouse(o.X, o.Y); // Initial mouse move when object is detected
+
+            }
+            if (o.SymbolID == 13)
+            {
+                int deltaX = Math.Abs((int)(o.X * Screen.PrimaryScreen.Bounds.Width) - Cursor.Position.X);
+                int deltaY = Math.Abs((int)(o.Y * Screen.PrimaryScreen.Bounds.Height) - Cursor.Position.Y);
+
+                if (deltaX <= threshold && deltaY <= threshold)
+                {
+                    // If the TUIO object is within the defined range, simulate a left mouse click
+                    LeftMouseClick((int)(o.X * Screen.PrimaryScreen.Bounds.Width), (int)(o.Y * Screen.PrimaryScreen.Bounds.Height));
+                }
+            } 
         }
 
+        // Importing the mouse_event function from user32.dll
+        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+        public static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint dwData, int dwExtraInfo);
+        // Constants for mouse events
+        private const int MOUSEEVENTF_LEFTDOWN = 0x02;
+        private const int MOUSEEVENTF_LEFTUP = 0x04;
+        static void TUIOMouse(float x, float y)
+        {
+            // Map TUIO coordinates to screen coordinates as needed
+            int screenX = (int)(x * Screen.PrimaryScreen.Bounds.Width);
+            int screenY = (int)(y * Screen.PrimaryScreen.Bounds.Height);
+
+            // Move the mouse cursor to the calculated screen position
+            Cursor.Position = new System.Drawing.Point(screenX, screenY);
+
+            // Simulate a left mouse button click
+
+        }
+
+        private static void LeftMouseClick(float x, float y)
+        {
+            // Simulate mouse down and mouse up events to perform a click
+            MessageBox.Show("TUIO object with SymbolID 1 detected!", "Notification", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, (uint)x, (uint)y, 0, 0);
+        }
         public void updateTuioObject(TuioObject tobj)
         {
             throw new NotImplementedException();
@@ -594,4 +680,6 @@ namespace AdminHCI
         public int posts_count { get; set; }
     }
 
+
+  
 }

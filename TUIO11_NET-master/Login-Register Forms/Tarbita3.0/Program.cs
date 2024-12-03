@@ -16,7 +16,7 @@ namespace Tarbita3._0
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new login());
+            Application.Run(new introform1());
             //Application.Run(new Register());
 
         }
