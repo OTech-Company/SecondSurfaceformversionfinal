@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.33927.289
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TUIO_DEMO", "TUIO_DEMO.csproj", "{83F18314-A320-4148-A5A5-D8FD091FC407}"
 EndProject
@@ -28,6 +28,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Register", "..\Login-Register Forms\Tarbita3.0\Register.csproj", "{16722C7D-E038-4A58-8884-A151BC1174A2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "introform1", "..\Register\introform1.csproj", "{4CD59F94-AD46-4D71-8EDB-61C772301046}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiGamesPlatform", "..\MultiGamesPlatform\MultiGamesPlatform.csproj", "{2A765C3E-C345-4DC5-9604-04094E6A0778}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +65,10 @@ Global
 		{4CD59F94-AD46-4D71-8EDB-61C772301046}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4CD59F94-AD46-4D71-8EDB-61C772301046}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4CD59F94-AD46-4D71-8EDB-61C772301046}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A765C3E-C345-4DC5-9604-04094E6A0778}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A765C3E-C345-4DC5-9604-04094E6A0778}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A765C3E-C345-4DC5-9604-04094E6A0778}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A765C3E-C345-4DC5-9604-04094E6A0778}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
