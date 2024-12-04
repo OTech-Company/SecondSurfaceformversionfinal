@@ -120,7 +120,7 @@ public class TuioDemo : Form, TuioListener
     private int screen_height = Screen.PrimaryScreen.Bounds.Height;
 
 
-    public int page = 3;
+    public int page = 1;
     string category = "Lunch";
 
     public int ScreenMode;
@@ -558,7 +558,7 @@ public class TuioDemo : Form, TuioListener
 
                 break;
             case 1:
-
+                drawPagerecommendation(g);
                 break;
             case 2:
                 drawPageCategories(g);
@@ -577,8 +577,64 @@ public class TuioDemo : Form, TuioListener
 
     void drawMainMenuBackground(Graphics g)
     {
+        if (page == 1)
+        {
+            string path = "";
+            if (ScreenMode == 0)
+            {
+                path = "light_recommendation.png";
+            }
+            else
+            {
+                path = "dark_recommendation.png";
+            }
 
-        if (page == 2)
+            using (Bitmap backgroundImage = (Bitmap)System.Drawing.Image.FromFile("images/" + path))
+            {
+                // Draw the bitmap to cover the entire window
+                g.DrawImage(backgroundImage, new Rectangle(0, 0, this.Width, this.Height));
+            }
+
+            // The specific text you want to display
+            string displayText1 = "breakfast";
+            string displayText2 = "pizza created";
+            string displayText3 = "shared before";
+            string displayText4 = "specially for you ";
+
+            using (Bitmap displayImage1 = (Bitmap)System.Drawing.Image.FromFile("images/menu/breakfast/egg_muffin.png"))
+            {
+                // Draw the recommenddation num 1
+                g.DrawImage(displayImage1, new Rectangle(120, 400, 180, 180));
+
+                // Optionally draw additional text over the image
+                g.DrawString(displayText1, new Font("Arial", 24, FontStyle.Bold), Brushes.Black, new PointF(120, 580));
+            }
+            using (Bitmap displayImage2 = (Bitmap)System.Drawing.Image.FromFile("images/menu/lunch/veg.png"))
+            {
+                // Draw the recommenddation num 2
+                g.DrawImage(displayImage2, new Rectangle(490, 400, 180, 180));
+
+                // Optionally draw additional text over the image
+                g.DrawString(displayText2, new Font("Arial", 24, FontStyle.Bold), Brushes.Black, new PointF(480, 580));
+            }
+            using (Bitmap displayImage3 = (Bitmap)System.Drawing.Image.FromFile("images/menu/lunch/Margarita.png"))
+            {
+                // Draw the recommenddation num 3
+                g.DrawImage(displayImage3, new Rectangle(870, 400, 180, 180));
+
+                // Optionally draw additional text over the image
+                g.DrawString(displayText3, new Font("Arial", 24, FontStyle.Bold), Brushes.Black, new PointF(850, 580));
+            }
+            using (Bitmap displayImage4 = (Bitmap)System.Drawing.Image.FromFile("images/menu/dessert/cookies.png"))
+            {
+                // Draw the recommenddation num 4
+                g.DrawImage(displayImage4, new Rectangle(1250, 400, 180,180));
+
+                // Optionally draw additional text over the image
+                g.DrawString(displayText4, new Font("Arial", 24, FontStyle.Bold), Brushes.Black, new PointF(1200, 580));
+            }
+        }
+        else if (page == 2)
         {
             string path = "";
             if (ScreenMode == 0)
@@ -727,7 +783,102 @@ public class TuioDemo : Form, TuioListener
         }
     }
 
+    void drawPagerecommendation(Graphics g)
+    {
+        drawMainMenuBackground(g);
 
+        if (ScreenMode == 0)
+        {
+            page = 3;
+            category = "Breakfast";
+            return;
+        }
+
+
+        // Lunch or Dessert or Build ur Own
+        // Copy of cursorList to safely iterate
+        List<TuioCursor> cursorCopy = new List<TuioCursor>();
+
+        lock (cursorList)
+        {
+            cursorCopy.AddRange(cursorList.Values); // Make a safe copy of cursorList
+        }
+
+        // Draw the cursor path
+        if (cursorCopy.Count > 0)
+        {
+            foreach (TuioCursor tcur in cursorCopy)
+            {
+                List<TuioPoint> path = tcur.Path;
+                TuioPoint current_point = path[0];
+
+                for (int i = 0; i < path.Count; i++)
+                {
+                    TuioPoint next_point = path[i];
+                    g.DrawLine(curPen, current_point.getScreenX(width), current_point.getScreenY(height), next_point.getScreenX(width), next_point.getScreenY(height));
+                    current_point = next_point;
+                }
+                g.FillEllipse(curBrush, current_point.getScreenX(width) - height / 100, current_point.getScreenY(height) - height / 100, height / 50, height / 50);
+                g.DrawString(tcur.CursorID + "", font, fntBrush, new PointF(tcur.getScreenX(width) - 10, tcur.getScreenY(height) - 10));
+            }
+        }
+
+        // Copy of objectList to safely iterate
+        List<TuioObject> objectCopy = new List<TuioObject>();
+
+        lock (objectList)
+        {
+            objectCopy.AddRange(objectList.Values);
+        }
+
+
+
+        if (objectCopy.Count > 0)
+        {
+
+            lock (objectRectangles)
+            {
+
+                objectRectangles.Clear();
+
+                foreach (TuioObject tobj in objectCopy)
+                {
+                    int ox = tobj.getScreenX(width);
+                    int oy = tobj.getScreenY(height);
+                    int size = height / 10;
+
+
+                    float angleDegrees = (float)(tobj.Angle / Math.PI * 180.0f);
+
+
+                    switch (tobj.SymbolID)
+                    {
+                        case 136:
+                            category = "checkout";
+                            page = 5;
+                            break;
+                        case 137:
+                            category = "checkout";
+                            page = 5;
+                            break;
+                        case 138:
+                            category = "checkout";
+                            page = 5;
+                            break;
+                        case 139:
+                            category = "checkout";
+                            page = 5;
+                            break;
+                        default:
+                            break;
+                    }
+
+                }
+            }
+
+        }
+
+    }
     void drawPageCategories(Graphics g)
     {
         drawMainMenuBackground(g);
