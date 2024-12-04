@@ -11,17 +11,25 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TUIO_LIB", "TUIO_LIB.csproj
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution_items", "Solution_items", "{086531B4-F63E-4E74-B320-43AFBEB57E16}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\..\..\..\..\Downloads\Lab 4  Location Awareness (Bluetooth) amp Pose Estimation(Mediapipe)-20241103 (1)\Bluetooth.py = ..\..\..\..\..\..\Downloads\Lab 4  Location Awareness (Bluetooth) amp Pose Estimation(Mediapipe)-20241103 (1)\Bluetooth.py
-		D:\MSA material\sana 4\HCI\Lab\lab2\OSAMA\lab2\file.json = D:\MSA material\sana 4\HCI\Lab\lab2\OSAMA\lab2\file.json
-		handGestureMouse.py = handGestureMouse.py
+		client.cs = client.cs
 		server.py = server.py
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Model", "Model", "{3BFDE196-5262-44EE-ADF0-6287AD9C4C7B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "View", "View", "{3135B187-8A7D-4BC5-ACFE-36196AB1F5C0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Controller", "Controller", "{A151C4EE-C66A-49C0-9181-E10CD3304E00}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheClient", "..\TheClient\TheClient.csproj", "{8B745AF7-A3C0-457E-90A6-208D29412876}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tarbita3.0", "..\Login-Register Forms\Tarbita3.0\Tarbita3.0.csproj", "{16722C7D-E038-4A58-8884-A151BC1174A2}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminHCI", "..\AdminHCI\AdminHCI\AdminHCI.csproj", "{EAB8ABE7-85C5-4C5D-A32D-E4A0C0075D54}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Register", "..\Login-Register Forms\Tarbita3.0\Register.csproj", "{16722C7D-E038-4A58-8884-A151BC1174A2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "introform1", "..\Register\introform1.csproj", "{4CD59F94-AD46-4D71-8EDB-61C772301046}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiGamesPlatform", "..\MultiGamesPlatform\MultiGamesPlatform.csproj", "{2A765C3E-C345-4DC5-9604-04094E6A0778}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,20 +53,33 @@ Global
 		{8B745AF7-A3C0-457E-90A6-208D29412876}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B745AF7-A3C0-457E-90A6-208D29412876}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B745AF7-A3C0-457E-90A6-208D29412876}.Release|Any CPU.Build.0 = Release|Any CPU
-		{16722C7D-E038-4A58-8884-A151BC1174A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{16722C7D-E038-4A58-8884-A151BC1174A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{16722C7D-E038-4A58-8884-A151BC1174A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{16722C7D-E038-4A58-8884-A151BC1174A2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EAB8ABE7-85C5-4C5D-A32D-E4A0C0075D54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EAB8ABE7-85C5-4C5D-A32D-E4A0C0075D54}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EAB8ABE7-85C5-4C5D-A32D-E4A0C0075D54}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EAB8ABE7-85C5-4C5D-A32D-E4A0C0075D54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16722C7D-E038-4A58-8884-A151BC1174A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16722C7D-E038-4A58-8884-A151BC1174A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16722C7D-E038-4A58-8884-A151BC1174A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16722C7D-E038-4A58-8884-A151BC1174A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CD59F94-AD46-4D71-8EDB-61C772301046}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CD59F94-AD46-4D71-8EDB-61C772301046}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CD59F94-AD46-4D71-8EDB-61C772301046}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CD59F94-AD46-4D71-8EDB-61C772301046}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A765C3E-C345-4DC5-9604-04094E6A0778}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A765C3E-C345-4DC5-9604-04094E6A0778}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A765C3E-C345-4DC5-9604-04094E6A0778}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A765C3E-C345-4DC5-9604-04094E6A0778}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3BFDE196-5262-44EE-ADF0-6287AD9C4C7B} = {086531B4-F63E-4E74-B320-43AFBEB57E16}
+		{3135B187-8A7D-4BC5-ACFE-36196AB1F5C0} = {086531B4-F63E-4E74-B320-43AFBEB57E16}
+		{A151C4EE-C66A-49C0-9181-E10CD3304E00} = {086531B4-F63E-4E74-B320-43AFBEB57E16}
+	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {28D1BB63-0AED-45C5-8600-C30FC77615BC}
+		SolutionGuid = {42A20A8D-61DA-46BE-8D0B-E17FEF309698}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
