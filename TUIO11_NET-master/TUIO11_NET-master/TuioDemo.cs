@@ -38,6 +38,8 @@ using Newtonsoft.Json.Linq;
 using static System.Net.Mime.MediaTypeNames;
 using Timer = System.Windows.Forms.Timer;
 using System.Linq;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using static MenuItem;
 
 
 /*
@@ -73,6 +75,7 @@ public class MenuItem
 
     }
 
+
     public override string ToString()
     {
         return $"{Name} ({Category}) - " +
@@ -96,6 +99,8 @@ public class Topping
 public class CartItem
 {
     public string Name { get; set; }
+    public string ImagePath { get; set; }
+
     public decimal Price { get; set; }
     public int Quantity { get; set; }
     public List<string> Toppings { get; set; } // For custom dishes like "Build Your Own Pizza"
@@ -108,7 +113,7 @@ public class TuioDemo : Form, TuioListener
     private Dictionary<long, TuioObject> objectList;
     private Dictionary<long, TuioCursor> cursorList;
     private Dictionary<long, TuioBlob> blobList;
-    private Dictionary<int, List<Button>> objectButtons = new Dictionary<int, List<Button>>();
+    private Dictionary<int, List<System.Windows.Forms.Button>> objectButtons = new Dictionary<int, List<System.Windows.Forms.Button>>();
 
     public bool flagShift = true;
     public static int width, height;
@@ -120,8 +125,11 @@ public class TuioDemo : Form, TuioListener
     private int screen_height = Screen.PrimaryScreen.Bounds.Height;
 
 
-    public int page = 0;
-    string category = "Lunch";
+    Panel cartPanel = new Panel();
+
+
+    public int page = 5;
+    string category = "CheckOut";
 
     public int ScreenMode;
 
@@ -347,7 +355,7 @@ public class TuioDemo : Form, TuioListener
 
         client = new TuioClient(port);
         client.addTuioListener(this);
-        //InitializeComponent();
+        InitializeComponent();
         client.connect();
     }
 
@@ -573,6 +581,9 @@ public class TuioDemo : Form, TuioListener
             case 4:
                 drawPageCustom(g);
                 break;
+            case 5:
+                drawPageCheckOut(g);
+                break;
             default:
                 break;
         }
@@ -583,15 +594,7 @@ public class TuioDemo : Form, TuioListener
     {
         if(page == 0)
         {
-            string path = "";
-            if (ScreenMode == 0)
-            {
-                path = "light_login.png";
-            }
-            else
-            {
-                path = "dark_login.png";
-            }
+            string path = (ScreenMode == 0) ? "light_login.png" : "dark_login.png";
 
             using (Bitmap backgroundImage = (Bitmap)System.Drawing.Image.FromFile("images/" + path))
             {
@@ -601,15 +604,7 @@ public class TuioDemo : Form, TuioListener
         }
         else if (page == 1)
         {
-            string path = "";
-            if (ScreenMode == 0)
-            {
-                path = "light_recommendation.png";
-            }
-            else
-            {
-                path = "dark_recommendation.png";
-            }
+            string path = (ScreenMode == 0) ? "light_recommendation.png" : "dark_recommendation.png";
 
             using (Bitmap backgroundImage = (Bitmap)System.Drawing.Image.FromFile("images/" + path))
             {
@@ -658,15 +653,7 @@ public class TuioDemo : Form, TuioListener
         }
         else if (page == 2)
         {
-            string path = "";
-            if (ScreenMode == 0)
-            {
-                path = "light_categories.png";
-            }
-            else
-            {
-                path = "dark_categories.png";
-            }
+            string path = (ScreenMode == 0) ? "light_categories.png" : "dark_categories.png";
 
             using (Bitmap backgroundImage = (Bitmap)System.Drawing.Image.FromFile("images/" + path))
             {
@@ -680,15 +667,7 @@ public class TuioDemo : Form, TuioListener
             if (ScreenMode == 0)
             {
 
-                string path = "";
-                if (isRightHanded)
-                {
-                    path = "light_right.png";
-                }
-                else
-                {
-                    path = "light_left.png";
-                }
+                string path = (isRightHanded) ? "light_right.png" : "light_left.png";
 
                 using (Bitmap backgroundImage = (Bitmap)System.Drawing.Image.FromFile("images/" + path))
                 {
@@ -698,16 +677,7 @@ public class TuioDemo : Form, TuioListener
             }
             else
             {
-                string path = "";
-
-                if (isRightHanded)
-                {
-                    path = "dark_right.png";
-                }
-                else
-                {
-                    path = "dark_left.png";
-                }
+                string path = (isRightHanded) ? "dark_right.png" : "dark_left.png";
                 using (Bitmap backgroundImage = (Bitmap)System.Drawing.Image.FromFile("images/" + path))
                 {
                     // Draw the bitmap to cover the entire window
@@ -721,15 +691,8 @@ public class TuioDemo : Form, TuioListener
             if (ScreenMode == 0)
             {
 
-                string path = "";
-                if (isRightHanded)
-                {
-                    path = "light_custom_right.png";
-                }
-                else
-                {
-                    path = "light_custom_left.png";
-                }
+                string path = (isRightHanded) ? "light_custom_right.png" : "light_custom_left.png";
+               
 
                 using (Bitmap backgroundImage = (Bitmap)System.Drawing.Image.FromFile("images/" + path))
                 {
@@ -739,16 +702,8 @@ public class TuioDemo : Form, TuioListener
             }
             else
             {
-                string path = "";
-
-                if (isRightHanded)
-                {
-                    path = "dark_custom_right.png";
-                }
-                else
-                {
-                    path = "dark_custom_left.png";
-                }
+                string path = (isRightHanded) ? "dark_custom_right.png" : "dark_custom_left.png"  ;
+ 
                 using (Bitmap backgroundImage = (Bitmap)System.Drawing.Image.FromFile("images/" + path))
                 {
                     // Draw the bitmap to cover the entire window
@@ -756,7 +711,24 @@ public class TuioDemo : Form, TuioListener
                 }
             }
         }
+        else if (page == 5)
+        {
+            string path = (ScreenMode == 0) ? "light_checkout.png" : "dark_checkout.png";
 
+            try
+            {
+                using (Bitmap backgroundImage = (Bitmap)System.Drawing.Image.FromFile("images/" + path))
+                {
+                    g.DrawImage(backgroundImage, new Rectangle(0, 0, this.Width, this.Height)); 
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error loading image: " + ex.Message);
+            }
+
+
+        }
     }
 
     void drawMainMenuCircularRings(Graphics g, string category)
@@ -805,6 +777,93 @@ public class TuioDemo : Form, TuioListener
         }
     }
 
+    void drawPageCheckOut(Graphics g)
+    {
+        drawMainMenuBackground(g);
+
+        if (ScreenMode == 0)
+        {
+            page = 5;
+            category = "CheckOut";
+            return;
+        }
+
+
+        // Lunch or Dessert or Build ur Own
+        // Copy of cursorList to safely iterate
+        List<TuioCursor> cursorCopy = new List<TuioCursor>();
+
+        lock (cursorList)
+        {
+            cursorCopy.AddRange(cursorList.Values); // Make a safe copy of cursorList
+        }
+
+        // Draw the cursor path
+        if (cursorCopy.Count > 0)
+        {
+            foreach (TuioCursor tcur in cursorCopy)
+            {
+                List<TuioPoint> path = tcur.Path;
+                TuioPoint current_point = path[0];
+
+                for (int i = 0; i < path.Count; i++)
+                {
+                    TuioPoint next_point = path[i];
+                    g.DrawLine(curPen, current_point.getScreenX(width), current_point.getScreenY(height), next_point.getScreenX(width), next_point.getScreenY(height));
+                    current_point = next_point;
+                }
+                g.FillEllipse(curBrush, current_point.getScreenX(width) - height / 100, current_point.getScreenY(height) - height / 100, height / 50, height / 50);
+                g.DrawString(tcur.CursorID + "", font, fntBrush, new PointF(tcur.getScreenX(width) - 10, tcur.getScreenY(height) - 10));
+            }
+        }
+
+        // Copy of objectList to safely iterate
+        List<TuioObject> objectCopy = new List<TuioObject>();
+
+        lock (objectList)
+        {
+            objectCopy.AddRange(objectList.Values);
+        }
+
+
+
+        if (objectCopy.Count > 0)
+        {
+
+            lock (objectRectangles)
+            {
+
+                objectRectangles.Clear();
+
+                foreach (TuioObject tobj in objectCopy)
+                {
+                    int ox = tobj.getScreenX(width);
+                    int oy = tobj.getScreenY(height);
+                    int size = height / 10;
+
+
+                    float angleDegrees = (float)(tobj.Angle / Math.PI * 180.0f);
+
+
+                    switch (tobj.SymbolID)
+                    {
+                        case 4:
+                            //loginResponse = PerformCRUDOperation("Start", null);
+                            //MessageBox.Show("" + response);
+                            //category = "recommendation";
+                            //page = 1;
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                }
+            }
+
+        }
+
+    }
     void drawPagelogin(Graphics g)
     {
         drawMainMenuBackground(g);
@@ -1570,6 +1629,8 @@ public class TuioDemo : Form, TuioListener
         this.Load += new System.EventHandler(this.TuioDemo_Load);
         this.ResumeLayout(false);
 
+
+
     }
 
     private void TuioDemo_Load(object sender, EventArgs e)
@@ -1615,5 +1676,6 @@ public class TuioDemo : Form, TuioListener
 
         TuioDemo app = new TuioDemo(port);
         System.Windows.Forms.Application.Run(app);
+
     }
 }
