@@ -38,6 +38,8 @@ using Newtonsoft.Json.Linq;
 using static System.Net.Mime.MediaTypeNames;
 using Timer = System.Windows.Forms.Timer;
 using System.Linq;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using static MenuItem;
 
 
 /*
@@ -73,6 +75,7 @@ public class MenuItem
 
     }
 
+
     public override string ToString()
     {
         return $"{Name} ({Category}) - " +
@@ -96,6 +99,8 @@ public class Topping
 public class CartItem
 {
     public string Name { get; set; }
+    public string ImagePath { get; set; }
+
     public decimal Price { get; set; }
     public int Quantity { get; set; }
     public List<string> Toppings { get; set; } // For custom dishes like "Build Your Own Pizza"
@@ -108,7 +113,7 @@ public class TuioDemo : Form, TuioListener
     private Dictionary<long, TuioObject> objectList;
     private Dictionary<long, TuioCursor> cursorList;
     private Dictionary<long, TuioBlob> blobList;
-    private Dictionary<int, List<Button>> objectButtons = new Dictionary<int, List<Button>>();
+    private Dictionary<int, List<System.Windows.Forms.Button>> objectButtons = new Dictionary<int, List<System.Windows.Forms.Button>>();
 
     public bool flagShift = true;
     public static int width, height;
@@ -120,8 +125,11 @@ public class TuioDemo : Form, TuioListener
     private int screen_height = Screen.PrimaryScreen.Bounds.Height;
 
 
-    public int page = 3;
-    string category = "Lunch";
+    Panel cartPanel = new Panel();
+
+
+    public int page = 5;
+    string category = "CheckOut";
 
     public int ScreenMode;
 
@@ -131,8 +139,12 @@ public class TuioDemo : Form, TuioListener
     private int Age = 22;
     private bool isRightHanded = true;
 
+    public JObject loginResponse;
     List<MenuItem> menu = new List<MenuItem>
 {
+
+
+
     // Breakfast items
     new MenuItem("Pancakes", "Breakfast", false, false, false, 5.99m, "Fluffy pancakes served with maple syrup.", "images/menu/breakfast/pancakes.png"),
     new MenuItem("Oatmeal", "Breakfast", true, true, true, 4.99m, "Healthy oatmeal topped with fresh fruits.", "images/menu/breakfast/oatmeal.png"),
@@ -217,8 +229,8 @@ public class TuioDemo : Form, TuioListener
 
     private JObject PerformCRUDOperation(string operation, object data)
     {
-        string serverIp = "192.168.20.129";  // Replace with your server's IP address
-        int serverPort = 9001;              // Replace with your server's port number
+        string serverIp = "192.168.1.13";  // Replace with your server's IP address
+        int serverPort = 1010;              // Replace with your server's port number
         try
         {
             // Create a TcpClient and connect to the server
@@ -343,7 +355,7 @@ public class TuioDemo : Form, TuioListener
 
         client = new TuioClient(port);
         client.addTuioListener(this);
-        //InitializeComponent();
+        InitializeComponent();
         client.connect();
     }
 
@@ -555,10 +567,10 @@ public class TuioDemo : Form, TuioListener
         switch (page)
         {
             case 0:
-
+                drawPagelogin(g);
                 break;
             case 1:
-
+                drawPagerecommendation(g);
                 break;
             case 2:
                 drawPageCategories(g);
@@ -569,6 +581,9 @@ public class TuioDemo : Form, TuioListener
             case 4:
                 drawPageCustom(g);
                 break;
+            case 5:
+                drawPageCheckOut(g);
+                break;
             default:
                 break;
         }
@@ -577,18 +592,68 @@ public class TuioDemo : Form, TuioListener
 
     void drawMainMenuBackground(Graphics g)
     {
-
-        if (page == 2)
+        if(page == 0)
         {
-            string path = "";
-            if (ScreenMode == 0)
+            string path = (ScreenMode == 0) ? "light_login.png" : "dark_login.png";
+
+            using (Bitmap backgroundImage = (Bitmap)System.Drawing.Image.FromFile("images/" + path))
             {
-                path = "light_categories.png";
+                // Draw the bitmap to cover the entire window
+                g.DrawImage(backgroundImage, new Rectangle(0, 0, this.Width, this.Height));
             }
-            else
+        }
+        else if (page == 1)
+        {
+            string path = (ScreenMode == 0) ? "light_recommendation.png" : "dark_recommendation.png";
+
+            using (Bitmap backgroundImage = (Bitmap)System.Drawing.Image.FromFile("images/" + path))
             {
-                path = "dark_categories.png";
+                // Draw the bitmap to cover the entire window
+                g.DrawImage(backgroundImage, new Rectangle(0, 0, this.Width, this.Height));
             }
+
+            // The specific text you want to display
+            string displayText1 = "breakfast";
+            string displayText2 = "pizza created";
+            string displayText3 = "shared before";
+            string displayText4 = "specially for you ";
+
+            using (Bitmap displayImage1 = (Bitmap)System.Drawing.Image.FromFile("images/menu/breakfast/egg_muffin.png"))
+            {
+                // Draw the recommenddation num 1
+                g.DrawImage(displayImage1, new Rectangle(120, 400, 180, 180));
+
+                // Optionally draw additional text over the image
+                g.DrawString(displayText1, new Font("Arial", 24, FontStyle.Bold), Brushes.Black, new PointF(120, 580));
+            }
+            using (Bitmap displayImage2 = (Bitmap)System.Drawing.Image.FromFile("images/menu/lunch/veg.png"))
+            {
+                // Draw the recommenddation num 2
+                g.DrawImage(displayImage2, new Rectangle(490, 400, 180, 180));
+
+                // Optionally draw additional text over the image
+                g.DrawString(displayText2, new Font("Arial", 24, FontStyle.Bold), Brushes.Black, new PointF(480, 580));
+            }
+            using (Bitmap displayImage3 = (Bitmap)System.Drawing.Image.FromFile("images/menu/lunch/Margarita.png"))
+            {
+                // Draw the recommenddation num 3
+                g.DrawImage(displayImage3, new Rectangle(870, 400, 180, 180));
+
+                // Optionally draw additional text over the image
+                g.DrawString(displayText3, new Font("Arial", 24, FontStyle.Bold), Brushes.Black, new PointF(850, 580));
+            }
+            using (Bitmap displayImage4 = (Bitmap)System.Drawing.Image.FromFile("images/menu/dessert/cookies.png"))
+            {
+                // Draw the recommenddation num 4
+                g.DrawImage(displayImage4, new Rectangle(1250, 400, 180,180));
+
+                // Optionally draw additional text over the image
+                g.DrawString(displayText4, new Font("Arial", 24, FontStyle.Bold), Brushes.Black, new PointF(1200, 580));
+            }
+        }
+        else if (page == 2)
+        {
+            string path = (ScreenMode == 0) ? "light_categories.png" : "dark_categories.png";
 
             using (Bitmap backgroundImage = (Bitmap)System.Drawing.Image.FromFile("images/" + path))
             {
@@ -602,15 +667,7 @@ public class TuioDemo : Form, TuioListener
             if (ScreenMode == 0)
             {
 
-                string path = "";
-                if (isRightHanded)
-                {
-                    path = "light_right.png";
-                }
-                else
-                {
-                    path = "light_left.png";
-                }
+                string path = (isRightHanded) ? "light_right.png" : "light_left.png";
 
                 using (Bitmap backgroundImage = (Bitmap)System.Drawing.Image.FromFile("images/" + path))
                 {
@@ -620,16 +677,7 @@ public class TuioDemo : Form, TuioListener
             }
             else
             {
-                string path = "";
-
-                if (isRightHanded)
-                {
-                    path = "dark_right.png";
-                }
-                else
-                {
-                    path = "dark_left.png";
-                }
+                string path = (isRightHanded) ? "dark_right.png" : "dark_left.png";
                 using (Bitmap backgroundImage = (Bitmap)System.Drawing.Image.FromFile("images/" + path))
                 {
                     // Draw the bitmap to cover the entire window
@@ -643,15 +691,8 @@ public class TuioDemo : Form, TuioListener
             if (ScreenMode == 0)
             {
 
-                string path = "";
-                if (isRightHanded)
-                {
-                    path = "light_custom_right.png";
-                }
-                else
-                {
-                    path = "light_custom_left.png";
-                }
+                string path = (isRightHanded) ? "light_custom_right.png" : "light_custom_left.png";
+               
 
                 using (Bitmap backgroundImage = (Bitmap)System.Drawing.Image.FromFile("images/" + path))
                 {
@@ -661,16 +702,8 @@ public class TuioDemo : Form, TuioListener
             }
             else
             {
-                string path = "";
-
-                if (isRightHanded)
-                {
-                    path = "dark_custom_right.png";
-                }
-                else
-                {
-                    path = "dark_custom_left.png";
-                }
+                string path = (isRightHanded) ? "dark_custom_right.png" : "dark_custom_left.png"  ;
+ 
                 using (Bitmap backgroundImage = (Bitmap)System.Drawing.Image.FromFile("images/" + path))
                 {
                     // Draw the bitmap to cover the entire window
@@ -678,7 +711,24 @@ public class TuioDemo : Form, TuioListener
                 }
             }
         }
+        else if (page == 5)
+        {
+            string path = (ScreenMode == 0) ? "light_checkout.png" : "dark_checkout.png";
 
+            try
+            {
+                using (Bitmap backgroundImage = (Bitmap)System.Drawing.Image.FromFile("images/" + path))
+                {
+                    g.DrawImage(backgroundImage, new Rectangle(0, 0, this.Width, this.Height)); 
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error loading image: " + ex.Message);
+            }
+
+
+        }
     }
 
     void drawMainMenuCircularRings(Graphics g, string category)
@@ -727,8 +777,182 @@ public class TuioDemo : Form, TuioListener
         }
     }
 
+    void drawPageCheckOut(Graphics g)
+    {
+        drawMainMenuBackground(g);
 
-    void drawPageCategories(Graphics g)
+        if (ScreenMode == 0)
+        {
+            page = 5;
+            category = "CheckOut";
+            return;
+        }
+
+
+        // Lunch or Dessert or Build ur Own
+        // Copy of cursorList to safely iterate
+        List<TuioCursor> cursorCopy = new List<TuioCursor>();
+
+        lock (cursorList)
+        {
+            cursorCopy.AddRange(cursorList.Values); // Make a safe copy of cursorList
+        }
+
+        // Draw the cursor path
+        if (cursorCopy.Count > 0)
+        {
+            foreach (TuioCursor tcur in cursorCopy)
+            {
+                List<TuioPoint> path = tcur.Path;
+                TuioPoint current_point = path[0];
+
+                for (int i = 0; i < path.Count; i++)
+                {
+                    TuioPoint next_point = path[i];
+                    g.DrawLine(curPen, current_point.getScreenX(width), current_point.getScreenY(height), next_point.getScreenX(width), next_point.getScreenY(height));
+                    current_point = next_point;
+                }
+                g.FillEllipse(curBrush, current_point.getScreenX(width) - height / 100, current_point.getScreenY(height) - height / 100, height / 50, height / 50);
+                g.DrawString(tcur.CursorID + "", font, fntBrush, new PointF(tcur.getScreenX(width) - 10, tcur.getScreenY(height) - 10));
+            }
+        }
+
+        // Copy of objectList to safely iterate
+        List<TuioObject> objectCopy = new List<TuioObject>();
+
+        lock (objectList)
+        {
+            objectCopy.AddRange(objectList.Values);
+        }
+
+
+
+        if (objectCopy.Count > 0)
+        {
+
+            lock (objectRectangles)
+            {
+
+                objectRectangles.Clear();
+
+                foreach (TuioObject tobj in objectCopy)
+                {
+                    int ox = tobj.getScreenX(width);
+                    int oy = tobj.getScreenY(height);
+                    int size = height / 10;
+
+
+                    float angleDegrees = (float)(tobj.Angle / Math.PI * 180.0f);
+
+
+                    switch (tobj.SymbolID)
+                    {
+                        case 4:
+                            //loginResponse = PerformCRUDOperation("Start", null);
+                            //MessageBox.Show("" + response);
+                            //category = "recommendation";
+                            //page = 1;
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                }
+            }
+
+        }
+
+    }
+    void drawPagelogin(Graphics g)
+    {
+        drawMainMenuBackground(g);
+
+        if (ScreenMode == 0)
+        {
+            page = 1;
+            category = "Breakfast";
+            return;
+        }
+
+
+        // Lunch or Dessert or Build ur Own
+        // Copy of cursorList to safely iterate
+        List<TuioCursor> cursorCopy = new List<TuioCursor>();
+
+        lock (cursorList)
+        {
+            cursorCopy.AddRange(cursorList.Values); // Make a safe copy of cursorList
+        }
+
+        // Draw the cursor path
+        if (cursorCopy.Count > 0)
+        {
+            foreach (TuioCursor tcur in cursorCopy)
+            {
+                List<TuioPoint> path = tcur.Path;
+                TuioPoint current_point = path[0];
+
+                for (int i = 0; i < path.Count; i++)
+                {
+                    TuioPoint next_point = path[i];
+                    g.DrawLine(curPen, current_point.getScreenX(width), current_point.getScreenY(height), next_point.getScreenX(width), next_point.getScreenY(height));
+                    current_point = next_point;
+                }
+                g.FillEllipse(curBrush, current_point.getScreenX(width) - height / 100, current_point.getScreenY(height) - height / 100, height / 50, height / 50);
+                g.DrawString(tcur.CursorID + "", font, fntBrush, new PointF(tcur.getScreenX(width) - 10, tcur.getScreenY(height) - 10));
+            }
+        }
+
+        // Copy of objectList to safely iterate
+        List<TuioObject> objectCopy = new List<TuioObject>();
+
+        lock (objectList)
+        {
+            objectCopy.AddRange(objectList.Values);
+        }
+
+
+
+        if (objectCopy.Count > 0)
+        {
+
+            lock (objectRectangles)
+            {
+
+                objectRectangles.Clear();
+
+                foreach (TuioObject tobj in objectCopy)
+                {
+                    int ox = tobj.getScreenX(width);
+                    int oy = tobj.getScreenY(height);
+                    int size = height / 10;
+
+
+                    float angleDegrees = (float)(tobj.Angle / Math.PI * 180.0f);
+
+
+                    switch (tobj.SymbolID)
+                    {
+                        case 4:
+                            loginResponse = PerformCRUDOperation("Start", null);
+                            //MessageBox.Show("" + response);
+                            category = "recommendation";
+                            page = 1;
+                            break;
+                       
+                        default:
+                            break;
+                    }
+
+                }
+            }
+
+        }
+
+    }
+
+    void drawPagerecommendation(Graphics g)
     {
         drawMainMenuBackground(g);
 
@@ -740,6 +964,102 @@ public class TuioDemo : Form, TuioListener
         }
 
 
+        // Lunch or Dessert or Build ur Own
+        // Copy of cursorList to safely iterate
+        List<TuioCursor> cursorCopy = new List<TuioCursor>();
+
+        lock (cursorList)
+        {
+            cursorCopy.AddRange(cursorList.Values); // Make a safe copy of cursorList
+        }
+
+        // Draw the cursor path
+        if (cursorCopy.Count > 0)
+        {
+            foreach (TuioCursor tcur in cursorCopy)
+            {
+                List<TuioPoint> path = tcur.Path;
+                TuioPoint current_point = path[0];
+
+                for (int i = 0; i < path.Count; i++)
+                {
+                    TuioPoint next_point = path[i];
+                    g.DrawLine(curPen, current_point.getScreenX(width), current_point.getScreenY(height), next_point.getScreenX(width), next_point.getScreenY(height));
+                    current_point = next_point;
+                }
+                g.FillEllipse(curBrush, current_point.getScreenX(width) - height / 100, current_point.getScreenY(height) - height / 100, height / 50, height / 50);
+                g.DrawString(tcur.CursorID + "", font, fntBrush, new PointF(tcur.getScreenX(width) - 10, tcur.getScreenY(height) - 10));
+            }
+        }
+
+        // Copy of objectList to safely iterate
+        List<TuioObject> objectCopy = new List<TuioObject>();
+
+        lock (objectList)
+        {
+            objectCopy.AddRange(objectList.Values);
+        }
+
+
+
+        if (objectCopy.Count > 0)
+        {
+
+            lock (objectRectangles)
+            {
+
+                objectRectangles.Clear();
+
+                foreach (TuioObject tobj in objectCopy)
+                {
+                    int ox = tobj.getScreenX(width);
+                    int oy = tobj.getScreenY(height);
+                    int size = height / 10;
+
+
+                    float angleDegrees = (float)(tobj.Angle / Math.PI * 180.0f);
+
+
+                    switch (tobj.SymbolID)
+                    {
+                        case 136:
+                            category = "checkout";
+                            page = 5;
+                            break;
+                        case 137:
+                            category = "checkout";
+                            page = 5;
+                            break;
+                        case 138:
+                            category = "checkout";
+                            page = 5;
+                            break;
+                        case 139:
+                            category = "checkout";
+                            page = 5;
+                            break;
+                        default:
+                            break;
+                    }
+
+                }
+            }
+
+        }
+
+    }
+    void drawPageCategories(Graphics g)
+    {
+        drawMainMenuBackground(g);
+
+        if (ScreenMode == 0)
+        {
+            page = 3;
+            category = "Breakfast";
+            return;
+        }
+
+        
         // Lunch or Dessert or Build ur Own
         // Copy of cursorList to safely iterate
         List<TuioCursor> cursorCopy = new List<TuioCursor>();
@@ -1309,6 +1629,8 @@ public class TuioDemo : Form, TuioListener
         this.Load += new System.EventHandler(this.TuioDemo_Load);
         this.ResumeLayout(false);
 
+
+
     }
 
     private void TuioDemo_Load(object sender, EventArgs e)
@@ -1354,5 +1676,6 @@ public class TuioDemo : Form, TuioListener
 
         TuioDemo app = new TuioDemo(port);
         System.Windows.Forms.Application.Run(app);
+
     }
 }

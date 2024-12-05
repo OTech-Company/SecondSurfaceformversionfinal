@@ -1,0 +1,10 @@
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\MultiGamesPlatform\bin\Debug\MultiGamesPlatform.exe.config
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\MultiGamesPlatform\bin\Debug\MultiGamesPlatform.exe
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\MultiGamesPlatform\bin\Debug\MultiGamesPlatform.pdb
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\MultiGamesPlatform\obj\Debug\MultiGamesPlatform.csproj.AssemblyReference.cache
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\MultiGamesPlatform\obj\Debug\MultiGamesPlatform.csproj.SuggestedBindingRedirects.cache
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\MultiGamesPlatform\obj\Debug\MultiGamesPlatform.Properties.Resources.resources
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\MultiGamesPlatform\obj\Debug\MultiGamesPlatform.csproj.GenerateResource.cache
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\MultiGamesPlatform\obj\Debug\MultiGamesPlatform.csproj.CoreCompileInputs.cache
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\MultiGamesPlatform\obj\Debug\MultiGamesPlatform.exe
+C:\Users\Osama hosam\Source\Repos\OTech-Company\SecondSurfaceformversionfinal\TUIO11_NET-master\MultiGamesPlatform\obj\Debug\MultiGamesPlatform.pdb
