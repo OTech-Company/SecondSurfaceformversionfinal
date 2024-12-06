@@ -1152,10 +1152,9 @@ Font font = new Font("Arial", 10.0f);
     void drawPageCheckOut(Graphics g)
     {
         drawMainMenuBackground(g);
-        
 
         // Check if the cartPanel already exists
-        if (cartPanel == null )
+        if (cartPanel == null || !this.Controls.Contains(cartPanel))
         {
             // Create the Panel if it doesn't exist
             cartPanel = new Panel
@@ -1167,7 +1166,6 @@ Font font = new Font("Arial", 10.0f);
             };
             // Add the Panel to the form's controls
             this.Controls.Add(cartPanel);
-
             cartDisplay = new CartDisplay(cartPanel, cart);
 
             // Subscribe to the Paint event of the panel
@@ -1175,16 +1173,20 @@ Font font = new Font("Arial", 10.0f);
 
             // Adjust the panel height for scrolling based on content
             cartDisplay.SetPanelHeight();
-
-            
         }
-        
+        else
+        {
+            // If the panel already exists, ensure it's visible or updated
+            cartPanel.Visible = true;
+        }
+        // Create the CartDisplay instance and pass the panel and cart items
+     
 
         if (ScreenMode == 0)
         {
             page = 5;
             category = "CheckOut";
-            //return;
+            return;
         }
 
 
@@ -1253,6 +1255,12 @@ Font font = new Font("Arial", 10.0f);
                         case 4:
                             changeCartSelectedItem(angleDegrees);
                             break;
+
+                        case 5:
+                            changeCartQuantity(angleDegrees);
+                            break;
+
+                        
                         default:
                             break;
                     }
@@ -1260,6 +1268,56 @@ Font font = new Font("Arial", 10.0f);
                 }
             }
 
+        }
+
+    }
+
+
+    bool isTUIOAppeared3 = false;
+    void changeCartQuantity(float angle)
+    {
+        if (!isTUIOAppeared3)
+        {
+            prevAngle = angle;
+            isTUIOAppeared3 = true;
+            return;
+        }
+
+        float angleDifference = (angle - prevAngle);
+        this.Text = "prev" + prevAngle + " " + "Curr" + angleDifference;
+
+        if (angleDifference >= 15)
+        {
+            // Calculate price per item dynamically based on the current state
+            decimal pricePerItem = cart[cartDisplay.cartSelectedItem].Quantity > 0 ? cart[cartDisplay.cartSelectedItem].Price / cart[cartDisplay.cartSelectedItem].Quantity : 0;
+
+            cart[cartDisplay.cartSelectedItem].Quantity += 1;
+            cart[cartDisplay.cartSelectedItem].Price += pricePerItem; // Increment price by price per item
+
+            prevAngle = angle;
+        }
+        else if (angleDifference <= -15)
+        {
+            decimal pricePerItem = cart[cartDisplay.cartSelectedItem].Quantity > 0 ? cart[cartDisplay.cartSelectedItem].Price / cart[cartDisplay.cartSelectedItem].Quantity : 0;
+
+            cart[cartDisplay.cartSelectedItem].Quantity -= 1;
+            cart[cartDisplay.cartSelectedItem].Price -= pricePerItem; // Increment price by price per item
+
+            prevAngle = angle;
+        }
+
+        if (angleDifference >= 15)
+        {
+
+            cart[cartDisplay.cartSelectedItem].Quantity += 1;
+
+            prevAngle = angle;
+        }
+        else if (angleDifference <= -15)
+        {
+            cart[cartDisplay.cartSelectedItem].Quantity -= 1;
+
+            prevAngle = angle;
         }
 
     }
@@ -1280,7 +1338,7 @@ Font font = new Font("Arial", 10.0f);
         this.Text = "prev" + prevAngle + " " + "Curr" + angleDifference;
 
      
-        if (angleDifference >= 40)
+        if (angleDifference >= 15)
         {
             if (cartDisplay.cartSelectedItem < cart.Count - 1)
             {
@@ -1288,7 +1346,7 @@ Font font = new Font("Arial", 10.0f);
             }
             prevAngle = angle;
         }
-        else if (angleDifference <= -40)
+        else if (angleDifference <= -15)
         {
             if (cartDisplay.cartSelectedItem > 0)
             {
@@ -1596,15 +1654,15 @@ Font font = new Font("Arial", 10.0f);
 
                     switch (tobj.SymbolID)
                     {
-                        case 136:
+                        case 1:
                             category = "Lunch";
                             page = 3;
                             break;
-                        case 137:
+                        case 2:
                             category = "Custom";
                             page = 4;
                             break;
-                        case 138:
+                        case 3:
                             category = "Dessert";
                             page = 3;
                             break;
@@ -2178,7 +2236,7 @@ Font font = new Font("Arial", 10.0f);
                             page = 2;
                             break;
                         case 136:
-                            page = 4;
+                            page = 5;
                             
                             break;
                         case 137:
@@ -2292,7 +2350,7 @@ Font font = new Font("Arial", 10.0f);
         // 
         this.ClientSize = new System.Drawing.Size(647, 479);
         this.Name = "TuioDemo";
-        this.Load += new System.EventHandler(this.TuioDemo_Load);
+        //this.Load += new System.EventHandler(this.TuioDemo_Load);
         this.ResumeLayout(false);
 
 
