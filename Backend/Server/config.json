@@ -1,0 +1,5 @@
+{
+    "port": 1010,
+    "IP": "192.168.1.160",
+    "FIREBASE_SERVICE_ACCOUNT": "Database/connection.json"
+}

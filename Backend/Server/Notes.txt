@@ -1,0 +1,16 @@
+How to recieve from the server using ClientServer Class:
+--------------------------------------------------------
+# Function to handle received data
+def handle_data(data):
+    print("Callback received data:", data)
+
+# Receiving data in a separate thread
+client.receiveData(callback=handle_data)
+
+-------------------------------------------------------------------------------------------------------------------------------------
+How to Send to the server using ClientServer Class:
+---------------------------------------------------
+# Sending data in a separate thread
+client.sendData(data_to_send)
+
+-------------------------------------------------------------------------------------------------------------------------------------
