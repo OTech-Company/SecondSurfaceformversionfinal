@@ -42,6 +42,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static MenuItem;
 
 
+
 /*
  
 Kids Menu 
@@ -405,66 +406,71 @@ public class TuioDemo : Form, TuioListener
     bool yoloOlives = false;
 
 
-    private void ProcessReceivedMessage(string message)
+   
+
+
+private string ProcessReceivedMessage(string message)
+{
+    // Parse the JSON message
+    dynamic parsedMessage = JsonConvert.DeserializeObject(message);
+
+    // Extract the operation and data
+    string operation = parsedMessage.operation;
+    string data = parsedMessage.data;
+
+    if (operation == "MediaPipe")
     {
-        string operation = "";
-
-        if ( operation == "MediaPipe")
+        if (data.Contains("Checkout"))
         {
-            
-                if (message.Contains("Checkout"))
-                {
-                    mediapipeCheckout = true;
-                }
-                else if (message.Contains("AddToCart"))
-                {
-                    mediapipeAddtocart = true;
-                }
-                else if (message.Contains("Home"))
-                {
-                    mediapipeHome = true;
-                }
-                else if(message.Contains("swipe left"))
-                {
-                    mediapipeSwipeLeft = true;
-                }
-                else if (message.Contains("swipe right"))
-                {
-                    mediapipeSwipeRight = true;
-                }
-            
-           
+            mediapipeCheckout = true;
         }
-        else if("operation" == "Yolo")
+        else if (data.Contains("AddToCart"))
         {
-            if (message.Contains("Onions"))
-            {
-                yoloOnions = true;
-            }
-            else if (message.Contains("Peppers"))
-            {
-                yoloPeppers = true;
-            }
-            else if (message.Contains("Mushrooms"))
-            {
-                yoloMushrooms = true;
-            }
-            else if (message.Contains("Tomatoes"))
-            {
-                yoloTomatoes = true;
-            }
-            else if (message.Contains("Olives"))
-            {
-                yoloOlives = true;
-            }
-
+            mediapipeAddtocart = true;
         }
-
-        
+        else if (data.Contains("Home"))
+        {
+            mediapipeHome = true;
+        }
+        else if (data.Contains("swipe left"))
+        {
+            mediapipeSwipeLeft = true;
+        }
+        else if (data.Contains("swipe right"))
+        {
+            mediapipeSwipeRight = true;
+        }
+    }
+    else if (operation == "YOLO")
+    {
+        if (data.Contains("Onions"))
+        {
+            yoloOnions = true;
+        }
+        else if (data.Contains("Peppers"))
+        {
+            yoloPeppers = true;
+        }
+        else if (data.Contains("Mushrooms"))
+        {
+            yoloMushrooms = true;
+        }
+        else if (data.Contains("Tomatoes"))
+        {
+            yoloTomatoes = true;
+        }
+        else if (data.Contains("Olives"))
+        {
+            yoloOlives = true;
+        }
     }
 
+        return "";
+}
 
-    Font font = new Font("Arial", 10.0f);
+
+
+Font font = new Font("Arial", 10.0f);
     SolidBrush fntBrush = new SolidBrush(Color.White);
     SolidBrush bgrBrush = new SolidBrush(Color.FromArgb(255, 255, 255));
     SolidBrush curBrush = new SolidBrush(Color.FromArgb(192, 0, 192));
