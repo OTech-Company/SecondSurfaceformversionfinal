@@ -56,6 +56,7 @@ public class CartDisplay
 {
     private Panel cartPanel;
     private List<CartItem> cart;
+    public int cartSelectedItem = 0;
 
     public CartDisplay(Panel cartPanel, List<CartItem> cart)
     {
@@ -103,6 +104,9 @@ public class CartDisplay
         Pen borderPen = new Pen(Color.Black, 2);
         Brush backgroundBrush = new SolidBrush(Color.White); // Solid white background for each item
 
+        // Scroll to ensure the selected item is visible
+        int targetScrollPosition = cartSelectedItem * (rectHeight + padding);
+        cartPanel.AutoScrollPosition = new Point(0, targetScrollPosition);
         // Loop through the cart items and draw them
         for (int i = 0; i < cart.Count; i++)
         {
@@ -119,6 +123,15 @@ public class CartDisplay
             // Draw the background color of the grid cell (solid color)
             g.FillRectangle(backgroundBrush, x, y, rectWidth, rectHeight);
 
+            if (i == cartSelectedItem) // Assume selectedItemIndex is defined elsewhere
+            {
+                Pen highlightPen = new Pen(Color.Red, 3); // Red border for highlighting
+                g.DrawRectangle(highlightPen, x - 3, y - 3, rectWidth + 6, rectHeight + 6);
+                highlightPen.Dispose(); // Dispose of the pen after use
+            }
+
+
+
             // Optionally: Draw the border for the grid cell (if you want the border)
             g.DrawRectangle(borderPen, x, y, rectWidth, rectHeight);
 
@@ -127,8 +140,8 @@ public class CartDisplay
             string itemName = $"{cart[i].Name}";       // Item name
             string itemPrice = $"{cart[i].Price}$";     // Item price
             string itemQuantity = $"{cart[i].Quantity}"; // Item quantity
-            string addBtn = "C:\\Users\\Osama hosam\\Source\\Repos\\OTech-Company\\SecondSurfaceformversionfinal\\TUIO11_NET-master\\TUIO11_NET-master\\bin\\Debug\\images\\addBTN.png";
-            string minusBtn = "C:\\Users\\Osama hosam\\Source\\Repos\\OTech-Company\\SecondSurfaceformversionfinal\\TUIO11_NET-master\\TUIO11_NET-master\\bin\\Debug\\images\\minusBTN.png";
+            string addBtn = "images\\addBTN.png";
+            string minusBtn = "images\\minusBTN.png";
 
             // Ensure the image is loaded correctly only if the path is valid
             if (!string.IsNullOrEmpty(itemImage) && File.Exists(itemImage))
@@ -260,7 +273,11 @@ public class TuioDemo : Form, TuioListener
     Panel cartPanel = new Panel();
 
 
-    public int page = 4;
+    public int page = 5;
+
+    
+
+
     string category = "Lunch";
 
     public int ScreenMode;
@@ -271,12 +288,12 @@ public class TuioDemo : Form, TuioListener
     private int Age = 22;
     private bool isRightHanded = true;
 
-    private CartDisplay cartDisplay;
+    public CartDisplay cartDisplay;
 
     public JObject loginResponse;
 
-    /*
-     *    List<CartItem> cart = new List<CartItem>
+    
+         List<CartItem> cart = new List<CartItem>
        {
            new CartItem { Name = "Pizza", Price = 18, Quantity = 2, ImagePath = "images/menu/lunch/Chicken_Pasta_Pizza.png" },
            new CartItem { Name = "Burger", Price = 12, Quantity = 3, ImagePath = "images\\menu\\breakfast\\french_toast.png"  },
@@ -286,10 +303,10 @@ public class TuioDemo : Form, TuioListener
            new CartItem { Name = "Pasta", Price = 15, Quantity = 1, ImagePath = "images\\menu\\dessert\\apple_pie.png"  },
 
                };
-     */
+     
 
 
-    List<CartItem> cart = new List<CartItem>();
+    //List<CartItem> cart = new List<CartItem>();
 
 
     List<MenuItem> menu = new List<MenuItem>
@@ -1135,9 +1152,10 @@ Font font = new Font("Arial", 10.0f);
     void drawPageCheckOut(Graphics g)
     {
         drawMainMenuBackground(g);
+        
 
         // Check if the cartPanel already exists
-        if (cartPanel == null || !this.Controls.Contains(cartPanel))
+        if (cartPanel == null )
         {
             // Create the Panel if it doesn't exist
             cartPanel = new Panel
@@ -1149,26 +1167,24 @@ Font font = new Font("Arial", 10.0f);
             };
             // Add the Panel to the form's controls
             this.Controls.Add(cartPanel);
-        }
-        else
-        {
-            // If the panel already exists, ensure it's visible or updated
-            cartPanel.Visible = true;
-        }
-        // Create the CartDisplay instance and pass the panel and cart items
-        cartDisplay = new CartDisplay(cartPanel, cart);
 
-        // Subscribe to the Paint event of the panel
-        cartPanel.Paint += CartPanel_Paint;
+            cartDisplay = new CartDisplay(cartPanel, cart);
 
-        // Adjust the panel height for scrolling based on content
-        cartDisplay.SetPanelHeight();
+            // Subscribe to the Paint event of the panel
+            cartPanel.Paint += CartPanel_Paint;
+
+            // Adjust the panel height for scrolling based on content
+            cartDisplay.SetPanelHeight();
+
+            
+        }
+        
 
         if (ScreenMode == 0)
         {
             page = 5;
             category = "CheckOut";
-            return;
+            //return;
         }
 
 
@@ -1234,6 +1250,9 @@ Font font = new Font("Arial", 10.0f);
                             page = 6;
                             break;
 
+                        case 4:
+                            changeCartSelectedItem(angleDegrees);
+                            break;
                         default:
                             break;
                     }
@@ -1243,6 +1262,83 @@ Font font = new Font("Arial", 10.0f);
 
         }
 
+    }
+
+
+    bool isTUIOAppeared2 = false;
+
+    void changeCartSelectedItem(float angle)
+    {
+        if (!isTUIOAppeared2)
+        {
+            prevAngle = angle;
+            isTUIOAppeared2 = true;
+            return;
+        }
+
+        float angleDifference = (angle - prevAngle);
+        this.Text = "prev" + prevAngle + " " + "Curr" + angleDifference;
+
+     
+        if (angleDifference >= 40)
+        {
+            if (cartDisplay.cartSelectedItem < cart.Count - 1)
+            {
+                cartDisplay.cartSelectedItem += 1;
+            }
+            prevAngle = angle;
+        }
+        else if (angleDifference <= -40)
+        {
+            if (cartDisplay.cartSelectedItem > 0)
+            {
+                cartDisplay.cartSelectedItem -= 1;
+            }
+            prevAngle = angle;
+        }
+
+      
+    }
+
+
+    bool isTUIOAppeared = false;
+
+    int changeCurrentMenuPage(float angle)
+    {
+        if (!isTUIOAppeared)
+        {
+
+            prevAngle = angle;
+            isTUIOAppeared = true;
+            return 0;
+
+        }
+
+        float angleDifference = (angle - prevAngle);
+        this.Text = "prev" + prevAngle + " " + "Curr" + angleDifference;
+
+
+        if (angleDifference >= 40)
+        {
+
+            if (currentMenuPage < 2)
+            {
+                currentMenuPage += 1;
+            }
+            prevAngle = angle;
+        }
+        else if (angleDifference <= -40)
+        {
+
+            if (currentMenuPage > 0)
+            {
+                currentMenuPage -= 1;
+            }
+            prevAngle = angle;
+        }
+
+
+        return currentMenuPage;
     }
 
     void drawPagelogin(Graphics g)
@@ -2179,45 +2275,6 @@ Font font = new Font("Arial", 10.0f);
     }
 
 
-    bool isTUIOAppeared = false;
-
-    int changeCurrentMenuPage(float angle)
-    {
-        if (!isTUIOAppeared)
-        {
-
-            prevAngle = angle;
-            isTUIOAppeared = true;
-            return 0;
-
-        }
-
-        float angleDifference = (angle - prevAngle);
-        this.Text = "prev" + prevAngle + " " + "Curr" + angleDifference;
-
-
-        if (angleDifference >= 40)
-        {
-
-            if (currentMenuPage < 2)
-            {
-                currentMenuPage += 1;
-            }
-            prevAngle = angle;
-        }
-        else if (angleDifference <= -40)
-        {
-
-            if (currentMenuPage > 0)
-            {
-                currentMenuPage -= 1;
-            }
-            prevAngle = angle;
-        }
-
-
-        return currentMenuPage;
-    }
 
 
 
