@@ -369,6 +369,101 @@ public class TuioDemo : Form, TuioListener
     private bool verbose;
 
 
+    private void HandleMessageFromServer(TcpClient client)
+    {
+        try
+        {
+            NetworkStream stream = client.GetStream();
+            byte[] buffer = new byte[1024];
+            int bytesRead = stream.Read(buffer, 0, buffer.Length);
+            string message = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+            string response = ProcessReceivedMessage(message);
+            byte[] responseBytes = Encoding.ASCII.GetBytes(response);
+            stream.Write(responseBytes, 0, responseBytes.Length);
+        }
+        catch (Exception ex)
+        {
+            string errorMessage = "Error receiving or sending message: " + ex.Message;
+            byte[] errorBytes = Encoding.ASCII.GetBytes(errorMessage);
+            NetworkStream stream = client.GetStream();
+            stream.Write(errorBytes, 0, errorBytes.Length);
+        }
+    }
+
+
+    bool mediapipeCheckout = false;
+    bool mediapipeAddtocart = false;
+    bool mediapipeHome = false;
+    bool mediapipeSwipeLeft = false;
+    bool mediapipeSwipeRight = false;
+
+
+    bool yoloOnions = false;
+    bool yoloPeppers = false;
+    bool yoloMushrooms = false;
+    bool yoloTomatoes = false;
+    bool yoloOlives = false;
+
+
+    private void ProcessReceivedMessage(string message)
+    {
+        string operation = "";
+
+        if ( operation == "MediaPipe")
+        {
+            
+                if (message.Contains("Checkout"))
+                {
+                    mediapipeCheckout = true;
+                }
+                else if (message.Contains("AddToCart"))
+                {
+                    mediapipeAddtocart = true;
+                }
+                else if (message.Contains("Home"))
+                {
+                    mediapipeHome = true;
+                }
+                else if(message.Contains("swipe left"))
+                {
+                    mediapipeSwipeLeft = true;
+                }
+                else if (message.Contains("swipe right"))
+                {
+                    mediapipeSwipeRight = true;
+                }
+            
+           
+        }
+        else if("operation" == "Yolo")
+        {
+            if (message.Contains("Onions"))
+            {
+                yoloOnions = true;
+            }
+            else if (message.Contains("Peppers"))
+            {
+                yoloPeppers = true;
+            }
+            else if (message.Contains("Mushrooms"))
+            {
+                yoloMushrooms = true;
+            }
+            else if (message.Contains("Tomatoes"))
+            {
+                yoloTomatoes = true;
+            }
+            else if (message.Contains("Olives"))
+            {
+                yoloOlives = true;
+            }
+
+        }
+
+        
+    }
+
+
     Font font = new Font("Arial", 10.0f);
     SolidBrush fntBrush = new SolidBrush(Color.White);
     SolidBrush bgrBrush = new SolidBrush(Color.FromArgb(255, 255, 255));
@@ -472,7 +567,7 @@ public class TuioDemo : Form, TuioListener
 
 
 
-
+   
 
 
     public TuioDemo(int port)
@@ -1510,6 +1605,104 @@ public class TuioDemo : Form, TuioListener
             yPosition += spacing;
         }
 
+
+        // Handle Mediapipe
+        if(mediapipeCheckout)
+        {
+            page = 5;
+            mediapipeCheckout = false;
+            return;
+        }
+        else if(mediapipeAddtocart)
+        {
+            isIDCartCustom = 1;
+            if (CartToppings.Count > 0 && canAddToCartCustom)
+            {
+                canAddToCartCustom = false;
+                cart.Add(new CartItem
+                {
+                    Name = "Custom Pizza",
+                    ImagePath = "images/menu/lunch/veg.png",
+                    Price = CartToppings.Sum(t => t.Price * t.Quantity),
+                    Quantity = 1,
+                    Toppings = CartToppings.Select(t => new Topping
+                    {
+                        Name = t.Name,
+                        Price = t.Price,
+                        ImgPath = t.ImgPath,
+                        Quantity = t.Quantity
+                    }).ToList()
+                });
+                this.Text = "ddd" + cart.Count;
+
+                CartToppings.Clear();
+            }
+            mediapipeAddtocart = false;
+        }
+        else if (mediapipeHome)
+        {
+            page = 2;
+            mediapipeHome = false;
+            return;
+        }
+
+
+
+        // Handling YOLO flags for toppings
+        var yoloFlags = new (bool Flag, int Index)[]
+        {
+            (yoloMushrooms, 0),
+            (yoloTomatoes, 1),
+            (yoloPeppers, 2),
+            (yoloOlives, 3),
+            (yoloOnions, 4)
+        };
+
+        foreach (var (flag, index) in yoloFlags)
+        {
+            if (flag)
+            {
+                var topping = toppings[index];
+                toppingAppears[index] = true;
+
+                // Check if the topping is already in the cart
+                var existingTopping = CartToppings.FirstOrDefault(t => t.Name == topping.Name);
+
+                if (existingTopping == null)
+                {
+                    // Add the topping to the cart with quantity 1
+                    CartToppings.Add(new Topping
+                    {
+                        Name = topping.Name,
+                        Price = topping.Price,
+                        ImgPath = topping.ImgPath,
+                        Quantity = 1
+                    });
+                }
+                else
+                {
+                    // Increment the quantity if it already exists
+                    existingTopping.Quantity++;
+                }
+
+                // Draw the topping on the screen
+                string toppingPath = topping.ImgPath;
+
+                using (System.Drawing.Image toppingImage = System.Drawing.Image.FromFile(toppingPath))
+                {
+                    int toppingWidth = toppingImage.Width / 2 + 150; // Adjust size
+                    int toppingHeight = toppingImage.Height / 2 + 150;
+
+                    g.DrawImage(toppingImage, new Rectangle(
+                        new Point(this.Width / 2 - toppingWidth / 2, this.Height / 2 - toppingHeight / 2),
+                        new Size(toppingWidth, toppingHeight)));
+                }
+            }
+        }
+
+
+        // Normal TUIO
+
         if (objectCopy.Count > 0)
         {
             lock (objectRectangles)
@@ -1752,9 +1945,54 @@ public class TuioDemo : Form, TuioListener
         List<MenuItem> MenuItems;
         MenuItems = menu.Where(item => item.Category == category).ToList();
 
+        int removedItem = -1;
+        Dictionary<int, bool> itemRemovedFlags = new Dictionary<int, bool>
+            {
+                { 0, true },
+                { 1, true },
+                { 2, true },
+                { 3, true }
+            };
+
+
         drawMainMenuBackground(g);
         // retreive el menu
         drawMainMenuCircularRings(g, category);
+
+
+        // Handle Mediapipe
+        if (mediapipeCheckout)
+        {
+            page = 5;
+            return;
+        }
+        else if (mediapipeAddtocart)
+        {
+            isIDCart = 1;
+            if (itemRemovedFlags.Values.Any(flag => flag))
+                removedItem = itemRemovedFlags.First(kv => kv.Value).Key;
+            AddToCart(removedItem, currentMenuPage, null, MenuItems, quantity);
+        }
+        else if (mediapipeHome)
+        {
+            page = 2;
+            return;
+        }
+        else if (mediapipeSwipeLeft)
+        {
+            if (currentMenuPage > 0)
+            {
+                currentMenuPage -= 1;
+            }
+        }
+        else if (mediapipeSwipeRight)
+        {
+            if (currentMenuPage < 2)
+            {
+                currentMenuPage += 1;
+            }
+        }
+
 
         List<TuioCursor> cursorCopy = new List<TuioCursor>();
 
@@ -1801,15 +2039,7 @@ public class TuioDemo : Form, TuioListener
 
         if (objectCopy.Count > 0)
         {
-            Dictionary<int, bool> itemRemovedFlags = new Dictionary<int, bool>
-            {
-                { 0, true },
-                { 1, true },
-                { 2, true },
-                { 3, true }
-            };
-
-            int removedItem = -1;
+         
             lock (objectRectangles)
             {
 
