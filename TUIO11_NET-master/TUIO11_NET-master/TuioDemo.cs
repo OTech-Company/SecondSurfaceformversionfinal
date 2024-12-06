@@ -735,12 +735,93 @@ public class TuioDemo : Form, TuioListener
             case 5:
                 drawPageCheckOut(g);
                 break;
+            case 6:
+                drawPageConfirmed(g);
+                break;
             default:
                 break;
         }
 
     }
+    void drawPageConfirmed(Graphics g)
+    {
+        drawMainMenuBackground(g);
 
+        List<TuioCursor> cursorCopy = new List<TuioCursor>();
+
+        lock (cursorList)
+        {
+            cursorCopy.AddRange(cursorList.Values); // Make a safe copy of cursorList
+        }
+
+        // Draw the cursor path
+        if (cursorCopy.Count > 0)
+        {
+            foreach (TuioCursor tcur in cursorCopy)
+            {
+                List<TuioPoint> path = tcur.Path;
+                TuioPoint current_point = path[0];
+
+                for (int i = 0; i < path.Count; i++)
+                {
+                    TuioPoint next_point = path[i];
+                    g.DrawLine(curPen, current_point.getScreenX(width), current_point.getScreenY(height), next_point.getScreenX(width), next_point.getScreenY(height));
+                    current_point = next_point;
+                }
+                g.FillEllipse(curBrush, current_point.getScreenX(width) - height / 100, current_point.getScreenY(height) - height / 100, height / 50, height / 50);
+                g.DrawString(tcur.CursorID + "", font, fntBrush, new PointF(tcur.getScreenX(width) - 10, tcur.getScreenY(height) - 10));
+            }
+        }
+
+        // Copy of objectList to safely iterate
+        List<TuioObject> objectCopy = new List<TuioObject>();
+
+        lock (objectList)
+        {
+            objectCopy.AddRange(objectList.Values);
+        }
+
+
+
+        if (objectCopy.Count > 0)
+        {
+
+            lock (objectRectangles)
+            {
+
+                objectRectangles.Clear();
+
+                foreach (TuioObject tobj in objectCopy)
+                {
+                    int ox = tobj.getScreenX(width);
+                    int oy = tobj.getScreenY(height);
+                    int size = height / 10;
+
+
+                    float angleDegrees = (float)(tobj.Angle / Math.PI * 180.0f);
+
+
+                    switch (tobj.SymbolID)
+                    {
+                        case 0:
+                            page = 7;
+                            break;
+                        case 1:
+                            this.Close();
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                }
+            }
+
+
+
+        }
+
+    }
     void drawMainMenuBackground(Graphics g)
     {
         if(page == 0)
@@ -879,6 +960,22 @@ public class TuioDemo : Form, TuioListener
             }
 
 
+        }
+        else if(page == 6)
+        {
+            string path = (ScreenMode == 0) ? "confirmed_light.png" : "confirmed_dark.png";
+
+            try
+            {
+                using (Bitmap backgroundImage = (Bitmap)System.Drawing.Image.FromFile("images/" + path))
+                {
+                    g.DrawImage(backgroundImage, new Rectangle(0, 0, this.Width, this.Height));
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error loading image: " + ex.Message);
+            }
         }
 
     }
@@ -1032,11 +1129,8 @@ public class TuioDemo : Form, TuioListener
 
                     switch (tobj.SymbolID)
                     {
-                        case 4:
-                            //loginResponse = PerformCRUDOperation("Start", null);
-                            //MessageBox.Show("" + response);
-                            //category = "recommendation";
-                            //page = 1;
+                        case 6:
+                            page = 6;
                             break;
 
                         default:
