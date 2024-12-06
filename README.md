@@ -8,6 +8,7 @@ This project consists of a series of interconnected forms developed within a str
 
 To get started with the project, simply open the `.sln` file using Visual Studio (or your preferred IDE). This solution file links all components, allowing you to navigate between forms, MVC files, and other resources seamlessly.
 
+
 ### Project Structure
 
 The project is divided into several sections:
