@@ -58,6 +58,7 @@
     <Compile Include="OSC.NET\OSCReceiver.cs" />
     <Compile Include="OSC.NET\OSCTransmitter.cs" />
     <Compile Include="TuioDemo.cs" />
+    <Compile Include="TUIO\Config.cs" />
     <Compile Include="TUIO\TuioClient.cs" />
     <Compile Include="TUIO\TuioContainer.cs" />
     <Compile Include="TUIO\TuioCursor.cs" />

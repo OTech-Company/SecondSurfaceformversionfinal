@@ -255,7 +255,7 @@ public class CartItem
 
 public class TuioDemo : Form, TuioListener
 {
-    //private Config config;
+    private Config config;
     private int maxRetries;
     private Thread sendThread;
     private TcpClient tcpClient;
@@ -399,26 +399,6 @@ public class TuioDemo : Form, TuioListener
     private bool verbose;
 
 
-    private void HandleMessageFromServer(TcpClient client)
-    {
-        try
-        {
-            NetworkStream stream = client.GetStream();
-            byte[] buffer = new byte[1024];
-            int bytesRead = stream.Read(buffer, 0, buffer.Length);
-            string message = Encoding.ASCII.GetString(buffer, 0, bytesRead);
-            string response = ProcessReceivedMessage(message);
-            byte[] responseBytes = Encoding.ASCII.GetBytes(response);
-            stream.Write(responseBytes, 0, responseBytes.Length);
-        }
-        catch (Exception ex)
-        {
-            string errorMessage = "Error receiving or sending message: " + ex.Message;
-            byte[] errorBytes = Encoding.ASCII.GetBytes(errorMessage);
-            NetworkStream stream = client.GetStream();
-            stream.Write(errorBytes, 0, errorBytes.Length);
-        }
-    }
 
 
     bool mediapipeCheckout = false;
@@ -438,64 +418,7 @@ public class TuioDemo : Form, TuioListener
 
 
 
-    private string ProcessReceivedMessage(string message)
-    {
-        // Parse the JSON message
-        dynamic parsedMessage = JsonConvert.DeserializeObject(message);
-
-        // Extract the operation and data
-        string operation = parsedMessage.operation;
-        string data = parsedMessage.data;
-
-        if (operation == "MediaPipe")
-        {
-            if (data.Contains("Checkout"))
-            {
-                mediapipeCheckout = true;
-            }
-            else if (data.Contains("AddToCart"))
-            {
-                mediapipeAddtocart = true;
-            }
-            else if (data.Contains("Home"))
-            {
-                mediapipeHome = true;
-            }
-            else if (data.Contains("swipe left"))
-            {
-                mediapipeSwipeLeft = true;
-            }
-            else if (data.Contains("swipe right"))
-            {
-                mediapipeSwipeRight = true;
-            }
-        }
-        else if (operation == "YOLO")
-        {
-            if (data.Contains("Onions"))
-            {
-                yoloOnions = true;
-            }
-            else if (data.Contains("Peppers"))
-            {
-                yoloPeppers = true;
-            }
-            else if (data.Contains("Mushrooms"))
-            {
-                yoloMushrooms = true;
-            }
-            else if (data.Contains("Tomatoes"))
-            {
-                yoloTomatoes = true;
-            }
-            else if (data.Contains("Olives"))
-            {
-                yoloOlives = true;
-            }
-        }
-
-        return "";
-    }
+ 
 
 
 
@@ -634,17 +557,254 @@ public class TuioDemo : Form, TuioListener
 
         this.Load += new System.EventHandler(this.TuioDemo_Load);
 
-        client = new TuioClient(port);
-        client.addTuioListener(this);
+        // Read the configuration from the config file
+        config = Config.ReadConfig("../../../../../Backend/Server/config.json");
+        maxRetries = config.client.maxRetries;
+        reconnectTimeout = config.client.reconnectTimeout;
+        sendMessageQueue = new BlockingCollection<Tuple<string, string>>();  // Queue to hold operation and data
+        cancellationTokenSource = new CancellationTokenSource();
+
+        // Start the connection and handling threads
+        InitializeSocketConnection();
+
+
+     
         InitializeComponent();
-        client.connect();
+      
+    }
+    private void InitializeSocketConnection()
+    {
+        try
+        {
+            tcpClient = new TcpClient(config.server.IP, config.server.port);
+            networkStream = tcpClient.GetStream();
+
+            // Start receiving and sending data in separate threads
+            receiveThread = new Thread(() => ReceiveData(cancellationTokenSource.Token));
+            receiveThread.Start();
+
+            sendThread = new Thread(() => SendMessages(cancellationTokenSource.Token));
+            sendThread.Start();
+        }
+        catch (Exception ex)
+        {
+            // Handle connection error silently
+        }
+    }
+    private void SendMessages(CancellationToken token)
+    {
+        int retries = 0;
+        while (retries < maxRetries)
+        {
+            try
+            {
+                foreach (var message in sendMessageQueue.GetConsumingEnumerable())
+                {
+                    // Check for cancellation
+                    if (token.IsCancellationRequested)
+                    {
+                        return; // Gracefully exit if cancellation is requested
+                    }
+
+                    // Send the message (operation and data)
+                    SendMessage(message.Item1, message.Item2);  // message.Item1 is operation, message.Item2 is data
+
+                    // Wait for confirmation
+                    bool confirmed = WaitForConfirmation();
+                    if (confirmed)
+                    {
+                        // Successful message send, do nothing
+                    }
+                    else
+                    {
+                        retries++;
+                        if (retries >= maxRetries)
+                        {
+                            break; // Max retries reached, stop sending
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle sending error silently
+            }
+        }
     }
 
 
 
+    private bool WaitForConfirmation()
+    {
+        // Use reconnectTimeout from config
+        int timeout = reconnectTimeout;  // Convert seconds to milliseconds
+        int elapsed = 0;
+        while (elapsed < timeout)
+        {
+            Thread.Sleep(100);
+            elapsed += 100;
+            // Check if confirmation has been received
+            if (confirmationReceived) return true;
+        }
+        return false;
+    }
+
+    private void SendMessage(string operation, string data)
+    {
+        // Create a message containing both operation and data
+        string jsonMessage = JsonConvert.SerializeObject(new
+        {
+            operation = operation,
+            data = data
+        });
+
+        byte[] dataBytes = Encoding.UTF8.GetBytes(jsonMessage);
+        networkStream.Write(dataBytes, 0, dataBytes.Length);
+        networkStream.Flush();
+    }
+
+    private void ReceiveData(CancellationToken token)
+    {
+        byte[] buffer = new byte[1024];
+        while (!token.IsCancellationRequested)
+        {
+            try
+            {
+                // Non-blocking read check
+                if (networkStream.DataAvailable)
+                {
+                    int bytesRead = networkStream.Read(buffer, 0, buffer.Length);
+                    if (bytesRead > 0)
+                    {
+                        string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                        HandleServerMessage(receivedMessage);
+                    }
+                }
+                else
+                {
+                    Thread.Sleep(100); // Sleep briefly if no data is available
+                }
+            }
+            catch (Exception ex)
+            {
+                if (!token.IsCancellationRequested)
+                {
+                    // Handle receiving error silently
+                }
+                break;
+            }
+        }
+    }
 
 
+    private void HandleServerMessage(string receivedMessage)
+    {
+        try
+        {
+            var jsonMessage = JsonConvert.DeserializeObject<dynamic>(receivedMessage);
+            string operation = jsonMessage.operation;
+            string data = jsonMessage.data;
 
+            // Process the message based on the operation
+            if (operation == "MediaPipe")
+            {
+                if (data.Contains("Checkout"))
+                {
+                    mediapipeCheckout = true;
+                }
+                else if (data.Contains("AddToCart"))
+                {
+                    mediapipeAddtocart = true;
+                }
+                else if (data.Contains("Home"))
+                {
+                    mediapipeHome = true;
+                }
+                else if (data.Contains("swipe left"))
+                {
+                    mediapipeSwipeLeft = true;
+                }
+                else if (data.Contains("swipe right"))
+                {
+                    mediapipeSwipeRight = true;
+                }
+            }
+            else if (operation == "YOLO")
+            {
+                if (data.Contains("Onions"))
+                {
+                    yoloOnions = true;
+                }
+                else if (data.Contains("Peppers"))
+                {
+                    yoloPeppers = true;
+                }
+                else if (data.Contains("Mushrooms"))
+                {
+                    yoloMushrooms = true;
+                }
+                else if (data.Contains("Tomatoes"))
+                {
+                    yoloTomatoes = true;
+                }
+                else if (data.Contains("Olives"))
+                {
+                    yoloOlives = true;
+                }
+            }
+
+            // If the message is not a confirmation, show it in a MessageBox
+            if (!receivedMessage.Contains("confirmation"))
+            {
+                MessageBox.Show($"Received message from server: {receivedMessage}");
+            }
+
+            // Send a confirmation back to the server
+            SendMessage($"I've received the message {receivedMessage}", "confirmation");
+
+            // Mark the confirmation as received
+            confirmationReceived = true;
+        }
+        catch (Exception ex)
+        {
+            // Handle server message handling error silently
+        }
+
+        //haidy
+        // Extract the operation and data
+       
+    }
+
+    protected override void OnFormClosing(FormClosingEventArgs e)
+    {
+        // Hide the form immediately
+        this.Hide();
+
+        // Gracefully cancel and wait for threads to finish
+        cancellationTokenSource.Cancel(); // Signal threads to stop
+
+        // Check if threads are running and try to join them
+        if (receiveThread != null && receiveThread.IsAlive)
+        {
+            // Give it a little time to exit, if not, force the exit
+            receiveThread.Join(1000); // Wait 1 second for the thread to complete
+        }
+
+        if (sendThread != null && sendThread.IsAlive)
+        {
+            // Give it a little time to exit, if not, force the exit
+            sendThread.Join(1000); // Wait 1 second for the thread to complete
+        }
+
+        // Close the TCP connection and ensure the application exits
+        if (tcpClient != null)
+        {
+            tcpClient.Close();
+        }
+
+        // Exit the application
+        System.Windows.Forms.Application.Exit();
+    }
 
 
     private void Form_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
