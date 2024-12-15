@@ -120,10 +120,6 @@
     <None Include="bin\Debug\handHi.gif" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\AdminHCI\AdminHCI\AdminHCI.csproj">
-      <Project>{eab8abe7-85c5-4c5d-a32d-e4a0c0075d54}</Project>
-      <Name>AdminHCI</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\TUIO11_NET-master\TUIO_DEMO.csproj">
       <Project>{83f18314-a320-4148-a5a5-d8fd091fc407}</Project>
       <Name>TUIO_DEMO</Name>

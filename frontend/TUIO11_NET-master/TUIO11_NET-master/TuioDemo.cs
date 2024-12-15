@@ -40,6 +40,7 @@ using Timer = System.Windows.Forms.Timer;
 using System.Linq;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static MenuItem;
+using System.Collections.Concurrent;
 
 
 
@@ -254,6 +255,18 @@ public class CartItem
 
 public class TuioDemo : Form, TuioListener
 {
+    //private Config config;
+    private int maxRetries;
+    private Thread sendThread;
+    private TcpClient tcpClient;
+    private Thread receiveThread;
+    private int reconnectTimeout;
+    private NetworkStream networkStream;
+    private bool confirmationReceived = false;
+    private CancellationTokenSource cancellationTokenSource;
+    private BlockingCollection<Tuple<string, string>> sendMessageQueue;
+
+
     private TuioClient client;
     private Dictionary<long, TuioObject> objectList;
     private Dictionary<long, TuioCursor> cursorList;
@@ -275,10 +288,10 @@ public class TuioDemo : Form, TuioListener
 
     public int page = 5;
 
-    
 
 
-    string category = "Lunch";
+
+    string category = "Breakfast";
 
     public int ScreenMode;
 
@@ -292,18 +305,17 @@ public class TuioDemo : Form, TuioListener
 
     public JObject loginResponse;
 
-    
-         List<CartItem> cart = new List<CartItem>
+
+    List<CartItem> cart = new List<CartItem>
        {
            new CartItem { Name = "Pizza", Price = 18, Quantity = 2, ImagePath = "images/menu/lunch/Chicken_Pasta_Pizza.png" },
-           new CartItem { Name = "Burger", Price = 12, Quantity = 3, ImagePath = "images\\menu\\breakfast\\french_toast.png"  },
-           new CartItem { Name = "Pasta", Price = 15, Quantity = 1, ImagePath = "images\\menu\\dessert\\apple_pie.png"  },
-                   new CartItem { Name = "Pizza", Price = 18, Quantity = 2, ImagePath = "images\\menu\\lunch\\Chicken_Pasta_Pizza.png" },
-           new CartItem { Name = "Burger", Price = 12, Quantity = 3, ImagePath = "images\\menu\\breakfast\\french_toast.png"  },
-           new CartItem { Name = "Pasta", Price = 15, Quantity = 1, ImagePath = "images\\menu\\dessert\\apple_pie.png"  },
+           new CartItem { Name = "french_toast", Price = 12, Quantity = 3, ImagePath = "images\\menu\\breakfast\\french_toast.png"  },
+           new CartItem { Name = "avocado_toast", Price = 15, Quantity = 1, ImagePath = "images\\menu\\breakfast\\avocado_toast.png"  },
+                   new CartItem { Name = "Ice Cream", Price = 18, Quantity = 2, ImagePath = "images\\menu\\dessert\\ice_cream.png" },
+           new CartItem { Name = "Brownies", Price = 12, Quantity = 3, ImagePath = "images\\menu\\dessert\\brownies.png"  },
 
-               };
-     
+
+         };
 
 
     //List<CartItem> cart = new List<CartItem>();
@@ -423,71 +435,71 @@ public class TuioDemo : Form, TuioListener
     bool yoloOlives = false;
 
 
-   
 
 
-private string ProcessReceivedMessage(string message)
-{
-    // Parse the JSON message
-    dynamic parsedMessage = JsonConvert.DeserializeObject(message);
 
-    // Extract the operation and data
-    string operation = parsedMessage.operation;
-    string data = parsedMessage.data;
-
-    if (operation == "MediaPipe")
+    private string ProcessReceivedMessage(string message)
     {
-        if (data.Contains("Checkout"))
+        // Parse the JSON message
+        dynamic parsedMessage = JsonConvert.DeserializeObject(message);
+
+        // Extract the operation and data
+        string operation = parsedMessage.operation;
+        string data = parsedMessage.data;
+
+        if (operation == "MediaPipe")
         {
-            mediapipeCheckout = true;
+            if (data.Contains("Checkout"))
+            {
+                mediapipeCheckout = true;
+            }
+            else if (data.Contains("AddToCart"))
+            {
+                mediapipeAddtocart = true;
+            }
+            else if (data.Contains("Home"))
+            {
+                mediapipeHome = true;
+            }
+            else if (data.Contains("swipe left"))
+            {
+                mediapipeSwipeLeft = true;
+            }
+            else if (data.Contains("swipe right"))
+            {
+                mediapipeSwipeRight = true;
+            }
         }
-        else if (data.Contains("AddToCart"))
+        else if (operation == "YOLO")
         {
-            mediapipeAddtocart = true;
+            if (data.Contains("Onions"))
+            {
+                yoloOnions = true;
+            }
+            else if (data.Contains("Peppers"))
+            {
+                yoloPeppers = true;
+            }
+            else if (data.Contains("Mushrooms"))
+            {
+                yoloMushrooms = true;
+            }
+            else if (data.Contains("Tomatoes"))
+            {
+                yoloTomatoes = true;
+            }
+            else if (data.Contains("Olives"))
+            {
+                yoloOlives = true;
+            }
         }
-        else if (data.Contains("Home"))
-        {
-            mediapipeHome = true;
-        }
-        else if (data.Contains("swipe left"))
-        {
-            mediapipeSwipeLeft = true;
-        }
-        else if (data.Contains("swipe right"))
-        {
-            mediapipeSwipeRight = true;
-        }
-    }
-    else if (operation == "YOLO")
-    {
-        if (data.Contains("Onions"))
-        {
-            yoloOnions = true;
-        }
-        else if (data.Contains("Peppers"))
-        {
-            yoloPeppers = true;
-        }
-        else if (data.Contains("Mushrooms"))
-        {
-            yoloMushrooms = true;
-        }
-        else if (data.Contains("Tomatoes"))
-        {
-            yoloTomatoes = true;
-        }
-        else if (data.Contains("Olives"))
-        {
-            yoloOlives = true;
-        }
-    }
 
         return "";
-}
+    }
 
 
 
-Font font = new Font("Arial", 10.0f);
+    Font font = new Font("Arial", 10.0f);
     SolidBrush fntBrush = new SolidBrush(Color.White);
     SolidBrush bgrBrush = new SolidBrush(Color.FromArgb(255, 255, 255));
     SolidBrush curBrush = new SolidBrush(Color.FromArgb(192, 0, 192));
@@ -498,7 +510,7 @@ Font font = new Font("Arial", 10.0f);
 
     private JObject PerformCRUDOperation(string operation, object data)
     {
-        string serverIp = "192.168.1.13";  // Replace with your server's IP address
+        string serverIp = "192.168.1.17";  // Replace with your server's IP address
         int serverPort = 1010;              // Replace with your server's port number
         try
         {
@@ -590,7 +602,7 @@ Font font = new Font("Arial", 10.0f);
 
 
 
-   
+
 
 
     public TuioDemo(int port)
@@ -942,7 +954,7 @@ Font font = new Font("Arial", 10.0f);
     }
     void drawMainMenuBackground(Graphics g)
     {
-        if(page == 0)
+        if (page == 0)
         {
             string path = (ScreenMode == 0) ? "light_login.png" : "dark_login.png";
 
@@ -995,7 +1007,7 @@ Font font = new Font("Arial", 10.0f);
             using (Bitmap displayImage4 = (Bitmap)System.Drawing.Image.FromFile("images/menu/dessert/cookies.png"))
             {
                 // Draw the recommenddation num 4
-                g.DrawImage(displayImage4, new Rectangle(1250, 400, 180,180));
+                g.DrawImage(displayImage4, new Rectangle(1250, 400, 180, 180));
 
                 // Optionally draw additional text over the image
                 g.DrawString(displayText4, new Font("Arial", 24, FontStyle.Bold), Brushes.Black, new PointF(1200, 580));
@@ -1042,7 +1054,7 @@ Font font = new Font("Arial", 10.0f);
             {
 
                 string path = (isRightHanded) ? "light_custom_right.png" : "light_custom_left.png";
-               
+
 
                 using (Bitmap backgroundImage = (Bitmap)System.Drawing.Image.FromFile("images/" + path))
                 {
@@ -1052,8 +1064,8 @@ Font font = new Font("Arial", 10.0f);
             }
             else
             {
-                string path = (isRightHanded) ? "dark_custom_right.png" : "dark_custom_left.png"  ;
- 
+                string path = (isRightHanded) ? "dark_custom_right.png" : "dark_custom_left.png";
+
                 using (Bitmap backgroundImage = (Bitmap)System.Drawing.Image.FromFile("images/" + path))
                 {
                     // Draw the bitmap to cover the entire window
@@ -1079,7 +1091,7 @@ Font font = new Font("Arial", 10.0f);
 
 
         }
-        else if(page == 6)
+        else if (page == 6)
         {
             string path = (ScreenMode == 0) ? "confirmed_light.png" : "confirmed_dark.png";
 
@@ -1180,7 +1192,7 @@ Font font = new Font("Arial", 10.0f);
             cartPanel.Visible = true;
         }
         // Create the CartDisplay instance and pass the panel and cart items
-     
+
 
         if (ScreenMode == 0)
         {
@@ -1189,6 +1201,36 @@ Font font = new Font("Arial", 10.0f);
             return;
         }
 
+        decimal totalPrice = 0;
+
+        // Calculate total price by multiplying price by quantity for each item and adding toppings price
+        foreach (var item in cart)
+        {
+            // Add item price to the total, considering the quantity
+            totalPrice += item.Price;
+
+            // If the item has toppings, add the toppings' price as well
+            if (item.Toppings != null)
+            {
+                foreach (var topping in item.Toppings)
+                {
+                    totalPrice += topping.Price;
+                }
+            }
+        }
+
+        string totalPricee1 = totalPrice.ToString("F2");
+        string totalPricee2 = (totalPrice * 1.24m).ToString("F2");
+
+
+        // Define reusable fonts and brushes
+        Font titleFont = new Font("Arial", 14, FontStyle.Bold); // Bolder font for title
+        Font detailsFont = new Font("Arial", 20, FontStyle.Bold); // Regular font for details
+        Brush priceBrush = Brushes.Orange; // Orange color for price
+
+        // Draw the price in orange
+        g.DrawString(totalPricee1, titleFont, priceBrush, new PointF(1550, 256));
+        g.DrawString(totalPricee2, titleFont, priceBrush, new PointF(1550, 465));
 
         // Lunch or Dessert or Build ur Own
         // Copy of cursorList to safely iterate
@@ -1252,7 +1294,7 @@ Font font = new Font("Arial", 10.0f);
                             page = 6;
                             break;
 
-                        case 4:
+                        case 15:
                             changeCartSelectedItem(angleDegrees);
                             break;
 
@@ -1260,7 +1302,7 @@ Font font = new Font("Arial", 10.0f);
                             changeCartQuantity(angleDegrees);
                             break;
 
-                        
+
                         default:
                             break;
                     }
@@ -1286,13 +1328,14 @@ Font font = new Font("Arial", 10.0f);
         float angleDifference = (angle - prevAngle);
         this.Text = "prev" + prevAngle + " " + "Curr" + angleDifference;
 
-        if (angleDifference >= 15)
+        if (angleDifference >= 35)
         {
             // Calculate price per item dynamically based on the current state
             decimal pricePerItem = cart[cartDisplay.cartSelectedItem].Quantity > 0 ? cart[cartDisplay.cartSelectedItem].Price / cart[cartDisplay.cartSelectedItem].Quantity : 0;
 
             cart[cartDisplay.cartSelectedItem].Quantity += 1;
-            cart[cartDisplay.cartSelectedItem].Price += pricePerItem; // Increment price by price per item
+            cart[cartDisplay.cartSelectedItem].Price =
+                Math.Round(cart[cartDisplay.cartSelectedItem].Price + pricePerItem, 2);
 
             prevAngle = angle;
         }
@@ -1315,7 +1358,13 @@ Font font = new Font("Arial", 10.0f);
         }
         else if (angleDifference <= -15)
         {
-            cart[cartDisplay.cartSelectedItem].Quantity -= 1;
+            cart[cartDisplay.cartSelectedItem].Quantity += 1;
+
+            if (cart[cartDisplay.cartSelectedItem].Quantity <= 0)
+            {
+               /// cart.RemoveAt(cartDisplay.cartSelectedItem);
+
+            }
 
             prevAngle = angle;
         }
@@ -1337,8 +1386,8 @@ Font font = new Font("Arial", 10.0f);
         float angleDifference = (angle - prevAngle);
         this.Text = "prev" + prevAngle + " " + "Curr" + angleDifference;
 
-     
-        if (angleDifference >= 15)
+
+        if (angleDifference >= 30)
         {
             if (cartDisplay.cartSelectedItem < cart.Count - 1)
             {
@@ -1346,7 +1395,7 @@ Font font = new Font("Arial", 10.0f);
             }
             prevAngle = angle;
         }
-        else if (angleDifference <= -15)
+        else if (angleDifference <= -30)
         {
             if (cartDisplay.cartSelectedItem > 0)
             {
@@ -1355,7 +1404,7 @@ Font font = new Font("Arial", 10.0f);
             prevAngle = angle;
         }
 
-      
+
     }
 
 
@@ -1475,7 +1524,7 @@ Font font = new Font("Arial", 10.0f);
                             category = "recommendation";
                             page = 1;
                             break;
-                       
+
                         default:
                             break;
                     }
@@ -1585,7 +1634,7 @@ Font font = new Font("Arial", 10.0f);
     }
     void drawPageCategories(Graphics g)
     {
-        
+
 
         if (ScreenMode == 0)
         {
@@ -1767,13 +1816,13 @@ Font font = new Font("Arial", 10.0f);
 
 
         // Handle Mediapipe
-        if(mediapipeCheckout)
+        if (mediapipeCheckout)
         {
             page = 5;
             mediapipeCheckout = false;
             return;
         }
-        else if(mediapipeAddtocart)
+        else if (mediapipeAddtocart)
         {
             isIDCartCustom = 1;
             if (CartToppings.Count > 0 && canAddToCartCustom)
@@ -1871,54 +1920,54 @@ Font font = new Font("Arial", 10.0f);
 
                 TuioObject id15Object = objectCopy.Find(obj => obj.SymbolID == 15);
 
-               
 
-                    // Initialize List of flags to track if each topping appears
 
-                    foreach (TuioObject tobj in objectCopy)
+                // Initialize List of flags to track if each topping appears
+
+                foreach (TuioObject tobj in objectCopy)
+                {
+                    switch (tobj.SymbolID)
                     {
-                        switch (tobj.SymbolID)
-                        {
-                                                            
 
-                            case 5:
-                                page = 2;
-                                break;
-                            case 6:
-                                page = 5;
-                                break;
 
-                            case 7:
-                                
-                                isIDCartCustom = 1;
-                                if (CartToppings.Count > 0 && canAddToCartCustom)
+                        case 5:
+                            page = 2;
+                            break;
+                        case 6:
+                            page = 5;
+                            break;
+
+                        case 7:
+
+                            isIDCartCustom = 1;
+                            if (CartToppings.Count > 0 && canAddToCartCustom)
+                            {
+                                canAddToCartCustom = false;
+                                cart.Add(new CartItem
                                 {
-                                    canAddToCartCustom = false;
-                                    cart.Add(new CartItem
+                                    Name = "Custom Pizza",
+                                    ImagePath = "images/menu/lunch/veg.png",
+                                    Price = CartToppings.Sum(t => t.Price * t.Quantity),
+                                    Quantity = 1,
+                                    Toppings = CartToppings.Select(t => new Topping
                                     {
-                                        Name = "Custom Pizza",
-                                        ImagePath = "images/menu/lunch/veg.png",
-                                        Price = CartToppings.Sum(t => t.Price * t.Quantity),
-                                        Quantity = 1,
-                                        Toppings = CartToppings.Select(t => new Topping
-                                        {
-                                            Name = t.Name,
-                                            Price = t.Price,
-                                            ImgPath = t.ImgPath,
-                                            Quantity = t.Quantity
-                                        }).ToList()
-                                    });
-                                   this.Text = "ddd"+cart.Count;
+                                        Name = t.Name,
+                                        Price = t.Price,
+                                        ImgPath = t.ImgPath,
+                                        Quantity = t.Quantity
+                                    }).ToList()
+                                });
+                                this.Text = "ddd" + cart.Count;
 
                                 CartToppings.Clear();
-                                }
-                                //string cartDetails = GetCartAsString();
-                                //MessageBox.Show(cartDetails);
+                            }
+                            //string cartDetails = GetCartAsString();
+                            //MessageBox.Show(cartDetails);
 
-                                break;
-                            default:
-                                break;
-                        }
+                            break;
+                        default:
+                            break;
+                    }
 
                     if (id15Object != null)
                     {
@@ -1999,7 +2048,7 @@ Font font = new Font("Arial", 10.0f);
 
 
 
-                        
+
                     }
 
 
@@ -2007,7 +2056,7 @@ Font font = new Font("Arial", 10.0f);
             }
         }
 
-        if(isIDCartCustom==-1)
+        if (isIDCartCustom == -1)
         {
             canAddToCartCustom = true;
         }
@@ -2031,7 +2080,7 @@ Font font = new Font("Arial", 10.0f);
     }
 
     bool canAddToCart = true;
-    
+
 
     public void AddToCart(int removedItem, int currentMenuPage, List<Topping> selectedToppings = null, List<MenuItem> menuItems = null, int quantity = 1)
     {
@@ -2052,7 +2101,7 @@ Font font = new Font("Arial", 10.0f);
         var existingItem = cart.Find(itemm => itemm.Name == item.Name);
         if (existingItem != null)
         {
-            existingItem.Quantity += quantity;
+            //existingItem.Quantity += quantity;
             return;
         }
 
@@ -2068,7 +2117,9 @@ Font font = new Font("Arial", 10.0f);
             Name = item.Name,
             Price = item.Price,
             Quantity = quantity,
-            Toppings = selectedToppings
+            Toppings = selectedToppings,
+            ImagePath = item.ImgPath
+
         };
 
         cart.Add(cartItem);
@@ -2199,7 +2250,7 @@ Font font = new Font("Arial", 10.0f);
 
         if (objectCopy.Count > 0)
         {
-         
+
             lock (objectRectangles)
             {
 
@@ -2237,7 +2288,7 @@ Font font = new Font("Arial", 10.0f);
                             break;
                         case 136:
                             page = 5;
-                            
+
                             break;
                         case 137:
                             isIDCart = 1;
