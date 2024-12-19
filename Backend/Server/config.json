@@ -1,0 +1,11 @@
+{
+    "server": {
+        "IP": "10.11.65.121",
+        "port": 1010
+    },
+    "client": {
+        "reconnectTimeout": 3000,
+        "maxRetries": 3
+    },
+    "FIREBASE_SERVICE_ACCOUNT": "Database/connection.json"
+}
