@@ -17,7 +17,7 @@ def handleDatabaseOperation(data):
             operation = request.get("operation")
 
             # Handle the 'get_all_user_mac_and_face_image' operation
-            if operation == "getAllMacFace":
+            if operation == "get_all_user_mac_and_face_image":
                 # Call the CRUD function to get the macAddress, faceImage, and name of all users
                 crud = FirestoreCRUD()
                 user_info = crud.get_all_user_mac_face_name()
@@ -29,8 +29,8 @@ def handleDatabaseOperation(data):
                     response = {"message": "No user data found."}
 
             # Handle the 'get_recommendation_data' operation
-            elif operation == "getRecommendation":
-                mac_address = request.get("macAddress")
+            elif operation == 'get_recommendation_data':
+                mac_address = request.get('macAddress')
                 if not mac_address:
                     response = {"error": "macAddress is required for this operation."}
                 else:
@@ -40,32 +40,22 @@ def handleDatabaseOperation(data):
                     response = recommendation
 
             # Handle the 'update_emotions' operation
-            elif operation == "addEmotions":
-                mac_address = request.get("macAddress")
-                page1expressions = request.get("page1expressions", [])
-                page2expressions = request.get("page2expressions", [])
-                page3expressions = request.get("page3expressions", [])
+            elif operation == 'update_emotions':
+                mac_address = request.get('macAddress')
+                page_id = request.get('page_id')
+                expressions = request.get('expressions', [])
 
                 # Validate input
                 if not mac_address:
                     response = {"error": "macAddress is required for this operation."}
-                elif (
-                    not isinstance(page1expressions, list)
-                    or not isinstance(page2expressions, list)
-                    or not isinstance(page3expressions, list)
-                ):
-                    response = {
-                        "error": "page1expressions, page2expressions, and page3expressions must be arrays."
-                    }
+                elif not page_id or page_id not in [1, 2, 3, 4]:
+                    response = {"error": "page_id must be one of 1, 2, 3, or 4."}
+                elif not isinstance(expressions, list):
+                    response = {"error": "expressions must be an array."}
                 else:
-                    # Call the update_emotions function
+                    # Call the update_emotions function with the new parameters
                     crud = FirestoreCRUD()
-                    update_response = crud.update_emotions(
-                        mac_address,
-                        page1expressions,
-                        page2expressions,
-                        page3expressions,
-                    )
+                    update_response = crud.update_emotions(mac_address, page_id, expressions)
                     response = update_response
 
     except json.JSONDecodeError:
