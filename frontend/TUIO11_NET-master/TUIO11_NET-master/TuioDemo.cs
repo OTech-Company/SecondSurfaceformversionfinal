@@ -40,7 +40,6 @@ using Timer = System.Windows.Forms.Timer;
 using System.Linq;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static MenuItem;
-using System.Collections.Concurrent;
 
 
 
@@ -187,10 +186,10 @@ public class CartDisplay
 
 
         // Dispose of reusable resources after the loop
-        titleFont.Dispose();
-        detailsFont.Dispose();
-        borderPen.Dispose();
-        backgroundBrush.Dispose(); // Dispose of the background brush
+        //titleFont.Dispose();
+        //detailsFont.Dispose();
+        //borderPen.Dispose();
+        //backgroundBrush.Dispose(); // Dispose of the background brush
     }
 
 
@@ -255,18 +254,6 @@ public class CartItem
 
 public class TuioDemo : Form, TuioListener
 {
-    private Config config;
-    private int maxRetries;
-    private Thread sendThread;
-    private TcpClient tcpClient;
-    private Thread receiveThread;
-    private int reconnectTimeout;
-    private NetworkStream networkStream;
-    private bool confirmationReceived = false;
-    private CancellationTokenSource cancellationTokenSource;
-    private BlockingCollection<Tuple<string, string>> sendMessageQueue;
-
-
     private TuioClient client;
     private Dictionary<long, TuioObject> objectList;
     private Dictionary<long, TuioCursor> cursorList;
@@ -286,12 +273,12 @@ public class TuioDemo : Form, TuioListener
     Panel cartPanel = new Panel();
 
 
-    public int page = 5;
+    public int page = 4;
 
 
 
 
-    string category = "Breakfast";
+    string category = "Lunch";
 
     public int ScreenMode;
 
@@ -309,13 +296,14 @@ public class TuioDemo : Form, TuioListener
     List<CartItem> cart = new List<CartItem>
        {
            new CartItem { Name = "Pizza", Price = 18, Quantity = 2, ImagePath = "images/menu/lunch/Chicken_Pasta_Pizza.png" },
-           new CartItem { Name = "french_toast", Price = 12, Quantity = 3, ImagePath = "images\\menu\\breakfast\\french_toast.png"  },
-           new CartItem { Name = "avocado_toast", Price = 15, Quantity = 1, ImagePath = "images\\menu\\breakfast\\avocado_toast.png"  },
-                   new CartItem { Name = "Ice Cream", Price = 18, Quantity = 2, ImagePath = "images\\menu\\dessert\\ice_cream.png" },
-           new CartItem { Name = "Brownies", Price = 12, Quantity = 3, ImagePath = "images\\menu\\dessert\\brownies.png"  },
+           new CartItem { Name = "Burger", Price = 12, Quantity = 3, ImagePath = "images\\menu\\breakfast\\french_toast.png"  },
+           new CartItem { Name = "Pasta", Price = 15, Quantity = 1, ImagePath = "images\\menu\\dessert\\apple_pie.png"  },
+                   new CartItem { Name = "Pizza", Price = 18, Quantity = 2, ImagePath = "images\\menu\\lunch\\Chicken_Pasta_Pizza.png" },
+           new CartItem { Name = "Burger", Price = 12, Quantity = 3, ImagePath = "images\\menu\\breakfast\\french_toast.png"  },
+           new CartItem { Name = "Pasta", Price = 15, Quantity = 1, ImagePath = "images\\menu\\dessert\\apple_pie.png"  },
 
+               };
 
-         };
 
 
     //List<CartItem> cart = new List<CartItem>();
@@ -399,6 +387,26 @@ public class TuioDemo : Form, TuioListener
     private bool verbose;
 
 
+    private void HandleMessageFromServer(TcpClient client)
+    {
+        try
+        {
+            NetworkStream stream = client.GetStream();
+            byte[] buffer = new byte[1024];
+            int bytesRead = stream.Read(buffer, 0, buffer.Length);
+            string message = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+            string response = ProcessReceivedMessage(message);
+            byte[] responseBytes = Encoding.ASCII.GetBytes(response);
+            stream.Write(responseBytes, 0, responseBytes.Length);
+        }
+        catch (Exception ex)
+        {
+            string errorMessage = "Error receiving or sending message: " + ex.Message;
+            byte[] errorBytes = Encoding.ASCII.GetBytes(errorMessage);
+            NetworkStream stream = client.GetStream();
+            stream.Write(errorBytes, 0, errorBytes.Length);
+        }
+    }
 
 
     bool mediapipeCheckout = false;
@@ -418,7 +426,64 @@ public class TuioDemo : Form, TuioListener
 
 
 
- 
+    private string ProcessReceivedMessage(string message)
+    {
+        // Parse the JSON message
+        dynamic parsedMessage = JsonConvert.DeserializeObject(message);
+
+        // Extract the operation and data
+        string operation = parsedMessage.operation;
+        string data = parsedMessage.data;
+
+        if (operation == "MediaPipe")
+        {
+            if (data.Contains("Checkout"))
+            {
+                mediapipeCheckout = true;
+            }
+            else if (data.Contains("AddToCart"))
+            {
+                mediapipeAddtocart = true;
+            }
+            else if (data.Contains("Home"))
+            {
+                mediapipeHome = true;
+            }
+            else if (data.Contains("swipe left"))
+            {
+                mediapipeSwipeLeft = true;
+            }
+            else if (data.Contains("swipe right"))
+            {
+                mediapipeSwipeRight = true;
+            }
+        }
+        else if (operation == "YOLO")
+        {
+            if (data.Contains("Onions"))
+            {
+                yoloOnions = true;
+            }
+            else if (data.Contains("Peppers"))
+            {
+                yoloPeppers = true;
+            }
+            else if (data.Contains("Mushrooms"))
+            {
+                yoloMushrooms = true;
+            }
+            else if (data.Contains("Tomatoes"))
+            {
+                yoloTomatoes = true;
+            }
+            else if (data.Contains("Olives"))
+            {
+                yoloOlives = true;
+            }
+        }
+
+        return "";
+    }
 
 
 
@@ -433,7 +498,7 @@ public class TuioDemo : Form, TuioListener
 
     private JObject PerformCRUDOperation(string operation, object data)
     {
-        string serverIp = "192.168.1.17";  // Replace with your server's IP address
+        string serverIp = "192.168.1.13";  // Replace with your server's IP address
         int serverPort = 1010;              // Replace with your server's port number
         try
         {
@@ -557,254 +622,17 @@ public class TuioDemo : Form, TuioListener
 
         this.Load += new System.EventHandler(this.TuioDemo_Load);
 
-        // Read the configuration from the config file
-        config = Config.ReadConfig("../../../../../Backend/Server/config.json");
-        maxRetries = config.client.maxRetries;
-        reconnectTimeout = config.client.reconnectTimeout;
-        sendMessageQueue = new BlockingCollection<Tuple<string, string>>();  // Queue to hold operation and data
-        cancellationTokenSource = new CancellationTokenSource();
-
-        // Start the connection and handling threads
-        InitializeSocketConnection();
-
-
-     
+        client = new TuioClient(port);
+        client.addTuioListener(this);
         InitializeComponent();
-      
-    }
-    private void InitializeSocketConnection()
-    {
-        try
-        {
-            tcpClient = new TcpClient(config.server.IP, config.server.port);
-            networkStream = tcpClient.GetStream();
-
-            // Start receiving and sending data in separate threads
-            receiveThread = new Thread(() => ReceiveData(cancellationTokenSource.Token));
-            receiveThread.Start();
-
-            sendThread = new Thread(() => SendMessages(cancellationTokenSource.Token));
-            sendThread.Start();
-        }
-        catch (Exception ex)
-        {
-            // Handle connection error silently
-        }
-    }
-    private void SendMessages(CancellationToken token)
-    {
-        int retries = 0;
-        while (retries < maxRetries)
-        {
-            try
-            {
-                foreach (var message in sendMessageQueue.GetConsumingEnumerable())
-                {
-                    // Check for cancellation
-                    if (token.IsCancellationRequested)
-                    {
-                        return; // Gracefully exit if cancellation is requested
-                    }
-
-                    // Send the message (operation and data)
-                    SendMessage(message.Item1, message.Item2);  // message.Item1 is operation, message.Item2 is data
-
-                    // Wait for confirmation
-                    bool confirmed = WaitForConfirmation();
-                    if (confirmed)
-                    {
-                        // Successful message send, do nothing
-                    }
-                    else
-                    {
-                        retries++;
-                        if (retries >= maxRetries)
-                        {
-                            break; // Max retries reached, stop sending
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                // Handle sending error silently
-            }
-        }
+        client.connect();
     }
 
 
 
-    private bool WaitForConfirmation()
-    {
-        // Use reconnectTimeout from config
-        int timeout = reconnectTimeout;  // Convert seconds to milliseconds
-        int elapsed = 0;
-        while (elapsed < timeout)
-        {
-            Thread.Sleep(100);
-            elapsed += 100;
-            // Check if confirmation has been received
-            if (confirmationReceived) return true;
-        }
-        return false;
-    }
-
-    private void SendMessage(string operation, string data)
-    {
-        // Create a message containing both operation and data
-        string jsonMessage = JsonConvert.SerializeObject(new
-        {
-            operation = operation,
-            data = data
-        });
-
-        byte[] dataBytes = Encoding.UTF8.GetBytes(jsonMessage);
-        networkStream.Write(dataBytes, 0, dataBytes.Length);
-        networkStream.Flush();
-    }
-
-    private void ReceiveData(CancellationToken token)
-    {
-        byte[] buffer = new byte[1024];
-        while (!token.IsCancellationRequested)
-        {
-            try
-            {
-                // Non-blocking read check
-                if (networkStream.DataAvailable)
-                {
-                    int bytesRead = networkStream.Read(buffer, 0, buffer.Length);
-                    if (bytesRead > 0)
-                    {
-                        string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                        HandleServerMessage(receivedMessage);
-                    }
-                }
-                else
-                {
-                    Thread.Sleep(100); // Sleep briefly if no data is available
-                }
-            }
-            catch (Exception ex)
-            {
-                if (!token.IsCancellationRequested)
-                {
-                    // Handle receiving error silently
-                }
-                break;
-            }
-        }
-    }
 
 
-    private void HandleServerMessage(string receivedMessage)
-    {
-        try
-        {
-            var jsonMessage = JsonConvert.DeserializeObject<dynamic>(receivedMessage);
-            string operation = jsonMessage.operation;
-            string data = jsonMessage.data;
 
-            // Process the message based on the operation
-            if (operation == "MediaPipe")
-            {
-                if (data.Contains("Checkout"))
-                {
-                    mediapipeCheckout = true;
-                }
-                else if (data.Contains("AddToCart"))
-                {
-                    mediapipeAddtocart = true;
-                }
-                else if (data.Contains("Home"))
-                {
-                    mediapipeHome = true;
-                }
-                else if (data.Contains("swipe left"))
-                {
-                    mediapipeSwipeLeft = true;
-                }
-                else if (data.Contains("swipe right"))
-                {
-                    mediapipeSwipeRight = true;
-                }
-            }
-            else if (operation == "YOLO")
-            {
-                if (data.Contains("Onions"))
-                {
-                    yoloOnions = true;
-                }
-                else if (data.Contains("Peppers"))
-                {
-                    yoloPeppers = true;
-                }
-                else if (data.Contains("Mushrooms"))
-                {
-                    yoloMushrooms = true;
-                }
-                else if (data.Contains("Tomatoes"))
-                {
-                    yoloTomatoes = true;
-                }
-                else if (data.Contains("Olives"))
-                {
-                    yoloOlives = true;
-                }
-            }
-
-            // If the message is not a confirmation, show it in a MessageBox
-            if (!receivedMessage.Contains("confirmation"))
-            {
-                MessageBox.Show($"Received message from server: {receivedMessage}");
-            }
-
-            // Send a confirmation back to the server
-            SendMessage($"I've received the message {receivedMessage}", "confirmation");
-
-            // Mark the confirmation as received
-            confirmationReceived = true;
-        }
-        catch (Exception ex)
-        {
-            // Handle server message handling error silently
-        }
-
-        //haidy
-        // Extract the operation and data
-       
-    }
-
-    protected override void OnFormClosing(FormClosingEventArgs e)
-    {
-        // Hide the form immediately
-        this.Hide();
-
-        // Gracefully cancel and wait for threads to finish
-        cancellationTokenSource.Cancel(); // Signal threads to stop
-
-        // Check if threads are running and try to join them
-        if (receiveThread != null && receiveThread.IsAlive)
-        {
-            // Give it a little time to exit, if not, force the exit
-            receiveThread.Join(1000); // Wait 1 second for the thread to complete
-        }
-
-        if (sendThread != null && sendThread.IsAlive)
-        {
-            // Give it a little time to exit, if not, force the exit
-            sendThread.Join(1000); // Wait 1 second for the thread to complete
-        }
-
-        // Close the TCP connection and ensure the application exits
-        if (tcpClient != null)
-        {
-            tcpClient.Close();
-        }
-
-        // Exit the application
-        System.Windows.Forms.Application.Exit();
-    }
 
 
     private void Form_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
@@ -1253,7 +1081,7 @@ public class TuioDemo : Form, TuioListener
         }
         else if (page == 6)
         {
-            string path = (ScreenMode == 0) ? "confirmed_light.png" : "confirmed_dark.png";
+            string path = "fake.jpg";
 
             try
             {
@@ -1318,41 +1146,48 @@ public class TuioDemo : Form, TuioListener
 
     private void CartPanel_Paint(object sender, PaintEventArgs e)
     {
-        // Call the DrawItems method to render the cart items
+        //Call the DrawItems method to render the cart items
         cartDisplay.DrawItems(e.Graphics);
     }
+
+
+    // fe mushkla hena enu kol mara el cartDisplay bybda2 mn null kol mara bndh feha drawpagecheckout
     void drawPageCheckOut(Graphics g)
     {
         drawMainMenuBackground(g);
 
         // Check if the cartPanel already exists
-        if (cartPanel == null || !this.Controls.Contains(cartPanel))
+        if (!this.Controls.Contains(cartPanel)) //|| !this.Controls.Contains(cartPanel))
         {
             // Create the Panel if it doesn't exist
             cartPanel = new Panel
             {
                 Location = new Point(70, 100),
-                Size = new Size(1100, 700),
+                Size = new Size(800, 600),
                 AutoScroll = true,
                 BackColor = Color.Transparent
             };
+
             // Add the Panel to the form's controls
             this.Controls.Add(cartPanel);
-            cartDisplay = new CartDisplay(cartPanel, cart);
 
-            // Subscribe to the Paint event of the panel
-            cartPanel.Paint += CartPanel_Paint;
-
+            // Initialize cartDisplay with the newly created panel
+            if (cartDisplay == null)
+            {  
+                //MessageBox.Show("ahu yabnelwes5a");
+                cartDisplay = new CartDisplay(cartPanel, cart);
+            } 
+           
+               
             // Adjust the panel height for scrolling based on content
-            cartDisplay.SetPanelHeight();
+            //cartDisplay.SetPanelHeight();
         }
-        else
-        {
-            // If the panel already exists, ensure it's visible or updated
-            cartPanel.Visible = true;
-        }
-        // Create the CartDisplay instance and pass the panel and cart items
 
+        if(cartDisplay != null)
+        {
+            cartDisplay.DrawItems(cartPanel.CreateGraphics());
+        }
+            //cartDisplay.DrawItems(cartPanel.CreateGraphics());
 
         if (ScreenMode == 0)
         {
@@ -1361,36 +1196,6 @@ public class TuioDemo : Form, TuioListener
             return;
         }
 
-        decimal totalPrice = 0;
-
-        // Calculate total price by multiplying price by quantity for each item and adding toppings price
-        foreach (var item in cart)
-        {
-            // Add item price to the total, considering the quantity
-            totalPrice += item.Price;
-
-            // If the item has toppings, add the toppings' price as well
-            if (item.Toppings != null)
-            {
-                foreach (var topping in item.Toppings)
-                {
-                    totalPrice += topping.Price;
-                }
-            }
-        }
-
-        string totalPricee1 = totalPrice.ToString("F2");
-        string totalPricee2 = (totalPrice * 1.24m).ToString("F2");
-
-
-        // Define reusable fonts and brushes
-        Font titleFont = new Font("Arial", 14, FontStyle.Bold); // Bolder font for title
-        Font detailsFont = new Font("Arial", 20, FontStyle.Bold); // Regular font for details
-        Brush priceBrush = Brushes.Orange; // Orange color for price
-
-        // Draw the price in orange
-        g.DrawString(totalPricee1, titleFont, priceBrush, new PointF(1550, 256));
-        g.DrawString(totalPricee2, titleFont, priceBrush, new PointF(1550, 465));
 
         // Lunch or Dessert or Build ur Own
         // Copy of cursorList to safely iterate
@@ -1454,7 +1259,7 @@ public class TuioDemo : Form, TuioListener
                             page = 6;
                             break;
 
-                        case 15:
+                        case 4:
                             changeCartSelectedItem(angleDegrees);
                             break;
 
@@ -1488,14 +1293,13 @@ public class TuioDemo : Form, TuioListener
         float angleDifference = (angle - prevAngle);
         this.Text = "prev" + prevAngle + " " + "Curr" + angleDifference;
 
-        if (angleDifference >= 35)
+        if (angleDifference >= 15)
         {
             // Calculate price per item dynamically based on the current state
             decimal pricePerItem = cart[cartDisplay.cartSelectedItem].Quantity > 0 ? cart[cartDisplay.cartSelectedItem].Price / cart[cartDisplay.cartSelectedItem].Quantity : 0;
 
             cart[cartDisplay.cartSelectedItem].Quantity += 1;
-            cart[cartDisplay.cartSelectedItem].Price =
-                Math.Round(cart[cartDisplay.cartSelectedItem].Price + pricePerItem, 2);
+            cart[cartDisplay.cartSelectedItem].Price += pricePerItem; // Increment price by price per item
 
             prevAngle = angle;
         }
@@ -1518,13 +1322,7 @@ public class TuioDemo : Form, TuioListener
         }
         else if (angleDifference <= -15)
         {
-            cart[cartDisplay.cartSelectedItem].Quantity += 1;
-
-            if (cart[cartDisplay.cartSelectedItem].Quantity <= 0)
-            {
-               /// cart.RemoveAt(cartDisplay.cartSelectedItem);
-
-            }
+            cart[cartDisplay.cartSelectedItem].Quantity -= 1;
 
             prevAngle = angle;
         }
@@ -1547,7 +1345,7 @@ public class TuioDemo : Form, TuioListener
         this.Text = "prev" + prevAngle + " " + "Curr" + angleDifference;
 
 
-        if (angleDifference >= 30)
+        if (angleDifference >= 15)
         {
             if (cartDisplay.cartSelectedItem < cart.Count - 1)
             {
@@ -1555,7 +1353,7 @@ public class TuioDemo : Form, TuioListener
             }
             prevAngle = angle;
         }
-        else if (angleDifference <= -30)
+        else if (angleDifference <= -15)
         {
             if (cartDisplay.cartSelectedItem > 0)
             {
@@ -1963,9 +1761,11 @@ public class TuioDemo : Form, TuioListener
 
 
         // draw the quantity of the toppings
+        int yPosition = 640;
+        int xPosition = 350;
+
         int spacing = 40;
-        int yPosition = 755;
-        int xPosition = 410;
+        
         font = new Font("Arial", 18);
         Brush brush = Brushes.Black;
         foreach (var topping in toppings)
@@ -1973,7 +1773,8 @@ public class TuioDemo : Form, TuioListener
             g.DrawString($"{topping.Quantity}", font, brush, new PointF(xPosition, yPosition));
             yPosition += spacing;
         }
-
+         yPosition = 755;
+         xPosition = 410;
 
         // Handle Mediapipe
         if (mediapipeCheckout)
@@ -2002,7 +1803,8 @@ public class TuioDemo : Form, TuioListener
                         Quantity = t.Quantity
                     }).ToList()
                 });
-                this.Text = "ddd" + cart.Count;
+                this.Text = "Cart" + cart.Count;
+               
 
                 CartToppings.Clear();
             }
@@ -2093,12 +1895,13 @@ public class TuioDemo : Form, TuioListener
                         case 5:
                             page = 2;
                             break;
-                        case 6:
-                            page = 5;
+                        case 4:
+                            page = 6;
                             break;
 
                         case 7:
 
+                            this.Text = CartToppings.Count + " ";
                             isIDCartCustom = 1;
                             if (CartToppings.Count > 0 && canAddToCartCustom)
                             {
@@ -2117,9 +1920,11 @@ public class TuioDemo : Form, TuioListener
                                         Quantity = t.Quantity
                                     }).ToList()
                                 });
-                                this.Text = "ddd" + cart.Count;
+                                this.Text = "Cart Items" + cart.Count;
+                                string cartString = GetCartAsString();
+                                //MessageBox.Show(cartString);
 
-                                CartToppings.Clear();
+                                //CartToppings.Clear();
                             }
                             //string cartDetails = GetCartAsString();
                             //MessageBox.Show(cartDetails);
@@ -2261,7 +2066,7 @@ public class TuioDemo : Form, TuioListener
         var existingItem = cart.Find(itemm => itemm.Name == item.Name);
         if (existingItem != null)
         {
-            //existingItem.Quantity += quantity;
+            existingItem.Quantity += quantity;
             return;
         }
 
@@ -2277,9 +2082,7 @@ public class TuioDemo : Form, TuioListener
             Name = item.Name,
             Price = item.Price,
             Quantity = quantity,
-            Toppings = selectedToppings,
-            ImagePath = item.ImgPath
-
+            Toppings = selectedToppings
         };
 
         cart.Add(cartItem);
@@ -2571,19 +2374,19 @@ public class TuioDemo : Form, TuioListener
     private void TuioDemo_Load(object sender, EventArgs e)
     {
         // Path to the reacTIVision executable
-        string exePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\reacTIVision-1.5.1-win64\reacTIVision.exe");
+       // string exePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\reacTIVision-1.5.1-win64\reacTIVision.exe");
 
         try
         {
             // Create a new process to start the executable
-            reactiVisionProcess = new Process();
-            reactiVisionProcess.StartInfo.FileName = exePath;
+         //   reactiVisionProcess = new Process();
+           // reactiVisionProcess.StartInfo.FileName = exePath;
 
             //    // Optionally set other properties like arguments
-            reactiVisionProcess.StartInfo.Arguments = ""; // If you have any arguments
+            //reactiVisionProcess.StartInfo.Arguments = ""; // If you have any arguments
 
             //    // Start the process
-            reactiVisionProcess.Start();
+            //reactiVisionProcess.Start();
         }
         catch (Exception ex)
         {
