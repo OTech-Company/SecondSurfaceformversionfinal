@@ -40,7 +40,6 @@ using Timer = System.Windows.Forms.Timer;
 using System.Linq;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static MenuItem;
-using System.Collections.Concurrent;
 
 
 
@@ -90,27 +89,54 @@ public class CartDisplay
         int padding = 10;
         int rectWidth = 1000;  // Adjust width for the rectangle
         int rectHeight = 120;  // Adjust height for the rectangle
-        int startX = 50;       // Fixed X position since we only display one item per row
-        int startY = 0;        // Start Y position
+        int startX = 100;       // Fixed X position since we only display one item per row
+        int startY = 150;        // Start Y position
         int numColumns = 1;    // Only one item per row, so columns = 1
 
         // Get the current scroll position
         int scrollOffset = cartPanel.VerticalScroll.Value;
-
+        // Scroll to ensure the selected item is visible
         // Define reusable fonts and brushes
         Font titleFont = new Font("Arial", 14, FontStyle.Bold); // Bolder font for title
         Font detailsFont = new Font("Arial", 12, FontStyle.Regular); // Regular font for details
         Brush textBrush = Brushes.Black;
         Brush priceBrush = Brushes.Green; // Green color for price
-        Pen borderPen = new Pen(Color.Black, 2);
+
+
+
+        Pen borderPen;
         Brush backgroundBrush = new SolidBrush(Color.White); // Solid white background for each item
 
         // Scroll to ensure the selected item is visible
         int targetScrollPosition = cartSelectedItem * (rectHeight + padding);
         cartPanel.AutoScrollPosition = new Point(0, targetScrollPosition);
         // Loop through the cart items and draw them
+
+
+        /*
+              for (int i = 0; i < cart.Count; i++)
+        {
+            if (i == cartSelectedItem)
+            {
+                 borderPen = new Pen(Color.Red, 2);
+            }
+            else
+            {
+                 borderPen = new Pen(Color.Black, 2);
+            }
+        g.DrawRectangle(borderPen, x, y, rectWidth, rectHeight);
+        }
+         */
         for (int i = 0; i < cart.Count; i++)
         {
+            if (i == cartSelectedItem)
+            {
+                borderPen = new Pen(Color.Red, 2);
+            }
+            else
+            {
+                borderPen = new Pen(Color.Black, 2);
+            }
             // Calculate the Y position for the current item
             int row = i;  // Since there's only 1 item per row, we use i directly for the row index
 
@@ -124,12 +150,6 @@ public class CartDisplay
             // Draw the background color of the grid cell (solid color)
             g.FillRectangle(backgroundBrush, x, y, rectWidth, rectHeight);
 
-            if (i == cartSelectedItem) // Assume selectedItemIndex is defined elsewhere
-            {
-                Pen highlightPen = new Pen(Color.Red, 3); // Red border for highlighting
-                g.DrawRectangle(highlightPen, x - 3, y - 3, rectWidth + 6, rectHeight + 6);
-                highlightPen.Dispose(); // Dispose of the pen after use
-            }
 
 
 
@@ -183,14 +203,16 @@ public class CartDisplay
 
             // Draw the quantity in black
             g.DrawString(itemQuantity, detailsFont, textBrush, new PointF(x + 860 + padding, y + padding + 30));
+
+
         }
 
 
         // Dispose of reusable resources after the loop
-        titleFont.Dispose();
-        detailsFont.Dispose();
-        borderPen.Dispose();
-        backgroundBrush.Dispose(); // Dispose of the background brush
+        //titleFont.Dispose();
+        //detailsFont.Dispose();
+        //borderPen.Dispose();
+        //backgroundBrush.Dispose(); // Dispose of the background brush
     }
 
 
@@ -255,18 +277,6 @@ public class CartItem
 
 public class TuioDemo : Form, TuioListener
 {
-    private Config config;
-    private int maxRetries;
-    private Thread sendThread;
-    private TcpClient tcpClient;
-    private Thread receiveThread;
-    private int reconnectTimeout;
-    private NetworkStream networkStream;
-    private bool confirmationReceived = false;
-    private CancellationTokenSource cancellationTokenSource;
-    private BlockingCollection<Tuple<string, string>> sendMessageQueue;
-
-
     private TuioClient client;
     private Dictionary<long, TuioObject> objectList;
     private Dictionary<long, TuioCursor> cursorList;
@@ -286,12 +296,13 @@ public class TuioDemo : Form, TuioListener
     Panel cartPanel = new Panel();
 
 
-    public int page = 5;
+    public int page = 2
+        ;
 
 
 
 
-    string category = "Breakfast";
+    string category = "Lunch";
 
     public int ScreenMode;
 
@@ -305,20 +316,27 @@ public class TuioDemo : Form, TuioListener
 
     public JObject loginResponse;
 
-
+    /*
     List<CartItem> cart = new List<CartItem>
        {
            new CartItem { Name = "Pizza", Price = 18, Quantity = 2, ImagePath = "images/menu/lunch/Chicken_Pasta_Pizza.png" },
-           new CartItem { Name = "french_toast", Price = 12, Quantity = 3, ImagePath = "images\\menu\\breakfast\\french_toast.png"  },
-           new CartItem { Name = "avocado_toast", Price = 15, Quantity = 1, ImagePath = "images\\menu\\breakfast\\avocado_toast.png"  },
-                   new CartItem { Name = "Ice Cream", Price = 18, Quantity = 2, ImagePath = "images\\menu\\dessert\\ice_cream.png" },
-           new CartItem { Name = "Brownies", Price = 12, Quantity = 3, ImagePath = "images\\menu\\dessert\\brownies.png"  },
+           new CartItem { Name = "Burger", Price = 12, Quantity = 3, ImagePath = "images\\menu\\breakfast\\french_toast.png"  },
+           new CartItem { Name = "Pasta", Price = 15, Quantity = 1, ImagePath = "images\\menu\\dessert\\apple_pie.png"  },
+                   new CartItem { Name = "Pizza", Price = 18, Quantity = 2, ImagePath = "images\\menu\\lunch\\Chicken_Pasta_Pizza.png" },
+           new CartItem { Name = "Burger", Price = 12, Quantity = 3, ImagePath = "images\\menu\\breakfast\\french_toast.png"  },
+           new CartItem { Name = "Pasta", Price = 15, Quantity = 1, ImagePath = "images\\menu\\dessert\\apple_pie.png"  },
+             new CartItem { Name = "Pizza", Price = 18, Quantity = 2, ImagePath = "images/menu/lunch/Chicken_Pasta_Pizza.png" },
+           new CartItem { Name = "Burger", Price = 12, Quantity = 3, ImagePath = "images\\menu\\breakfast\\french_toast.png"  },
+           new CartItem { Name = "Pasta", Price = 15, Quantity = 1, ImagePath = "images\\menu\\dessert\\apple_pie.png"  },
+                   new CartItem { Name = "Pizza", Price = 18, Quantity = 2, ImagePath = "images\\menu\\lunch\\Chicken_Pasta_Pizza.png" },
+           new CartItem { Name = "Burger", Price = 12, Quantity = 3, ImagePath = "images\\menu\\breakfast\\french_toast.png"  },
+           new CartItem { Name = "Pasta", Price = 15, Quantity = 1, ImagePath = "images\\menu\\dessert\\apple_pie.png"  },
 
+               };
 
-         };
+    */
 
-
-    //List<CartItem> cart = new List<CartItem>();
+    List<CartItem> cart = new List<CartItem>();
 
 
     List<MenuItem> menu = new List<MenuItem>
@@ -327,48 +345,48 @@ public class TuioDemo : Form, TuioListener
 
 
     // Breakfast items
-    new MenuItem("Pancakes", "Breakfast", false, false, false, 5.99m, "Fluffy pancakes served with maple syrup.", "images/menu/breakfast/pancakes.png"),
-    new MenuItem("Oatmeal", "Breakfast", true, true, true, 4.99m, "Healthy oatmeal topped with fresh fruits.", "images/menu/breakfast/oatmeal.png"),
-    new MenuItem("Scrambled Eggs", "Breakfast", true, true, true, 3.99m, "Classic scrambled eggs with herbs.", "images/menu/breakfast/scrambled_eggs.png"),
-    new MenuItem("Smoothie Bowl", "Breakfast", true, true, true, 6.99m, "Refreshing smoothie bowl with granola.", "images/menu/breakfast/smoothie_bowl.png"),
-    new MenuItem("Avocado Toast", "Breakfast", false, true, true, 7.99m, "Toasted bread topped with mashed avocado.", "images/menu/breakfast/avocado_toast.png"),
-    new MenuItem("Granola Bar", "Breakfast", true, true, true, 2.99m, "Crunchy granola bar with nuts.", "images/menu//breakfast/granola_bar.png"),
-    new MenuItem("Bagel with Cream Cheese", "Breakfast", false, false, false, 3.49m, "Fresh bagel with a spread of cream cheese.", "images/menu/breakfast/bagel_cream_cheese.png"),
-    new MenuItem("Fruit Salad", "Breakfast", true, true, true, 4.49m, "Assorted fresh fruit served chilled.", "images/menu/breakfast/fruit_salad.png"),
-    new MenuItem("Yogurt Parfait", "Breakfast", true, true, true, 5.49m, "Layered yogurt with granola and berries.", "images/menu/breakfast/yogurt_parfait.png"),
-    new MenuItem("Breakfast Burrito", "Breakfast", false, true, true, 8.49m, "Burrito filled with eggs, beans, and cheese.", "images/menu/breakfast/breakfast_burrito.png"),
-    new MenuItem("French Toast", "Breakfast", false, false, false, 6.99m, "Classic French toast served with syrup.", "images/menu/breakfast/french_toast.png"),
-    new MenuItem("Egg Muffin", "Breakfast", true, true, true, 3.99m, "Egg and cheese muffin for a quick bite.", "images/menu/breakfast/egg_muffin.png"),
+    new MenuItem("Pancakes", "Breakfast", false, false, false, 6m, "Fluffy pancakes served with maple syrup.", "images/menu/breakfast/pancakes.png"),
+    new MenuItem("Oatmeal", "Breakfast", true, true, true, 4m, "Healthy oatmeal topped with fresh fruits.", "images/menu/breakfast/oatmeal.png"),
+    new MenuItem("Scrambled Eggs", "Breakfast", true, true, true, 8m, "Classic scrambled eggs with herbs.", "images/menu/breakfast/scrambled_eggs.png"),
+    new MenuItem("Smoothie Bowl", "Breakfast", true, true, true, 8m, "Refreshing smoothie bowl with granola.", "images/menu/breakfast/smoothie_bowl.png"),
+    new MenuItem("Avocado Toast", "Breakfast", false, true, true, 8m, "Toasted bread topped with mashed avocado.", "images/menu/breakfast/avocado_toast.png"),
+    new MenuItem("Granola Bar", "Breakfast", true, true, true, 10m, "Crunchy granola bar with nuts.", "images/menu//breakfast/granola_bar.png"),
+    new MenuItem("Bagel with Cream Cheese", "Breakfast", false, false, false, 4m, "Fresh bagel with a spread of cream cheese.", "images/menu/breakfast/bagel_cream_cheese.png"),
+    new MenuItem("Fruit Salad", "Breakfast", true, true, true, 4m, "Assorted fresh fruit served chilled.", "images/menu/breakfast/fruit_salad.png"),
+    new MenuItem("Yogurt Parfait", "Breakfast", true, true, true, 4m, "Layered yogurt with granola and berries.", "images/menu/breakfast/yogurt_parfait.png"),
+    new MenuItem("Breakfast Burrito", "Breakfast", false, true, true, 8m, "Burrito filled with eggs, beans, and cheese.", "images/menu/breakfast/breakfast_burrito.png"),
+    new MenuItem("French Toast", "Breakfast", false, false, false, 6m, "Classic French toast served with syrup.", "images/menu/breakfast/french_toast.png"),
+    new MenuItem("Egg Muffin", "Breakfast", true, true, true, 6m, "Egg and cheese muffin for a quick bite.", "images/menu/breakfast/egg_muffin.png"),
 
 
     //Lunch
-    new MenuItem("Grilled Chicken", "Lunch", false, true, true, 11.99m, "Juicy grilled chicken seasoned to perfection.", "images/menu/lunch/Grilled_Chicken.png"),
-    new MenuItem("Tandori Pizza", "Lunch", false, false, true, 14.99m, "Spicy Tandori chicken pizza with a crispy crust.", "images/menu/lunch/Tandori_Pizza.png"),
-    new MenuItem("Meat Lovers", "Lunch", false, false, false, 15.99m, "Loaded with assorted meats and cheese.", "images/menu/lunch/Meat_Lovers.png"),
-    new MenuItem("Hot N Spicy Beef", "Lunch", false, false, false, 13.99m, "Beef pizza with a spicy kick.", "images/menu/lunch/Hot_N_Spicy_Beef.png"),
-    new MenuItem("Vegetarian Pizza", "Lunch", true, true, true, 12.99m, "Loaded with fresh vegetables and cheese.", "images/menu/lunch/veg.png"),
-    new MenuItem("Tuna Delight", "Lunch", true, true, true, 10.99m, "Tuna pizza with fresh toppings and cheese.", "images/menu/lunch/Tuna.png"),
-    new MenuItem("Pepperoni Pizza", "Lunch", false, false, false, 13.49m, "Classic pepperoni pizza with a golden crust.", "images/menu/lunch/Pepperoni.png"),
-    new MenuItem("Supreme Chicken", "Lunch", false, true, true, 14.99m, "Supreme chicken pizza with assorted toppings.", "images/menu/lunch/Supreme_Chicken.png"),
-    new MenuItem("Seafood Pizza", "Lunch", true, true, true, 15.49m, "Fresh seafood pizza with premium ingredients.", "images/menu/lunch/Seafood.png"),
-    new MenuItem("BBQ Chicken Pizza", "Lunch", false, true, true, 14.99m, "BBQ chicken pizza with smoky flavors.", "images/menu/lunch/BBQ_Chicken.png"),
-    new MenuItem("Chicken Ranch Pizza", "Lunch", false, true, true, 13.99m, "Chicken ranch pizza with creamy ranch sauce.", "images/menu/lunch/Chicken_Ranch.png"),
-    new MenuItem("Margarita Pizza", "Lunch", true, true, true, 11.99m, "Classic Margarita pizza with fresh basil.", "images/menu/lunch/Margarita.png"),
+    new MenuItem("Grilled Chicken", "Lunch", false, true, true, 12m, "Juicy grilled chicken seasoned to perfection.", "images/menu/lunch/Grilled_Chicken.png"),
+    new MenuItem("Tandori Pizza", "Lunch", false, false, true, 12m, "Spicy Tandori chicken pizza with a crispy crust.", "images/menu/lunch/Tandori_Pizza.png"),
+    new MenuItem("Meat Lovers", "Lunch", false, false, false, 16m, "Loaded with assorted meats and cheese.", "images/menu/lunch/Meat_Lovers.png"),
+    new MenuItem("Hot N Spicy Beef", "Lunch", false, false, false, 14m, "Beef pizza with a spicy kick.", "images/menu/lunch/Hot_N_Spicy_Beef.png"),
+    new MenuItem("Vegetarian Pizza", "Lunch", true, true, true, 10m, "Loaded with fresh vegetables and cheese.", "images/menu/lunch/veg.png"),
+    new MenuItem("Tuna Delight", "Lunch", true, true, true, 10m, "Tuna pizza with fresh toppings and cheese.", "images/menu/lunch/Tuna.png"),
+    new MenuItem("Pepperoni Pizza", "Lunch", false, false, false, 12m, "Classic pepperoni pizza with a golden crust.", "images/menu/lunch/Pepperoni.png"),
+    new MenuItem("Supreme Chicken", "Lunch", false, true, true, 14m, "Supreme chicken pizza with assorted toppings.", "images/menu/lunch/Supreme_Chicken.png"),
+    new MenuItem("Seafood Pizza", "Lunch", true, true, true, 16m, "Fresh seafood pizza with premium ingredients.", "images/menu/lunch/Seafood.png"),
+    new MenuItem("BBQ Chicken Pizza", "Lunch", false, true, true, 16m, "BBQ chicken pizza with smoky flavors.", "images/menu/lunch/BBQ_Chicken.png"),
+    new MenuItem("Chicken Ranch Pizza", "Lunch", false, true, true, 12m, "Chicken ranch pizza with creamy ranch sauce.", "images/menu/lunch/Chicken_Ranch.png"),
+    new MenuItem("Margarita Pizza", "Lunch", true, true, true, 12m, "Classic Margarita pizza with fresh basil.", "images/menu/lunch/Margarita.png"),
     
 
     // Dessert items
-    new MenuItem("Cheesecake", "Dessert", false, false, false, 6.99m, "Rich and creamy cheesecake.", "images/menu/dessert/cheesecake.png"),
-    new MenuItem("Cookies", "Dessert", false, false, false, 2.99m, "Freshly baked cookies.", "images/menu/dessert/cookies.png"),
-    new MenuItem("Chocolate Cake", "Dessert", false, false, false, 6.99m, "Rich chocolate cake with frosting.", "images/menu/dessert/chocolate_cake.png"),
-    new MenuItem("Cupcakes", "Dessert", false, false, false, 3.99m, "Decorated cupcakes with frosting.", "images/menu/dessert/cupcakes.png"),
-    new MenuItem("Ice Cream", "Dessert", false, false, false, 3.99m, "Creamy ice cream in various flavors.", "images/menu/dessert/ice_cream.png"),
-    new MenuItem("Pudding", "Dessert", true, false, false, 2.99m, "Smooth and creamy pudding.", "images/menu/dessert/pudding.png"),
-    new MenuItem("Brownies", "Dessert", false, false, false, 5.49m, "Chocolate brownies with a fudgy center.", "images/menu/dessert/brownies.png"),
-    new MenuItem("Apple Pie", "Dessert", false, false, false, 5.99m, "Traditional apple pie with spices.", "images/menu/dessert/apple_pie.png"),
-    new MenuItem("Lemon Sorbet", "Dessert", true, true, true, 3.99m, "Refreshing lemon sorbet.", "images/menu/dessert/lemon_sorbet.png"),
-    new MenuItem("Mousse", "Dessert", false, false, false, 4.49m, "Light and airy mousse.", "images/menu/dessert/mousse.png"),
-    new MenuItem("Fruit Salad", "Dessert", true, true, true, 4.49m, "Fresh and healthy fruit salad.", "images/menu/dessert/fruit_salad.png"),
-    new MenuItem("Frozen Yogurt", "Dessert", true, true, true, 4.99m, "Healthy frozen yogurt with toppings.", "images/menu/dessert/frozen_yogurt.png")
+    new MenuItem("Cheesecake", "Dessert", false, false, false, 8m, "Rich and creamy cheesecake.", "images/menu/dessert/cheesecake.png"),
+    new MenuItem("Cookies", "Dessert", false, false, false, 4m, "Freshly baked cookies.", "images/menu/dessert/cookies.png"),
+    new MenuItem("Chocolate Cake", "Dessert", false, false, false, 10m, "Rich chocolate cake with frosting.", "images/menu/dessert/chocolate_cake.png"),
+    new MenuItem("Cupcakes", "Dessert", false, false, false, 4m, "Decorated cupcakes with frosting.", "images/menu/dessert/cupcakes.png"),
+    new MenuItem("Ice Cream", "Dessert", false, false, false, 4m, "Creamy ice cream in various flavors.", "images/menu/dessert/ice_cream.png"),
+    new MenuItem("Pudding", "Dessert", true, false, false, 4m, "Smooth and creamy pudding.", "images/menu/dessert/pudding.png"),
+    new MenuItem("Brownies", "Dessert", false, false, false, 12m, "Chocolate brownies with a fudgy center.", "images/menu/dessert/brownies.png"),
+    new MenuItem("Apple Pie", "Dessert", false, false, false, 12m, "Traditional apple pie with spices.", "images/menu/dessert/apple_pie.png"),
+    new MenuItem("Lemon Sorbet", "Dessert", true, true, true, 12m, "Refreshing lemon sorbet.", "images/menu/dessert/lemon_sorbet.png"),
+    new MenuItem("Mousse", "Dessert", false, false, false, 12m, "Light and airy mousse.", "images/menu/dessert/mousse.png"),
+    new MenuItem("Fruit Salad", "Dessert", true, true, true, 10m, "Fresh and healthy fruit salad.", "images/menu/dessert/fruit_salad.png"),
+    new MenuItem("Frozen Yogurt", "Dessert", true, true, true, 10m, "Healthy frozen yogurt with toppings.", "images/menu/dessert/frozen_yogurt.png")
 };
 
 
@@ -378,7 +396,7 @@ public class TuioDemo : Form, TuioListener
     new Topping { Name = "Peppers", Price = 5, ImgPath = "images/custom/Peppers.png", Quantity = 0 },
     new Topping { Name = "Tomatoes", Price = 5, ImgPath = "images/custom/Tomatoes.png", Quantity = 0 },
     new Topping { Name = "Onions", Price = 5, ImgPath = "images/custom/Onions.png", Quantity = 0 },
-    new Topping { Name = "Olives", Price = 5, ImgPath = "images/custom/Olives.png", Quantity = 0 },
+    //new Topping { Name = "Olives", Price = 5, ImgPath = "images/custom/Olives.png", Quantity = 0 },
     new Topping { Name = "Mushrom", Price = 10, ImgPath = "images/custom/Mushrom.png", Quantity = 0 }
 };
 
@@ -399,6 +417,26 @@ public class TuioDemo : Form, TuioListener
     private bool verbose;
 
 
+    private void HandleMessageFromServer(TcpClient client)
+    {
+        try
+        {
+            NetworkStream stream = client.GetStream();
+            byte[] buffer = new byte[1024];
+            int bytesRead = stream.Read(buffer, 0, buffer.Length);
+            string message = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+            string response = ProcessReceivedMessage(message);
+            byte[] responseBytes = Encoding.ASCII.GetBytes(response);
+            stream.Write(responseBytes, 0, responseBytes.Length);
+        }
+        catch (Exception ex)
+        {
+            string errorMessage = "Error receiving or sending message: " + ex.Message;
+            byte[] errorBytes = Encoding.ASCII.GetBytes(errorMessage);
+            NetworkStream stream = client.GetStream();
+            stream.Write(errorBytes, 0, errorBytes.Length);
+        }
+    }
 
 
     bool mediapipeCheckout = false;
@@ -418,7 +456,64 @@ public class TuioDemo : Form, TuioListener
 
 
 
- 
+    private string ProcessReceivedMessage(string message)
+    {
+        // Parse the JSON message
+        dynamic parsedMessage = JsonConvert.DeserializeObject(message);
+
+        // Extract the operation and data
+        string operation = parsedMessage.operation;
+        string data = parsedMessage.data;
+
+        if (operation == "MediaPipe")
+        {
+            if (data.Contains("Checkout"))
+            {
+                mediapipeCheckout = true;
+            }
+            else if (data.Contains("AddToCart"))
+            {
+                mediapipeAddtocart = true;
+            }
+            else if (data.Contains("Home"))
+            {
+                mediapipeHome = true;
+            }
+            else if (data.Contains("swipe left"))
+            {
+                mediapipeSwipeLeft = true;
+            }
+            else if (data.Contains("swipe right"))
+            {
+                mediapipeSwipeRight = true;
+            }
+        }
+        else if (operation == "YOLO")
+        {
+            if (data.Contains("Onions"))
+            {
+                yoloOnions = true;
+            }
+            else if (data.Contains("Peppers"))
+            {
+                yoloPeppers = true;
+            }
+            else if (data.Contains("Mushrooms"))
+            {
+                yoloMushrooms = true;
+            }
+            else if (data.Contains("Tomatoes"))
+            {
+                yoloTomatoes = true;
+            }
+            else if (data.Contains("Olives"))
+            {
+                yoloOlives = true;
+            }
+        }
+
+        return "";
+    }
 
 
 
@@ -433,7 +528,7 @@ public class TuioDemo : Form, TuioListener
 
     private JObject PerformCRUDOperation(string operation, object data)
     {
-        string serverIp = "192.168.1.17";  // Replace with your server's IP address
+        string serverIp = "192.168.1.13";  // Replace with your server's IP address
         int serverPort = 1010;              // Replace with your server's port number
         try
         {
@@ -527,6 +622,8 @@ public class TuioDemo : Form, TuioListener
 
 
 
+    public Label myLabel;
+    public System.Windows.Forms.Timer timer;
 
     public TuioDemo(int port)
     {
@@ -557,254 +654,43 @@ public class TuioDemo : Form, TuioListener
 
         this.Load += new System.EventHandler(this.TuioDemo_Load);
 
-        // Read the configuration from the config file
-        config = Config.ReadConfig("../../../../../Backend/Server/config.json");
-        maxRetries = config.client.maxRetries;
-        reconnectTimeout = config.client.reconnectTimeout;
-        sendMessageQueue = new BlockingCollection<Tuple<string, string>>();  // Queue to hold operation and data
-        cancellationTokenSource = new CancellationTokenSource();
-
-        // Start the connection and handling threads
-        InitializeSocketConnection();
-
-
-     
+        client = new TuioClient(port);
+        client.addTuioListener(this);
         InitializeComponent();
-      
-    }
-    private void InitializeSocketConnection()
-    {
-        try
+        client.connect();
+
+        // Initialize the label
+        myLabel = new Label
         {
-            tcpClient = new TcpClient(config.server.IP, config.server.port);
-            networkStream = tcpClient.GetStream();
+            Text = "",               // Empty text by default
+            Visible = false,         // Hidden by default
+            AutoSize = true,         // Automatically resize based on content
+            Location = new Point(50, 100), // Set x and y coordinates
+            Font = new Font("Arial", 12, FontStyle.Bold),
+            ForeColor = Color.Black,
+        };
 
-            // Start receiving and sending data in separate threads
-            receiveThread = new Thread(() => ReceiveData(cancellationTokenSource.Token));
-            receiveThread.Start();
+        // Add the label to the form
+        this.Controls.Add(myLabel);
 
-            sendThread = new Thread(() => SendMessages(cancellationTokenSource.Token));
-            sendThread.Start();
-        }
-        catch (Exception ex)
+        // Initialize the timer
+        timer = new System.Windows.Forms.Timer
         {
-            // Handle connection error silently
-        }
-    }
-    private void SendMessages(CancellationToken token)
-    {
-        int retries = 0;
-        while (retries < maxRetries)
+            Interval = 5000 // 5 seconds
+        };
+        timer.Tick += (s, e) =>
         {
-            try
-            {
-                foreach (var message in sendMessageQueue.GetConsumingEnumerable())
-                {
-                    // Check for cancellation
-                    if (token.IsCancellationRequested)
-                    {
-                        return; // Gracefully exit if cancellation is requested
-                    }
-
-                    // Send the message (operation and data)
-                    SendMessage(message.Item1, message.Item2);  // message.Item1 is operation, message.Item2 is data
-
-                    // Wait for confirmation
-                    bool confirmed = WaitForConfirmation();
-                    if (confirmed)
-                    {
-                        // Successful message send, do nothing
-                    }
-                    else
-                    {
-                        retries++;
-                        if (retries >= maxRetries)
-                        {
-                            break; // Max retries reached, stop sending
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                // Handle sending error silently
-            }
-        }
+            myLabel.Visible = false; // Hide the label
+            timer.Stop();            // Stop the timer
+        };
     }
 
 
 
-    private bool WaitForConfirmation()
-    {
-        // Use reconnectTimeout from config
-        int timeout = reconnectTimeout;  // Convert seconds to milliseconds
-        int elapsed = 0;
-        while (elapsed < timeout)
-        {
-            Thread.Sleep(100);
-            elapsed += 100;
-            // Check if confirmation has been received
-            if (confirmationReceived) return true;
-        }
-        return false;
-    }
-
-    private void SendMessage(string operation, string data)
-    {
-        // Create a message containing both operation and data
-        string jsonMessage = JsonConvert.SerializeObject(new
-        {
-            operation = operation,
-            data = data
-        });
-
-        byte[] dataBytes = Encoding.UTF8.GetBytes(jsonMessage);
-        networkStream.Write(dataBytes, 0, dataBytes.Length);
-        networkStream.Flush();
-    }
-
-    private void ReceiveData(CancellationToken token)
-    {
-        byte[] buffer = new byte[1024];
-        while (!token.IsCancellationRequested)
-        {
-            try
-            {
-                // Non-blocking read check
-                if (networkStream.DataAvailable)
-                {
-                    int bytesRead = networkStream.Read(buffer, 0, buffer.Length);
-                    if (bytesRead > 0)
-                    {
-                        string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                        HandleServerMessage(receivedMessage);
-                    }
-                }
-                else
-                {
-                    Thread.Sleep(100); // Sleep briefly if no data is available
-                }
-            }
-            catch (Exception ex)
-            {
-                if (!token.IsCancellationRequested)
-                {
-                    // Handle receiving error silently
-                }
-                break;
-            }
-        }
-    }
 
 
-    private void HandleServerMessage(string receivedMessage)
-    {
-        try
-        {
-            var jsonMessage = JsonConvert.DeserializeObject<dynamic>(receivedMessage);
-            string operation = jsonMessage.operation;
-            string data = jsonMessage.data;
 
-            // Process the message based on the operation
-            if (operation == "MediaPipe")
-            {
-                if (data.Contains("Checkout"))
-                {
-                    mediapipeCheckout = true;
-                }
-                else if (data.Contains("AddToCart"))
-                {
-                    mediapipeAddtocart = true;
-                }
-                else if (data.Contains("Home"))
-                {
-                    mediapipeHome = true;
-                }
-                else if (data.Contains("swipe left"))
-                {
-                    mediapipeSwipeLeft = true;
-                }
-                else if (data.Contains("swipe right"))
-                {
-                    mediapipeSwipeRight = true;
-                }
-            }
-            else if (operation == "YOLO")
-            {
-                if (data.Contains("Onions"))
-                {
-                    yoloOnions = true;
-                }
-                else if (data.Contains("Peppers"))
-                {
-                    yoloPeppers = true;
-                }
-                else if (data.Contains("Mushrooms"))
-                {
-                    yoloMushrooms = true;
-                }
-                else if (data.Contains("Tomatoes"))
-                {
-                    yoloTomatoes = true;
-                }
-                else if (data.Contains("Olives"))
-                {
-                    yoloOlives = true;
-                }
-            }
 
-            // If the message is not a confirmation, show it in a MessageBox
-            if (!receivedMessage.Contains("confirmation"))
-            {
-                MessageBox.Show($"Received message from server: {receivedMessage}");
-            }
-
-            // Send a confirmation back to the server
-            SendMessage($"I've received the message {receivedMessage}", "confirmation");
-
-            // Mark the confirmation as received
-            confirmationReceived = true;
-        }
-        catch (Exception ex)
-        {
-            // Handle server message handling error silently
-        }
-
-        //haidy
-        // Extract the operation and data
-       
-    }
-
-    protected override void OnFormClosing(FormClosingEventArgs e)
-    {
-        // Hide the form immediately
-        this.Hide();
-
-        // Gracefully cancel and wait for threads to finish
-        cancellationTokenSource.Cancel(); // Signal threads to stop
-
-        // Check if threads are running and try to join them
-        if (receiveThread != null && receiveThread.IsAlive)
-        {
-            // Give it a little time to exit, if not, force the exit
-            receiveThread.Join(1000); // Wait 1 second for the thread to complete
-        }
-
-        if (sendThread != null && sendThread.IsAlive)
-        {
-            // Give it a little time to exit, if not, force the exit
-            sendThread.Join(1000); // Wait 1 second for the thread to complete
-        }
-
-        // Close the TCP connection and ensure the application exits
-        if (tcpClient != null)
-        {
-            tcpClient.Close();
-        }
-
-        // Exit the application
-        System.Windows.Forms.Application.Exit();
-    }
 
 
     private void Form_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
@@ -1093,8 +979,8 @@ public class TuioDemo : Form, TuioListener
 
                     switch (tobj.SymbolID)
                     {
-                        case 0:
-                            page = 7;
+                        case 50:
+                            page = 2;
                             break;
                         case 1:
                             this.Close();
@@ -1206,6 +1092,29 @@ public class TuioDemo : Form, TuioListener
                     g.DrawImage(backgroundImage, new Rectangle(0, 0, this.Width, this.Height));
                 }
             }
+
+            // Set the circle location and size
+            int circleX = 1300;  // X position of the circle
+            int circleY = 625;  // Y position of the circle
+            int circleDiameter = 50; // Smaller diameter of the circle
+
+            // Draw the white circle
+            g.FillEllipse(Brushes.White, new Rectangle(circleX, circleY, circleDiameter, circleDiameter));
+
+            // Draw the text inside the circle
+            string text = cart.Count.ToString();  // Convert cart.Count to string
+            Font textFont = new Font("Arial", 12, FontStyle.Bold); // Font for text
+            Brush textBrush = Brushes.Black;  // Text color
+
+            // Calculate the position for the text to be centered inside the circle
+            float textWidth = g.MeasureString(text, textFont).Width;
+            float textHeight = g.MeasureString(text, textFont).Height;
+            float textX = circleX + (circleDiameter - textWidth) / 2;  // Center the text horizontally inside the circle
+            float textY = circleY + (circleDiameter - textHeight) / 2; // Center the text vertically inside the circle
+
+            // Draw the text
+            g.DrawString(text, textFont, textBrush, textX, textY);
+
         }
         else if (page == 4)
         {
@@ -1232,6 +1141,28 @@ public class TuioDemo : Form, TuioListener
                     g.DrawImage(backgroundImage, new Rectangle(0, 0, this.Width, this.Height));
                 }
             }
+
+            // Set the circle location and size
+            int circleX = 1300;  // X position of the circle
+            int circleY = 625;  // Y position of the circle
+            int circleDiameter = 50; // Smaller diameter of the circle
+
+            // Draw the white circle
+            g.FillEllipse(Brushes.White, new Rectangle(circleX, circleY, circleDiameter, circleDiameter));
+
+            // Draw the text inside the circle
+            string text = cart.Count.ToString();  // Convert cart.Count to string
+            Font textFont = new Font("Arial", 12, FontStyle.Bold); // Font for text
+            Brush textBrush = Brushes.Black;  // Text color
+
+            // Calculate the position for the text to be centered inside the circle
+            float textWidth = g.MeasureString(text, textFont).Width;
+            float textHeight = g.MeasureString(text, textFont).Height;
+            float textX = circleX + (circleDiameter - textWidth) / 2;  // Center the text horizontally inside the circle
+            float textY = circleY + (circleDiameter - textHeight) / 2; // Center the text vertically inside the circle
+
+            // Draw the text
+            g.DrawString(text, textFont, textBrush, textX, textY);
         }
         else if (page == 5)
         {
@@ -1253,7 +1184,8 @@ public class TuioDemo : Form, TuioListener
         }
         else if (page == 6)
         {
-            string path = (ScreenMode == 0) ? "confirmed_light.png" : "confirmed_dark.png";
+            //osama
+            string path = "confirmed_light.png";
 
             try
             {
@@ -1318,79 +1250,78 @@ public class TuioDemo : Form, TuioListener
 
     private void CartPanel_Paint(object sender, PaintEventArgs e)
     {
-        // Call the DrawItems method to render the cart items
+        //Call the DrawItems method to render the cart items
         cartDisplay.DrawItems(e.Graphics);
     }
+
+
+
+    int h = 1;
+    // fe mushkla hena enu kol mara el cartDisplay bybda2 mn null kol mara bndh feha drawpagecheckout
     void drawPageCheckOut(Graphics g)
     {
         drawMainMenuBackground(g);
 
+
+
         // Check if the cartPanel already exists
-        if (cartPanel == null || !this.Controls.Contains(cartPanel))
+        if (!this.Controls.Contains(cartPanel)) //|| !this.Controls.Contains(cartPanel))
         {
             // Create the Panel if it doesn't exist
             cartPanel = new Panel
             {
-                Location = new Point(70, 100),
-                Size = new Size(1100, 700),
+                Location = new Point(200, 500),
+                Size = new Size(1400, 1000),
                 AutoScroll = true,
                 BackColor = Color.Transparent
             };
+
+            typeof(Panel).InvokeMember("DoubleBuffered",
+    System.Reflection.BindingFlags.SetProperty |
+    System.Reflection.BindingFlags.Instance |
+    System.Reflection.BindingFlags.NonPublic,
+    null, cartPanel, new object[] { true });
+
+
             // Add the Panel to the form's controls
             this.Controls.Add(cartPanel);
-            cartDisplay = new CartDisplay(cartPanel, cart);
 
-            // Subscribe to the Paint event of the panel
-            cartPanel.Paint += CartPanel_Paint;
+            // Initialize cartDisplay with the newly created panel
+            if (cartDisplay == null)
+            {
+                //MessageBox.Show("ahu yabnelwes5a");
+                cartDisplay = new CartDisplay(cartPanel, cart);
+            }
+
 
             // Adjust the panel height for scrolling based on content
-            cartDisplay.SetPanelHeight();
+            //cartDisplay.SetPanelHeight();
         }
-        else
+
+        if (cartDisplay != null)
         {
-            // If the panel already exists, ensure it's visible or updated
-            cartPanel.Visible = true;
+            cartDisplay.DrawItems(g);
         }
-        // Create the CartDisplay instance and pass the panel and cart items
+        //cartDisplay.DrawItems(cartPanel.CreateGraphics());
 
-
-        if (ScreenMode == 0)
-        {
-            page = 5;
-            category = "CheckOut";
-            return;
-        }
-
+        // Calculate the total price
         decimal totalPrice = 0;
-
-        // Calculate total price by multiplying price by quantity for each item and adding toppings price
-        foreach (var item in cart)
+        decimal totalPriceAfterTax = 0;
+        foreach (var item in cart) // Assuming cart.Items is a collection of cart items
         {
-            // Add item price to the total, considering the quantity
-            totalPrice += item.Price;
+            totalPrice += item.Price * item.Quantity; // Adjust based on your cart structure
 
-            // If the item has toppings, add the toppings' price as well
-            if (item.Toppings != null)
-            {
-                foreach (var topping in item.Toppings)
-                {
-                    totalPrice += topping.Price;
-                }
-            }
         }
+        totalPriceAfterTax = totalPrice + (totalPrice * 0.24m); // Use 0.24m for decimal division
 
-        string totalPricee1 = totalPrice.ToString("F2");
-        string totalPricee2 = (totalPrice * 1.24m).ToString("F2");
+        // Display the total price at location (0, 0)
+        Font totalFont = new Font("Arial", 16, FontStyle.Bold);
+        Brush totalBrush = Brushes.Green;
+        string totalPriceText = $" ${totalPrice:0.00}";
+        string totalPriceAfterTaxText = $" ${totalPriceAfterTax:0.00}";
+        g.DrawString(totalPriceText, totalFont, totalBrush, new PointF(1435, 205));
+        g.DrawString(totalPriceAfterTaxText, totalFont, totalBrush, new PointF(1435, 370));
 
-
-        // Define reusable fonts and brushes
-        Font titleFont = new Font("Arial", 14, FontStyle.Bold); // Bolder font for title
-        Font detailsFont = new Font("Arial", 20, FontStyle.Bold); // Regular font for details
-        Brush priceBrush = Brushes.Orange; // Orange color for price
-
-        // Draw the price in orange
-        g.DrawString(totalPricee1, titleFont, priceBrush, new PointF(1550, 256));
-        g.DrawString(totalPricee2, titleFont, priceBrush, new PointF(1550, 465));
 
         // Lunch or Dessert or Build ur Own
         // Copy of cursorList to safely iterate
@@ -1429,9 +1360,10 @@ public class TuioDemo : Form, TuioListener
         }
 
 
-
         if (objectCopy.Count > 0)
         {
+
+
 
             lock (objectRectangles)
             {
@@ -1450,16 +1382,21 @@ public class TuioDemo : Form, TuioListener
 
                     switch (tobj.SymbolID)
                     {
-                        case 6:
+                        case 50:
+                            page = 2;
+                            break;
+                        case 102:
                             page = 6;
                             break;
 
-                        case 15:
-                            changeCartSelectedItem(angleDegrees);
+                        case 112:
+                            changeCartSelectedItem(angleDegrees, g);
+
                             break;
 
-                        case 5:
+                        case 110:
                             changeCartQuantity(angleDegrees);
+
                             break;
 
 
@@ -1474,7 +1411,6 @@ public class TuioDemo : Form, TuioListener
 
     }
 
-
     bool isTUIOAppeared3 = false;
     void changeCartQuantity(float angle)
     {
@@ -1488,18 +1424,17 @@ public class TuioDemo : Form, TuioListener
         float angleDifference = (angle - prevAngle);
         this.Text = "prev" + prevAngle + " " + "Curr" + angleDifference;
 
-        if (angleDifference >= 35)
+        if (angleDifference >= 30)
         {
             // Calculate price per item dynamically based on the current state
             decimal pricePerItem = cart[cartDisplay.cartSelectedItem].Quantity > 0 ? cart[cartDisplay.cartSelectedItem].Price / cart[cartDisplay.cartSelectedItem].Quantity : 0;
 
             cart[cartDisplay.cartSelectedItem].Quantity += 1;
-            cart[cartDisplay.cartSelectedItem].Price =
-                Math.Round(cart[cartDisplay.cartSelectedItem].Price + pricePerItem, 2);
+            cart[cartDisplay.cartSelectedItem].Price += pricePerItem; // Increment price by price per item
 
             prevAngle = angle;
         }
-        else if (angleDifference <= -15)
+        else if (angleDifference <= -30)
         {
             decimal pricePerItem = cart[cartDisplay.cartSelectedItem].Quantity > 0 ? cart[cartDisplay.cartSelectedItem].Price / cart[cartDisplay.cartSelectedItem].Quantity : 0;
 
@@ -1509,7 +1444,7 @@ public class TuioDemo : Form, TuioListener
             prevAngle = angle;
         }
 
-        if (angleDifference >= 15)
+        /*if (angleDifference >= 30)
         {
 
             cart[cartDisplay.cartSelectedItem].Quantity += 1;
@@ -1518,28 +1453,23 @@ public class TuioDemo : Form, TuioListener
         }
         else if (angleDifference <= -15)
         {
-            cart[cartDisplay.cartSelectedItem].Quantity += 1;
-
-            if (cart[cartDisplay.cartSelectedItem].Quantity <= 0)
-            {
-               /// cart.RemoveAt(cartDisplay.cartSelectedItem);
-
-            }
+            cart[cartDisplay.cartSelectedItem].Quantity -= 1;
 
             prevAngle = angle;
-        }
+        }*/
 
     }
 
 
     bool isTUIOAppeared2 = false;
 
-    void changeCartSelectedItem(float angle)
+    void changeCartSelectedItem(float angle, Graphics g)
     {
         if (!isTUIOAppeared2)
         {
             prevAngle = angle;
             isTUIOAppeared2 = true;
+
             return;
         }
 
@@ -1552,6 +1482,7 @@ public class TuioDemo : Form, TuioListener
             if (cartDisplay.cartSelectedItem < cart.Count - 1)
             {
                 cartDisplay.cartSelectedItem += 1;
+
             }
             prevAngle = angle;
         }
@@ -1560,9 +1491,15 @@ public class TuioDemo : Form, TuioListener
             if (cartDisplay.cartSelectedItem > 0)
             {
                 cartDisplay.cartSelectedItem -= 1;
+
             }
             prevAngle = angle;
         }
+
+        cartDisplay.DrawItems(g);
+
+        cartPanel.Invalidate(); // or cartPanel.Refresh();
+
 
 
     }
@@ -1614,9 +1551,9 @@ public class TuioDemo : Form, TuioListener
 
         if (ScreenMode == 0)
         {
-            page = 1;
-            category = "Breakfast";
-            return;
+            //page = 1;
+            //category = "Breakfast";
+            //return;
         }
 
 
@@ -1678,7 +1615,7 @@ public class TuioDemo : Form, TuioListener
 
                     switch (tobj.SymbolID)
                     {
-                        case 4:
+                        case 101:
                             loginResponse = PerformCRUDOperation("Start", null);
                             //MessageBox.Show("" + response);
                             category = "recommendation";
@@ -1798,9 +1735,9 @@ public class TuioDemo : Form, TuioListener
 
         if (ScreenMode == 0)
         {
-            page = 3;
-            category = "Breakfast";
-            return;
+            // page = 3;
+            //category = "Breakfast";
+            //return;
         }
 
         drawMainMenuBackground(g);
@@ -1863,15 +1800,19 @@ public class TuioDemo : Form, TuioListener
 
                     switch (tobj.SymbolID)
                     {
-                        case 1:
+
+                        case 50:
+                            // page = 0;
+                            break;
+                        case 60:
                             category = "Lunch";
                             page = 3;
                             break;
-                        case 2:
+                        case 61:
                             category = "Custom";
                             page = 4;
                             break;
-                        case 3:
+                        case 62:
                             category = "Dessert";
                             page = 3;
                             break;
@@ -1963,9 +1904,11 @@ public class TuioDemo : Form, TuioListener
 
 
         // draw the quantity of the toppings
-        int spacing = 40;
-        int yPosition = 755;
-        int xPosition = 410;
+        int yPosition = 745;
+        int xPosition = 400;
+
+        int spacing = 45;
+
         font = new Font("Arial", 18);
         Brush brush = Brushes.Black;
         foreach (var topping in toppings)
@@ -1973,7 +1916,8 @@ public class TuioDemo : Form, TuioListener
             g.DrawString($"{topping.Quantity}", font, brush, new PointF(xPosition, yPosition));
             yPosition += spacing;
         }
-
+        //yPosition = 755;
+        //xPosition = 410;
 
         // Handle Mediapipe
         if (mediapipeCheckout)
@@ -2002,7 +1946,8 @@ public class TuioDemo : Form, TuioListener
                         Quantity = t.Quantity
                     }).ToList()
                 });
-                this.Text = "ddd" + cart.Count;
+                this.Text = "Cart" + cart.Count;
+
 
                 CartToppings.Clear();
             }
@@ -2054,6 +1999,7 @@ public class TuioDemo : Form, TuioListener
                     existingTopping.Quantity++;
                 }
 
+
                 // Draw the topping on the screen
                 string toppingPath = topping.ImgPath;
 
@@ -2078,7 +2024,7 @@ public class TuioDemo : Form, TuioListener
             {
                 objectRectangles.Clear();
 
-                TuioObject id15Object = objectCopy.Find(obj => obj.SymbolID == 15);
+                TuioObject id15Object = objectCopy.Find(obj => obj.SymbolID == 111);
 
 
 
@@ -2090,15 +2036,16 @@ public class TuioDemo : Form, TuioListener
                     {
 
 
-                        case 5:
+                        case 50:
                             page = 2;
                             break;
-                        case 6:
+                        case 51:
                             page = 5;
                             break;
 
-                        case 7:
+                        case 53:
 
+                            this.Text = CartToppings.Count + " ";
                             isIDCartCustom = 1;
                             if (CartToppings.Count > 0 && canAddToCartCustom)
                             {
@@ -2117,9 +2064,11 @@ public class TuioDemo : Form, TuioListener
                                         Quantity = t.Quantity
                                     }).ToList()
                                 });
-                                this.Text = "ddd" + cart.Count;
+                                this.Text = "Cart Items" + cart.Count;
+                                string cartString = GetCartAsString();
+                                //MessageBox.Show(cartString);
 
-                                CartToppings.Clear();
+                                //CartToppings.Clear();
                             }
                             //string cartDetails = GetCartAsString();
                             //MessageBox.Show(cartDetails);
@@ -2136,7 +2085,7 @@ public class TuioDemo : Form, TuioListener
 
                         int offset = 550;
 
-                        if (tobj.SymbolID >= 16 && tobj.SymbolID < 21)
+                        if (tobj.SymbolID >= 80 && tobj.SymbolID < 84)
                         {
                             int objX = tobj.getScreenX(width);
                             int objY = tobj.getScreenY(height);
@@ -2145,9 +2094,9 @@ public class TuioDemo : Form, TuioListener
                             if (Math.Abs(objX - id15X) <= offset && Math.Abs(objY - id15Y) <= offset)
                             {
                                 // Topping appears
-                                int toppingIndex = tobj.SymbolID - 16;
+                                int toppingIndex = tobj.SymbolID - 80;
                                 var topping = toppings[toppingIndex];
-                                toppingAppears[tobj.SymbolID - 16] = true;
+                                toppingAppears[tobj.SymbolID - 80] = true;
 
                                 // Check if the topping is already in the cart
                                 var existingTopping = CartToppings.FirstOrDefault(t => t.Name == topping.Name);
@@ -2185,7 +2134,7 @@ public class TuioDemo : Form, TuioListener
                             else
                             {
                                 // Topping is out of bounds
-                                int toppingIndex = tobj.SymbolID - 16;
+                                int toppingIndex = tobj.SymbolID - 80;
                                 var topping = toppings[toppingIndex];
 
                                 // Check if the topping is already in the cart
@@ -2261,7 +2210,7 @@ public class TuioDemo : Form, TuioListener
         var existingItem = cart.Find(itemm => itemm.Name == item.Name);
         if (existingItem != null)
         {
-            //existingItem.Quantity += quantity;
+            existingItem.Quantity += quantity;
             return;
         }
 
@@ -2277,14 +2226,16 @@ public class TuioDemo : Form, TuioListener
             Name = item.Name,
             Price = item.Price,
             Quantity = quantity,
-            Toppings = selectedToppings,
-            ImagePath = item.ImgPath
-
+            ImagePath = item.ImgPath,
+            Toppings = selectedToppings
         };
 
         cart.Add(cartItem);
 
         canAddToCart = false;
+
+        // Create and configure the label if it doesn't already exist
+
     }
 
     public string GetCartAsString()
@@ -2309,8 +2260,14 @@ public class TuioDemo : Form, TuioListener
         return cartDetails;
     }
 
+
+
     void drawPageMainMenu(Graphics g)
     {
+
+
+
+
         int quantity = 1;
         int isIDCart = -1;
         List<MenuItem> MenuItems;
@@ -2428,33 +2385,38 @@ public class TuioDemo : Form, TuioListener
 
                     switch (tobj.SymbolID)
                     {
-                        case 132:
+
+                        case 90:
                             itemRemovedFlags[0] = false;
                             break;
-                        case 133:
+                        case 91:
                             itemRemovedFlags[1] = false;
                             break;
-                        case 134:
+                        case 92:
                             itemRemovedFlags[2] = false;
                             break;
-                        case 135:
+                        case 93:
                             itemRemovedFlags[3] = false;
                             break;
-                        case 4:
+                        case 52:
                             currentMenuPage = changeCurrentMenuPage(angleDegrees); // Handle menu page change
                             break;
-                        case 5:
+                        case 50:
                             page = 2;
                             break;
-                        case 136:
+                        case 51:
                             page = 5;
 
                             break;
-                        case 137:
+                        case 53:
                             isIDCart = 1;
                             if (itemRemovedFlags.Values.Any(flag => flag))
                                 removedItem = itemRemovedFlags.First(kv => kv.Value).Key;
+
+
                             AddToCart(removedItem, currentMenuPage, null, MenuItems, quantity);
+
+
                             break;
                         default:
                             break;
@@ -2570,7 +2532,7 @@ public class TuioDemo : Form, TuioListener
 
     private void TuioDemo_Load(object sender, EventArgs e)
     {
-        // Path to the reacTIVision executable
+        //Path to the reacTIVision executable
         string exePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\reacTIVision-1.5.1-win64\reacTIVision.exe");
 
         try

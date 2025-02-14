@@ -4,6 +4,7 @@ import pickle
 import mediapipe as mp
 from dollarpy import Recognizer, Template, Point
 
+
 mp_drawing = mp.solutions.drawing_utils  # Drawing helpers
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_holistic = mp.solutions.holistic  # Mediapipe Solutions
