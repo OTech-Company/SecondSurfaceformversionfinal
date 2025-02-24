@@ -1,51 +1,140 @@
-# SecondSurface
+# Smart Ordering Table using Hand Gestures and TUIO
 
 ## Overview
+This project implements a **smart ordering table** that allows users to interact with a digital menu using **hand gestures** and **TUIO touch inputs**. It leverages **socket communication** to connect a Python-based hand gesture recognition system (using CNN) and TUIO signals to a **C# application**.
 
-This project consists of a series of interconnected forms developed within a structured solution. The code is organized to support both client and server functionalities, leveraging an MVC (Model-View-Controller) structure for efficient and organized development.
+The project is designed to enhance ordering experiences in restaurants by enabling **gesture-based interactions** and **TUIO-based touch inputs**. The system ensures real-time processing of user inputs and communicates via sockets to a client application.
 
-## Getting Started
+---
+## Features
+- **Hand Gesture Recognition:** Uses a **CNN-based** model to recognize hand gestures.
+- **TUIO Touch Input Processing:** Detects touch interactions via **TUIO protocol**.
+- **Socket Communication:** Python sends recognized gestures and TUIO events to the C# application.
+- **Food Detection (YOLO - not in this repo):** YOLO-based food detection is used in a separate Unity AR project.
+- **Smart Table Interface:** Users can interact with the menu in an intuitive and futuristic manner.
+- **Real-time Order Processing:** Seamless data transmission between gesture recognition and ordering system.
+- **Cart Management:** Users can modify their order items dynamically with gestures.
+- **Day/Night UI Mode:** Adjusts the interface based on ambient lighting.
 
-To get started with the project, simply open the `.sln` file using Visual Studio (or your preferred IDE). This solution file links all components, allowing you to navigate between forms, MVC files, and other resources seamlessly.
+---
+## System Architecture
+1. **Hand Gesture Recognition:**
+   - Processes camera feed and detects gestures using CNN.
+   - Outputs recognized gestures as commands.
+   
+2. **TUIO Touch Input Processing:**
+   - Detects specific TUIO events that map to predefined commands.
+   
+3. **Socket Communication:**
+   - The Python script runs socket servers that transmit data to the C# application.
+   - IP address and port configuration is required before execution.
+   
+4. **C# Interface:**
+   - Receives and processes socket data.
+   - Displays an interactive menu with ordering options.
 
+---
+## Installation & Setup
+### 1. Prerequisites
+- Python 3.7+
+- OpenCV
+- TensorFlow/Keras (for CNN-based hand gesture recognition)
+- PyTUIO (for TUIO processing)
+- Unity & C# (for UI implementation)
+- .NET Framework
 
-### Project Structure
+### 2. Clone the Repository
+```sh
+ git clone git@github.com:OTech-Company/SecondSurfaceformversionfinal.git
+ cd SecondSurfaceformversionfinal
+```
 
-The project is divided into several sections:
+### 3. Install Dependencies
+```sh
+ pip install -r requirements.txt
+```
 
-1. **Forms**:
-   - Multiple forms are included, each designed to handle specific aspects of the application's functionality.
-   - These forms are connected and work together to provide a cohesive user experience.
+### 4. Run the Python Socket Server
+Ensure all socket connections are established **before running the C# application**.
 
-2. **Solution_items**:
-   - This folder contains MVC files essential for the application’s logic, including:
-     - **Models**: Define the data structures and business logic.
-     - **Views**: Present data to the user and accept user input.
-     - **Controllers**: Handle user input, interact with models, and render the appropriate view.
+```sh
+ python socket_server.py
+```
 
-3. **Client**:
-   - This section includes client-side code and resources. It may contain HTML, CSS, JavaScript, or other assets as required by the application.
+### 5. Run the C# Client Application
+- Configure the correct **IP address** and **port** in the C# application.
+- Start the Unity/C# project.
 
-4. **Server**:
-   - This section contains server-side code, handling data processing, database interactions, and any other server-related functionality.
-   - Files here are structured to support robust server operations, including data retrieval and processing.
+---
+## Usage
+- **Start the Python server** first to handle gesture and TUIO input processing.
+- **Launch the C# application** to display the interactive menu and receive gesture-based inputs.
+- Use **hand gestures or TUIO objects** to navigate the menu, add items to the cart, and confirm orders.
+- The **cart dynamically updates** based on user selections.
+- **Checkout** by performing the relevant gesture or using TUIO signals.
 
-## Running the Project
+---
+## TUIO Mappings
+The following **TUIO signals** are mapped to ordering actions:
 
-1. **Open the `.sln` File**:
-   - Open the solution file (.sln) to load all project files into your development environment.
-2. **Build and Run**:
-   - Build the solution to compile all components.
-   - Run the project to start the application and navigate between forms, as well as client-server interactions.
+| TUIO Signal | Action |
+|------------|--------|
+| `50` | Add to cart |
+| `51` | Remove item |
+| `52` | Confirm order |
+| `53` | Cancel order |
+| `54` | Increase quantity |
+| `55` | Decrease quantity |
+| `60` | Open Lunch Menu |
+| `61` | Open Custom Menu |
+| `62` | Open Dessert Menu |
+| `90` | Select first menu item |
+| `91` | Select second menu item |
+| `92` | Select third menu item |
+| `93` | Select fourth menu item |
+| `102` | Proceed to Checkout Confirmation |
+| `110` | Adjust Quantity in Cart |
+| `112` | Scroll Through Cart Items |
+| `136` | Select Recommended Item 1 |
+| `137` | Select Recommended Item 2 |
+| `138` | Select Recommended Item 3 |
+| `139` | Select Recommended Item 4 |
 
-## Dependencies
+---
+## Hand Gesture Controls
+Hand gesture mappings will be illustrated in the **attached image** in the repository.
 
-Ensure that all required libraries and dependencies are installed. You may need to restore packages if prompted by your IDE.
+---
+## Interface
+The **C# interface** displays a **digital menu** where users can:
+- Browse food items.
+- Add or remove items using gestures or TUIO touch inputs.
+- Confirm or cancel orders.
+- View real-time responses to gestures and TUIO actions.
+- Toggle between **light and dark mode** depending on ambient conditions.
 
+---
 ## Contributing
+Contributions are welcome! To contribute:
+1. **Fork** the repository.
+2. **Create** a new branch for your feature (`git checkout -b feature-branch`).
+3. **Commit** your changes (`git commit -m 'Add new feature'`).
+4. **Push** the branch (`git push origin feature-branch`).
+5. **Open** a pull request.
 
-Contributions are welcome! Please follow the standard process for pull requests and ensure that any changes adhere to the project's architecture and coding standards.
+---
+## Issues & Bug Reporting
+If you encounter issues or have feature requests, please create an issue on GitHub under the **Issues** tab.
 
+---
 ## License
+This project is licensed under the **MIT License**.
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+---
+## Contact
+For any inquiries or collaboration, please reach out via **[your email or GitHub profile]**.
+
+---
+## Repository Link
+🔗 [GitHub Repository](https://github.com/OTech-Company/SecondSurfaceformversionfinal)
+
